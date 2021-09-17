@@ -1,0 +1,89 @@
+#set term postscript eps enhanced
+
+set xlabel "Age (years)"
+set ylabel "Stems/ha"
+set title "Stand Density Development"
+plot [0:] [0:10000] standfile  using 1:2 with lines lw 2 lc rgb "forest-green" title "Stems/ha simulated" ,"ksto-mt.dat" using 1:5 with points lc rgb "blue" lw 2 title "Ksto MT"
+
+pause -1 "Hit return to continue"
+set ylabel "ln(N)"
+set xlabel "ln(Vstem_mean)"
+set title "The self-thinning relationship"
+plot standfile  using (log(10000.0*$14/$2)):(log($2)) with lines lc rgb "forest-green" lw 2 title "simulated", "~/cvsprojects/core-model/LignumForest/gpl/ksto-mt.dat" using (log($7/$5)):(6.0-(2.0/3.0)*log($7/$5)) with lines lc rgb "black" lw 2 title "-2/3 line","~/cvsprojects/core-model/LignumForest/gpl/ksto-mt.dat" using (log($7/$5)):(log($5)) with points lc rgb "blue" lw 2 title "Ksto MT"
+
+pause -1 "Hit return to continue"
+set ylabel "Base diameter (cm)"
+set xlabel "Age (years)"
+set title "Base diameter Development"
+plot [0:] [0:] standfile using 1:($3*100.0) with lines lc rgb "blue" lw 2 title "Dbase_mean",  standfile using 1:($4*100.0) with lines lc rgb "green" lw 2 title "Dbase_min", standfile using 1:($5*100.0) with lines lc rgb "red" lw 2 title "Dbasemax","Va27.txt" using 1:(2+1.25*$4) with points lc rgb "red" lw 2 title "Stump diam. sapling stand", "~/cvsprojects/core-model/LignumForest/gpl/VVV-data.txt" using 1:(2+1.25*$2) with points lc rgb "red" lw 2 title "Stump diam. yield table"
+
+pause -1 "Hit return to continue"
+set ylabel "Diameter at breast height(cm)"
+set xlabel "Age (years)"
+set title "Base diameter Development"
+plot [0:] [0:] standfile using 1:($6*100.0) with lines lc rgb "blue" lw 2 title "Dbh_mean",  standfile using 1:($7*100.0) with lines lc rgb "green" lw 2 title "Dbh_min", standfile using 1:($8*100.0) with lines lc rgb "red" lw 2 title "Dbh_max", "~/cvsprojects/core-model/LignumForest/gpl/Va27.txt" using 1:4 with points lc rgb "red" lw 2 title "Sapling stand data", "~/cvsprojects/core-model/LignumForest/gpl/VVV-data.txt" using 1:2 with points lc rgb "red" lw 2 title "Yield table data", "~/cvsprojects/core-model/LignumForest/gpl/ksto-mt.dat" using 1:4 with points lc rgb "blue" lw 2 title "Ksto MT"
+
+pause -1 "Hit return to continue"
+set ylabel "Height (m)"
+set xlabel "Age (years)"
+set title "Height Development"
+plot [0:] [0:] standfile using 1:9 with lines lc rgb "blue" lw 2 title "H_mean",  standfile using 1:10 with lines lc rgb "green" lw 2 title "H_min", standfile using 1:11 with lines lc rgb "red" lw 2 title "H_max","~/cvsprojects/core-model/LignumForest/gpl/VVV-data.txt" using ($1):($3) with point pt 1 lc rgb "forest-green" lw 2 title "Yield table data", "~/cvsprojects/core-model/LignumForest/gpl/VVV-data.txt" using ($1):($4) with point pt 1 lc rgb "blue" lw 2 notitle, "~/cvsprojects/core-model/LignumForest/gpl/Va27.txt" using 1:3 with points pt 3 lc rgb "forest-green" lw 2 title "Sapling stand data",  "~/cvsprojects/core-model/LignumForest/gpl/Va27.txt" using 1:6 lc rgb "blue" pt 3 lw 2 notitle,"~/cvsprojects/core-model/LignumForest/gpl/ksto-mt.dat" using 1:3 with points lc rgb "blue" lw 2 title "Ksto MT Hav"
+
+#plot [0:] [0:] standfile using 1:9 with lines lc rgb "blue" lw 2 title "H_mean",  standfile using 1:10 with lines lc rgb "green" lw 2 title "H_min", standfile using 1:11 with lines lc rgb "red" lw 2 title "H_max",standfile using 1:13 with lines lc rgb "green" lw 2 title "Hcb_min",standfile using 1:14 with lines lc rgb "red" lw 2 title "Hcb_max","~/cvsprojects/core-model/LignumForest/gpl/VVV-data.txt" using ($1):($3) with point pt 1 lc rgb "forest-green" lw 2 title "Yield table data", "~/cvsprojects/core-model/LignumForest/gpl/VVV-data.txt" using ($1):($4) with point pt 1 lc rgb "blue" lw 2 notitle, "~/cvsprojects/core-model/LignumForest/gpl/Va27.txt" using 1:3 with points pt 3 lc rgb "forest-green" lw 2 title "Sapling stand data",  "~/cvsprojects/core-model/LignumForest/gpl/Va27.txt" using 1:6 lc rgb "blue" pt 3 lw 2 notitle
+
+
+pause -1 "Hit return to continue"
+
+set ylabel "Stem volume  (m3/ha)"
+set xlabel "Age (years)"
+set title "Stem volume"
+plot [0:] [0:] standfile using 1:(10000*$14) with lines lc rgb "blue" lw 2 title "Vstem", "~/cvsprojects/core-model/LignumForest/gpl/Va27.txt" using 1:5 with points pt 3 lc rgb "red" lw 2 title "Sapling stand data","~/cvsprojects/core-model/LignumForest/gpl/ksto-mt.dat" using 1:7 with points lc rgb "blue" lw 2 title "Ksto MT"
+
+pause -1 "Hit return to continue"
+
+set ylabel "Basal area (m2/ha)"
+set xlabel "Age (years)"
+set title "Basal area and basal area at crown base"
+plot [0:] [0:] standfile using 1:(10000*$12) with lines lc rgb "blue" lw 2 title "G", standfile using 1:(10000*$13) with lines lc rgb "forest-green" lw 2 title "G at crown base","~/cvsprojects/core-model/LignumForest/gpl/Va27.txt" using 1:7 with points pt 3 lc rgb "red" lw 2 title "Sapling stand data","~/cvsprojects/core-model/LignumForest/gpl/VVV-data.txt" using 1:8 with point pt 3 lc rgb "red" lw 2 title "Yield table data","~/cvsprojects/core-model/LignumForest/gpl/ksto-mt.dat" using 1:6 with points lc rgb "blue" lw 2 title "Ksto MT"
+
+
+pause -1 "Hit return to continue"
+
+set ylabel "LAI (m2/m2)"
+set xlabel "Age (years)"
+set title "LAI"
+plot [0:] [0:] standfile using 1:15 with lines lc rgb "forest-green" lw 2 title "LAI"
+
+pause -1 "Hit return to continue"
+
+set ylabel "Foliage mass (tn DM/ha)"
+set xlabel "Age (years)"
+set title "Foliage mass"
+plot [0:] [0:] standfile using 1:(10000*$16*2/1000) with lines lc rgb "forest-green" lw 2 title ""
+
+pause -1 "Hit return to continue"
+
+set title "Stand level specific lea area i.e. LAI / Wf"
+set xlabel "Age (years)"
+set ylabel "Specific leaf area (m2 / kg DM)"
+plot [0:] [0:] standfile using 1:($15/(2.0*$16)) with lines lc rgb "forest-green" lw 2 title ""
+
+pause -1 "Hit return to continue"
+
+set title "Mean height / mean Dbase"
+set xlabel "Age (years)"
+set ylabel "Average tree height / average Dbase (m/cm)"
+plot [0:30] [0:] standfile using 1:($9/($3*100.0)) with lines lc rgb "forest-green" lw 2 title "", "~/cvsprojects/core-model/LignumForest/gpl/Va27.txt" using 1:($2/$3) with points lc rgb "red" lw 2 title "Sapling stand data", "~/cvsprojects/core-model/LignumForest/gpl/VVV-data.txt" using 1:($3/$2) with points lc rgb "red" lw 2 title "Yield table data"
+pause -1 "Hit return to continue"
+
+set title "Mean height  vs mean Dbase"
+set xlabel "Mean Dbase (cm)"
+set ylabel "Mean tree height (m)"
+plot [0:15] [0:15] standfile using (100.0*$6):9 with lines lc rgb "forest-green" lw 2 title "simulated","ksto-mt.dat" using 4:3 with linespoints lc rgb "blue" lw 2 title "Koivisto MT"
+
+pause -1 "Hit return to continue"
+set ylabel "Height (m)"
+set xlabel "Age (years)"
+set title "Height Development"
+plot [0:] [0:] standfile using 1:9 with lines lc rgb "blue" lw 2 title "H_mean",  standfile using 1:10 with lines lc rgb "green" lw 2 title "H_min", standfile using 1:11 with lines lc rgb "red" lw 2 title "H_max","~/cvsprojects/core-model/LignumForest/gpl/VVV-data.txt" using ($1):($3) with point pt 1 lc rgb "forest-green" lw 2 title "Yield table data", "~/cvsprojects/core-model/LignumForest/gpl/VVV-data.txt" using ($1):($4) with point pt 1 lc rgb "blue" lw 2 notitle, "~/cvsprojects/core-model/LignumForest/gpl/Va27.txt" using 1:3 with points pt 3 lc rgb "forest-green" lw 2 title "Sapling stand data",  "~/cvsprojects/core-model/LignumForest/gpl/Va27.txt" using 1:6 lc rgb "blue" pt 3 lw 2 notitle,"~/cvsprojects/core-model/LignumForest/gpl/ksto-mt.dat" using 1:3 with points lc rgb "blue" lw 2 title "Ksto MT Hav",standfile using 1:17 with lines lc rgb "forest-green" lw 2 title "Hcb_mean"
+

@@ -1,0 +1,32 @@
+#Gnuplot file Crown-Limits.gpl for the crown limit data  files 
+
+#NOTE: this  is for gnuplot 4.2  only (it has  introduced call command
+#with parameters)!!!
+
+#Usage:
+#In Set-Files.gpl set four crown limit data file
+#1) start gnuplot
+#2) load 'Set-Files.gpl'
+#3) call 'Crown-Limit.gpl' 
+#to produce eps files instead of terminal output
+#set 'tofile' below to 1 (file names are predefined, see below)
+
+tofile=0
+
+if (tofile==1) set term postscript eps enhanced
+
+if (tofile==1) set out "wf-10-30.eps"
+set title "Foliage Masses  in Branching Points"
+set xlabel "Height (m)"
+set ylabel "Wf (kgC)"
+set key left
+plot  crown1 using 1:2 with boxes title age1,  crown2 using 1:2 with boxes title age2, crown3 using 1:2 with boxes title age3, crown4  using 1:2 with boxes title age4 
+pause -1
+
+if (tofile==1) set out "qabs.eps"
+set title "Radiation Used in Photosynthesis in Branching Points"
+set xlabel "Height (m)"
+set ylabel "Qabs (MJ)"
+set key left
+plot crown1 using 1:6 with boxes title age1, crown2 using 1:6 with boxes title age2, crown3 using 1:6 with boxes title age3, crown4 using 1:6 with boxes title age4
+pause -1

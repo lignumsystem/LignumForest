@@ -1,0 +1,1 @@
+./lig-forest -iter 26 -metafile MetaFile.txt -voxelspace VoxelSpace.txt  -writeOutput -outputAll -writeInterval 1 -numParts 2  -toFile this-41/this41.dat -generateLocations 250 -dumpSelf -hw 15 -n_buds_ini_min 3 -n_buds_ini_max 3 -increaseXi 15 -noBorderForest -p0Var 20 -xml this-41/this41.xml -verbose > this-41/now23.dat

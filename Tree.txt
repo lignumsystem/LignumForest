@@ -1,0 +1,23 @@
+#PLEASE NOTE that the following parameters are now functions of light
+#LGPlr (flr.fun) , LGPsf (fsf.fun) , LGPaf (faf.fun), LGPna (fna.fun) 
+#and LGPapical (fapical.fun)  
+LGPlr 0.01
+LGPsf 28.0
+LGPms 0.024
+LGPmr 0.24
+LGPnl 0.03
+LGPpr 0.0006
+LGPar 0.5
+LGPLmin 0.02
+LGPna 0.7854
+LGPzbrentEpsilon 0.01
+LGPrhoW 200.0
+LGPmf 0.24
+LGPss  0.07
+LGPapical 0.9
+LGPxi 0.6
+LGPaf 2.0
+LGPq 0.1
+LGPsr 1.33
+LGPlen_random 0.0
+

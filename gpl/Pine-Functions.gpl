@@ -1,0 +1,20 @@
+if (tofile)
+  set out "fip.eps"
+set title "The Effect of Relative Light to Segment Length" 
+set xlabel "Qrel"
+set ylabel "f(Qrel)"
+plot "fip.fun" with linespoints title "f(0.085)=0"
+
+if (tofile)
+  set out "fnbuds.eps"
+set title "Number of Lateral Buds as the Foliage Mass of the Mother Segment"
+set xlabel "Wf (kgC)"
+set ylabel "N buds"
+plot [0:0.01] [0:8] "fnbuds.fun" with linespoints notitle
+
+if (tofile)
+  set out "fstarmean.eps"
+set title "Star mean 
+set xlabel "Segment Age"
+set ylabel "Star mean"
+plot "fstarmean.fun" with linespoints notitle

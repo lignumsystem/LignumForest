@@ -1,0 +1,16 @@
+set term postscript eps enhanced
+
+set out "p-wf-ratio.eps"
+set key left
+set title "P/Wf"
+set xlabel "Age"
+set ylabel "P/Wf"
+plot "pine-managed.txt" using 1:($10)/($12) with linespoints notitle
+
+set out "p-and-wf.eps"
+set title "P, Wf and P/Wf"
+set key left
+set xlabel "Age"
+set ylabel "P, Wf, P/Wf, Ws diameter /Wf elongation"
+plot "pine-managed.txt" using 1:($10) with linespoints title "P (kgC)", "pine-managed.txt" using 1:($12) with linespoints title "Wf (kgC)","pine-managed.txt" using 1:($10)/($12) with linespoints title "P/Wf", "pine-managed.txt" using ($1):($33)/($31)  with linespoints title "Ws diameter /Wf elongation"
+

@@ -1,0 +1,13 @@
+#Edit the file names and load into gnuplot
+#Data file
+data_file = "Tree40forestData11.10-5-kauri.txt"
+#Data for crown limits, for (4) files are plotted
+crown1= "CrownLimit-10-10-10.txt"
+crown2= "CrownLimit-10-10-20.txt"
+crown3= "CrownLimit-10-10-30.txt"
+crown4= "CrownLimit-10-10-40.txt"
+#Titleis in crown limit plots
+age1 = "10 years"
+age2 = "20 years"
+age3 = "30 years"
+age4 = "40 years"

@@ -1,0 +1,21 @@
+set title "Branch length vs diameter"
+set xlabel "Diameter (cm)"
+set ylabel "Length (m)"
+
+plot  [0:2] "../LGSim/Perusajo-bl.dat" using (100*$3):5 notitle
+
+replot "../LGSim/Perusajo-bl.dat" using (100*$3):((25+2*1000*$3)/100) title "1"  with lines lw 2 lc rgb "red"
+
+
+replot "oksavert.dat" using (100*$1):(((2.3+0.95348*log(1000*$1)+0.25695*log($2))**2.72)/100) title "2"  with lines lw 2 lc rgb "blue"
+
+-------------------
+
+
+set title "Branch diameters"
+set xlabel "Distance from tree top (m)"
+set ylabel "Branch diameter (cm)"
+
+plot [0:7] [0:2.5] "../LGSim/Perusajo-bl.dat" using 2:($3*100) notitle
+
+replot "Makinen-d.txt" using 1:2 with lines lw 2 lc rgb "red" notitle

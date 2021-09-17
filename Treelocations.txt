@@ -1,0 +1,5 @@
+First right corner of stand (left corner =(0.0)), borderx, bordery
+10.0 10.0 2.0 2.0
+Then locations of trees, each on its own line
+5.0 5.0  
+5.0 6.0

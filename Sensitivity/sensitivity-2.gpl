@@ -1,0 +1,98 @@
+#python script to generate sensitivity analysis data  
+#The parameter is LGPsf 
+#1. run with nominal value
+#2. raise LGPsf with amount_up percentace and run
+#3. lower LGPsf with amount_down percentage and run
+import sys
+import os
+import string
+
+parameters ={}
+parameters["LGPaf"] = 0.66 #Needle mass - tree segment area (kgC/m^2)relationship
+parameters["LGPar"] = 0.50 #Foliage - root relationship 
+parameters["LGPlr"] = 0.01 #Length - radius relationship (R=lr*L) of a tree segment
+parameters["LGPmf"] = 0.240#Maintenace respiration of foliage
+parameters["LGPmr"] = 0.240#Maintenance respiration rate of roots
+parameters["LGPms"] = 0.0240#Maintenance respiration rate of sapwood
+parameters["LGPna"] = 0.7854#Needle angle
+parameters["LGPnl"] = 0.030#Needle length
+parameters["LGPq"]  = 0.05 #Tree segment shortening factor
+parameters["LGPsr"] = 0.330#Senescence rate of roots
+parameters["LGPss"] = 0.07 #Senescence rate of sapwood
+parameters["LGPrhoW"]= 200.0 #Density (kgC/m3) of wood in tree segment
+parameters["LGPpr"] = 0.00070 #LUE: Proportion of bound solar radiation used in P
+parameters["LGPxi"] = 0.60 #Fraction of heartwood in tree segments
+parameters["LGPzbrentEpsilon"] = 0.01#Accuracy for finding root of P-M = G
+parameters["LGPsf"] = 28.0 #SLA: foliage m^2/kgC
+parameters["LGPapical"] = 0.90 #Length of segment forking off: L = LGPapical * L_mother_segment
+parameters["LGPLmin"] = 0.01 #Minimum segment length
+
+#Parameterized file names, parameter names and parameter values
+pname = "LGPsf"
+nominal = 28.0 
+amount_up = 1.05
+amount_down = 0.95
+function_file = "sf.fun"
+parameter_file = "Tree.txt"
+sensitivity = "SensivitivityDataLGPsf"
+nsuffix = "-n.txt"
+upsuffix = "-up.txt"
+downsuffix = "-down.txt"
+#Three output files for sensitivity data
+#nominal, up and down 
+nsensitivity = sensitivity+nsuffix
+upsensitivity = sensitivity+upsuffix
+downsensitivity = sensitivity+downsuffix
+
+#In what follows are three runs of Lignum producing three files
+#for sensitivity data.
+  
+#Write the nominal value and the two deviations up and down
+file = open(nsensitivity,"w")
+file.write(pname+" "+str(nominal)+ "\n")
+file.close()
+
+file = open(upsensitivity,"w")
+file.write(pname+" "+str(nominal*amount_up)+ "\n")
+file.close()     
+
+file = open(downsensitivity,"w")
+file.write(pname+" "+str(nominal*amount_down)+ "\n")
+file.close()     
+
+#Write parameters to Tree.txt
+file = open(parameter_file,"w")
+for k,v in parameters.iteritems():
+    file.write(k+" "+str(v)+"\n")
+file.close()
+
+#'pname' is a function, write the nominal value to faf.fun
+file = open(function_file,"w");
+file.write(str(0.0)+" "+str(nominal)+"\n"+str(1.0)+" "+str(nominal)+"\n")
+file.close()
+
+#1st run of Lignum, nominal values
+sensitivity_data = nsensitivity 
+command_line = ['scotspine','30','2','10','10','MetaFile.txt','VoxelSpace.txt','-treeDist','0.5','-startVoxCalc','0','-numParts','2','-light','4','-toFile','pine-managed-n.txt','-xml', 'Tree30n.xml','-sensitivity',sensitivity_data]
+result = os.spawnvpe(os.P_WAIT,"./scotspine",command_line,os.environ)
+print result
+
+#Change a parameter value up
+file = open(function_file,"w");
+file.write(str(0.0)+" "+str(nominal*amount_up)+"\n"+str(1.0)+" "+str(nominal*amount_up)+"\n")
+file.close()
+
+#2nd run of Lignum 
+sensitivity_data = upsensitivity
+command_line = ['scotspine','30','2','10','10','MetaFile.txt','VoxelSpace.txt','-treeDist','0.5','-startVoxCalc','0','-numParts','2','-light','4','-toFile','pine-managed-up.txt','-xml', 'Tree30up.xml','-sensitivity',sensitivity_data]
+result = os.spawnvpe(os.P_WAIT,"./scotspine",command_line,os.environ)
+
+#Change a parameter value down
+file = open(function_file,"w");
+file.write(str(0.0)+" "+str(nominal*amount_down)+"\n"+str(1.0)+" "+str(nominal*amount_down)+"\n")
+file.close()
+
+#3rd run of Lignum 
+sensitivity_data = downsensitivity
+command_line = ['scotspine','30','2','10','10','MetaFile.txt','VoxelSpace.txt','-treeDist','0.5','-startVoxCalc','0','-numParts','2','-light','4','-toFile','pine-managed-up.txt','-xml', 'Tree30down.xml','-sensitivity',sensitivity_data]
+result = os.spawnvpe(os.P_WAIT,"./scotspine",command_line,os.environ)

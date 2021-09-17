@@ -1,0 +1,49 @@
+#This file defines trees to be used with the target trees in the forest.
+#At the beginning of the file there can a comment block. 
+#Each comment line begins with # 
+#Each data line is of the form 
+#   Y FileName  P
+#where Y is the year when the tree in the file FileName will be used
+#The P is the cumulative probability (for the ease of implementation)
+#because there can be several trees in use in one year. 
+#Implicitely the target tree is inserted into the forest with probability 1-Pmax 
+#and once to the center of the forest.
+4   1-Jun-*.xml 0.2
+4   2-Jun-*.xml 0.6
+4   3-Jun-*.xml 0.8
+5   2-Jun-*.xml 0.6
+6   3-Jun-*.xml 0.4
+7   4-Jun-*.xml 0.3
+8   3-Jun-*.xml 0.5
+9   4-Jun-*.xml 0.5
+10  5-Jun-*.xml 0.5	
+11  6-Jun-*.xml	0.5	
+12  7-Jun-*.xml	0.5	
+13  8-Jun-*.xml	0.5	
+14  9-Jun-*.xml	0.5
+15  10-Jun-*.xml 0.5
+16  11-Jun-*.xml 0.5
+17  12-Jun-*.xml 0.5
+18  13-Jun-*.xml 0.5
+19  14-Jun-*.xml 0.5
+20  15-Jun-*.xml 0.5
+21  16-Jun-*.xml 0.5
+22  17-Jun-*.xml 0.5
+23  18-Jun-*.xml 0.5
+24  19-Jun-*.xml 0.5
+25  20-Jun-*.xml 0.5
+26  21-Jun-*.xml 0.5
+27  22-Jun-*.xml 0.5
+28  23-Jun-*.xml 0.5
+29  24-Jun-*.xml 0.5
+30  25-Jun-*.xml 0.5
+31  26-Jun-*.xml 0.5
+32  27-Jun-*.xml 0.5
+33  28-Jun-*.xml 0.5
+34  29-Jun-*.xml 0.5
+35  30-Jun-*.xml 0.5
+36  31-Jun-*.xml 0.5
+37  32-Jun-*.xml 0.5
+38  33-Jun-*.xml 0.5
+39  34-Jun-*.xml 0.5
+40  35-Jun-*.xml 0.5

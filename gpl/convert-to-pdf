@@ -1,0 +1,33 @@
+#!/bin/sh
+epstopdf age-height.eps                   
+epstopdf diameter.eps                     
+epstopdf fip.eps                          
+epstopdf height-diameter.eps       
+epstopdf qabs.eps                  
+epstopdf wf-10-30.eps             
+epstopdf dWf.eps                   
+epstopdf dqabs.eps                 
+epstopdf production.eps
+epstopdf p-m.eps
+epstopdf masses.eps            
+epstopdf crown-size.eps
+epstopdf stand-density.eps         
+epstopdf foliage-mortality.eps     
+epstopdf fnbuds.eps                 
+epstopdf fstarmean.eps
+
+epstopdf p-wf-ratio.eps
+epstopdf p-and-wf.eps
+
+epstopdf Locations30.eps
+epstopdf fdensity-stemsha.eps   
+
+
+
+
+
+
+
+
+
+  

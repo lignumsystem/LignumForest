@@ -1,0 +1,8 @@
+set term postscript eps enhanced
+
+set out "Locations30.eps"
+set xlabel "Meters"
+set ylabel "Meters"
+set title "Forest Plot 1784 trees/ha"
+
+plot "Locations30.txt" notitle,"25x25.txt" title "Simulated pine (25x25)"

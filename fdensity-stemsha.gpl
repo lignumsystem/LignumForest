@@ -1,0 +1,8 @@
+set term postscript eps enhanced
+
+set out "fdensity-stemsha.eps"
+set xlabel "Age "
+set ylabel "Trees/ha"
+set title "Forest Density "
+
+plot "fdensity-stemsha.fun" with lp notitle

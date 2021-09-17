@@ -1,0 +1,115 @@
+#set term postscript eps enhanced
+
+set ylabel "Diameter (cm)"
+set xlabel "Age (years)"
+set title "Diameter Development"
+plot [0:43] [0:] file using 1:($5*100.0) with lines lc rgb "blue" lw 2 title "Dbase",  file using 1:($6*100.0) with lines lc rgb "green" lw 2 title "D1.3", "Va27.txt" using 1:4 with points lc rgb "red" lw 2 title "Sapling stand data", "VVV-data.txt" using 1:2 with points lc rgb "red" lw 2 title "Yield table data"
+
+pause -1 "Hit return to continue"
+
+#set out "age-height.eps"
+set title "Tree Height and height of crown base"
+set xlabel "Age (years)"
+set ylabel "Tree Height (m)"
+set key left
+plot  [0:] [0:] file using 1:2 with lines lw 2 lc rgb "forest-green" title "H", file using ($1):($8) with lines lw 2 lc rgb "blue" title "Hcb", "VVV-data.txt" using ($1):($3) with point pt 1 lc rgb "forest-green" lw 2 title "Yield table data", "VVV-data.txt" using ($1):($4) with point pt 1 lc rgb "blue" lw 2 notitle, "Va27.txt" using 1:3 with points pt 3 lc rgb "forest-green" lw 2 title "Sapling stand data",  "Va27.txt" using 1:6 lc rgb "blue" pt 3 lw 2 notitle
+
+pause -1 "Hit return to continue"
+
+set title "Height vs diameter"
+set ylabel "Tree Height (m)"
+set xlabel "Diameter (cm)"
+set key left
+plot [0:] [0:] file using ($5*100.0):($2) with lines title "H vs Dbase", file using ($6*100.0):($2) with lines title "H vs D13", "VVV-data.txt" using ($2):($3) with point title "HvsD13-data", "Va27.txt" using 4:3 with points title "HvsD13-data"
+
+pause -1 "Hit return to continue"
+
+#set out "p-m.eps"
+set title "Photosynthesis and Resipration"
+set xlabel "Age (years)"
+set ylabel "P, M, Mfol, Msap, Mroot (kgC)"
+set key left
+plot  file using 1:9 with lines title "P (kgC)" lc rgb "forest-green" lw 2, file using 1:10 with lines title "M (kgC)" lc rgb "blue" lw 2, file using 1:18 with lines title "Ms (kgC)" lc rgb "brown" lw 2, file using 1:19 with lines title "Mf (kgC)" lc rgb "green" lw 2, file using 1:15 with lines title "Mr (kgC)" lc rgb "black" lw 2
+
+pause -1 "Hit return to continue"
+set title "Respiration / photosynthesis"
+set key left
+set xlabel "Age (years)"
+set ylabel "kg C / kg C"
+plot  [0:] [0:0.5] file using ($1):($10/$9)  with lines lw 2 lc rgb "forest-green" title "M/P" 
+
+pause -1 "Hit return to continue"
+
+set xlabel "Age (years)"
+set ylabel "P/Wf (kgC/kgC), lambda (dimensionless)"
+set key left
+plot [0:] [0:] file using 1:($9/$11) with lines lw 2 lc rgb "forest-green" title "P/Wf", file using 1:40 with lines lw 2 lc rgb "dark-blue" title "lambda"
+
+
+pause -1 "Hit return to continue"
+set title "Components of Growth"
+set key left
+set xlabel "Age (years)"
+set ylabel "Proportion"
+plot  [0:43] [0:] file using ($1):($28/($28+$29+$30+$31))  with lines title "iWf", file using ($1):($29/($28+$29+$30+$31)) with lines title "iWsw-elong", file using ($1):($30/($28+$29+$30+$31)) with lines title "iWsw-diamg", file using ($1):($31/($28+$29+$30+$31)) with lines title "iWr"    
+
+pause -1 "Hit return to continue"
+set title "Sapwood, Foliage and Root mass"
+set xlabel "Age (years)"
+set ylabel "Ws, Wf, Wr (kgC)"
+set key left
+plot  file using 1:34 with linespoints title "Ws (kgC)", file using 1:11 with linespoints title "Wf (kgC)", file using 1:14 with linespoints title "Wr (kgC)"
+
+pause -1 "Hit return to continue"
+
+set title "Shares vs tree height"
+set xlabel "Tree height, m"
+set ylabel "Per cent of total above ground"
+set key left
+plot [0:16] [0:] file using ($2):($11/($33+$11)) with lines lw 2 lc rgb "forest-green" title "Wf", file using ($2):($36/($33+$11)) with lines lw 2 lc rgb "red" title "Stem sapwood", file using ($2):($35/($33+$11)) with lines lw 2 lc rgb "blue" title "Branch mass", "osuuksia.txt" using 1:3 with points lw 2 lc rgb "forest-green" title "Wf-data", "osuuksia.txt" using 1:2 with points lw 2 lc rgb "red" title "Stem sw-data", "osuuksia.txt" using ($1):($5+$6) with points lw 2 lc rgb "blue" title "Branch-data"
+
+pause -1 "Hit return to continue"
+
+set title "Tree level pipe model relationships"
+set xlabel "Cross-sectional area of stem (cm2)"
+set ylabel "Needle mass of tree (kg DW)"
+set key left
+plot [0:] [0:] file using (3.1416*($7*100/2.0)**2):(2*$11)  with line lw 2 lc rgb "forest-green" title "Wf vs Acrownbase", file using (3.1416*($6*100/2.0)**2):(2*$11)  with lines lw 2 lc rgb "blue"  title "Wf vs Adbh", file using (3.1416*($5*100/2.0)**2):(2*$11)  with line lw 2 lc rgb "red"  title "Wf vs Abase", file using (3.1416*($7*100/2.0)**2):(exp(2.968+1.178*log(3.1416*(100.0*$7/2.0)**2)+0.026/2)/1000) with point lc rgb "black" title "Arola", file using (3.1416*($7*100/2.0)**2):(0.056*(3.1416*(100.0*$7/2.0)**2)) with point lc rgb "brown" title "Berninger et al. 2005"
+
+
+pause -1 "Hit return to continue"
+set title "Number of segments"
+set xlabel "Tree height (m)"
+set ylabel "Number of segments"
+plot  [0:] [0:] file using 2:21 with lines notitle lc rgb "blue" lw 2, file using 2:($2<6.5?45*$2**2.5:-1.0) with points title "Kurttio&K:maki" lc rgb "red" lw 2 
+
+pause -1 "Hit return to continue"
+set title "Qabs"
+set xlabel " Time (years)"
+set ylabel "Qabs (?)"
+plot  [0:] [0:] file using 1:22 with lines notitle lc rgb "blue" lw 2
+
+pause -1 "Hit return to continue"
+set title "Qabs/Wf"
+set xlabel " Time (years)"
+set ylabel "Qabs/Wf (?/kgDM)"
+plot  [0:] [0:] file using 1:($22/(2.0*$11)) with lines notitle lc rgb "blue" lw 2
+
+pause -1 "Hit return to continue"
+branchfile="../branchinformation.dat"
+set title "Branch diameter vs position in crown"
+set xlabel "Distance from tree top (m)"
+set ylabel "Diameter (cm)" 
+plot [0:] [0:] branchfile using 2:3 notitle lc rgb "forest-green", "Makinen-d.txt" using 1:2 with lines lw 2 lc rgb "black" title "Makinen"
+
+pause -1 "Hit return to continue"
+set title "Branch length vs. diameter"
+set xlabel "Diameter (cm)"
+set ylabel "Length (m)"
+plot [0:] [0:] branchfile using 3:5 with points lc rgb "forest-green" notitle,branchfile using 3:($3>0.5?(54+3.5*10*$3)/100:-1.0)  with lines lw 2 lc rgb "red" title "Kaitaniemi", branchfile using 3:((2.3+0.95348*log(10.0*$3)+0.25695*log(0.8))**2.72/100.0) with points lw 2 lc rgb "light-blue" title "Makinen crown pos. 0.8", branchfile using 3:((2.3+0.95348*log(10.0*$3)+0.25695*log(0.2))**2.72/100.0) with points lw 2 lc rgb "dark-blue" title "Makinen crown pos. 0.2"
+
+pause -1 "Hit return to continue"
+set title "Branch length vs. diameter"
+set xlabel "Diameter (cm)"
+set ylabel "Length (m)"
+plot [0:] [0:] branchfile using 3:5 with points lc rgb "forest-green" notitle,branchfile using 3:($3>0.5?(54+3.5*10*$3)/100:-1.0)  with lines lw 2 lc rgb "red" title "Kaitaniemi", branchfile using 3:((2.3+0.95348*log(10.0*$3)+0.25695*log($12))**2.72/100.0) with points lw 2 lc rgb "dark-blue" title "Makinen"

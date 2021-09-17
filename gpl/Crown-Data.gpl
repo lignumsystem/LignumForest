@@ -1,0 +1,31 @@
+if (tofile)
+  set out "wf-10-30.eps"
+set title "Foliage Masses  in Branching Points"
+set xlabel "Height (m)"
+set ylabel "Wf (kgC)"
+set key left
+plot  crown_file30 using 1:2 with boxes title "Age 30",  crown_file20 using 1:2 with boxes title "Age 20", crown_file10 using 1:2 with boxes title "Age 10" 
+
+if (tofile)
+ set out "dWf.eps"
+set title "Foliage Masses in Branching Points \n(divided by the segment length \n below the branching point)"
+set xlabel "Height (m)"
+set ylabel "dWf/dH (kgC)"
+set key right
+plot crown_file30 using 1:4 with linespoints title "Age 30", "CrownLimit-25.00-25.00-25.txt" using 1:4 with linespoints title "Age 25", crown_file20 using 1:4 with linespoints title "Age 20","CrownLimit-25.00-25.00-15.txt" using 1:4 with linespoints title  "Age 15", crown_file10 using 1:4 with linespoints title "Age 10","CrownLimit-25.00-25.00-5.txt" using 1:4 with linespoints title "Age 5" 
+
+if (tofile)
+  set out "qabs.eps"
+set title "Radiation Used in Photosynthesis in Branching Points"
+set xlabel "Height (m)"
+set ylabel "Qabs (MJ)"
+set key left
+plot crown_file30 using 1:6 with boxes title "Qabs 30",  crown_file20 using 1:6 with boxes title "Qabs 20", crown_file10 using 1:6 with boxes title "Qabs 10"
+
+if (tofile)
+  set out "dqabs.eps"
+set title "Radiation Used in Photosynthesis in Branching Points \n (divided by the segment length \n below the branching point)"
+set xlabel "Height (m)"
+set ylabel "dQabs/dH (MJ)"
+set key left
+plot crown_file30 using 1:8 with lp title "dQabs/dH 30",  crown_file20 using 1:8 with lp title "dQabs/dH 20",  crown_file10 using 1:8 with lp title "dQabs/dH 10"

@@ -1,0 +1,9 @@
+#File describing the location of definition files
+#for parameters and fuctions of LIGNUM
+Parameters:
+    Tree: Tree.txt 
+    Firmament: Firmament.txt
+Functions:
+    LGMFM: fm.fun
+    LGMIP: fip.fun
+    LGMVI: fvigorindex.fun

@@ -1,0 +1,79 @@
+#Gnuplot file Lig-Crobas.gpl for the data  file (option -toFile)
+
+#NOTE: this  is for gnuplot 4.2  only (it has  introduced call command
+#with parameters)!!!
+
+#Usage:
+#In Set-Files.gpl set the 'data_file' to the data file  
+#1) start gnuplot
+#2) load 'Set-Files.gpl'
+#3) call 'Lig-Crobas.gpl' 
+#to produce eps files instead of terminal output
+#set 'tofile' below to 1 (file names are predefined, see below)
+
+tofile = 0
+
+if (tofile == 1)set term postscript eps enhanced
+
+if (tofile == 1)set out "stand-density.eps"
+set xlabel "Age (years)"
+set ylabel "Stems/ha"
+set title "Stand Density Development"
+plot  data_file using 1:2 with linespoints title "Stems/ha simulated" 
+pause -1
+
+if (tofile == 1)set out "diameter.eps"
+set ylabel "Diameter (cm)"
+set xlabel "Age (years)"
+set title "Diameter Development"
+plot  data_file using 1:($$6*100.0) with linespoints title "Dbase",  data_file using 1:($$7*100.0) with linespoints title "D1.3"
+pause -1
+
+if (tofile == 1)set out "production.eps"
+set title "Photosynthesis and Respiration"
+set xlabel "Age (years)"
+set ylabel "P, M, Wf, P/Wf, Wr, MWr, M-MWr"
+set key left
+plot  data_file using 1:10 with linespoints title "P (kgC)", data_file using 1:11 with linespoints title "M (kgC)", data_file using 1:12 with linespoints title "Wf (kgC)", data_file using ($$1):($$10-$$11) with linespoints title "P-M (kgC)", data_file using ($$1):($$10/$$12) with linespoints title "P/Wf", data_file using ($$1):($$15) with linespoints title "Wr (kgC)", data_file using ($$1):($$16) with linespoints title "MWr (kgC)",  data_file using ($$1):($$17) with linespoints title "M-MWr (kgC)"
+pause -1
+
+if (tofile == 1)set out "height-diameter.eps"
+set title "Height vs. Diameter"
+set xlabel "Tree Height (m)"
+set ylabel "Diameter (cm)"
+set key left
+plot  data_file using ($$3):($$6*100.0) with linespoints title "Dbase", data_file using ($$3):($$7*100.0) with linespoints title "D1.3" 
+pause -1
+
+if (tofile == 1)set out "age-height.eps"
+set title "Tree Height Development"
+set xlabel "Age (years)"
+set ylabel "Tree Height (m)"
+set key left
+plot  data_file using ($$1):($$3) with linespoints notitle
+pause -1
+
+if (tofile == 1)set out "p-m.eps"
+set title "Production and Resipration"
+set xlabel "Age (years)"
+set ylabel "P, M, Mfol, Msap, Mroot (kgC)"
+set key left
+plot  data_file using 1:10 with linespoints title "P (kgC)", data_file using 1:11 with linespoints title "M (kgC)", data_file using 1:19 with linespoints title "Ms (kgC)",data_file using 1:20 with linespoints title "Mf (kgC)", data_file using 1:16 with linespoints title "Mr (kgC)"
+pause -1
+
+if (tofile == 1)set out "masses.eps"
+set title "Sapwood, Foliage and Root mass"
+set xlabel "Age (years)"
+set ylabel "Ws, Wf, Wr (kgC)"
+set key left
+plot  data_file using 1:18 with linespoints title "Ws (kgC)", data_file using 1:12 with linespoints title "Wf (kgC)", data_file using 1:15 with linespoints title "Wr (kgC)"
+pause -1
+
+if (tofile == 1) set out "crown-size.eps"
+set title "Crown volume, P and Wf"
+set xlabel "Age (years)"
+set ylabel "Vcrown, P (kgC, Wf (kgC)"
+set key left
+plot  data_file using 1:21  with linespoints title "Vcrown", data_file using 1:10  with linespoints title "P(kgC)", data_file using 1:12  with linespoints title "Wf (kgC)"
+pause -1
+
