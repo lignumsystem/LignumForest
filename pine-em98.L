@@ -10,8 +10,7 @@ using namespace Lignum;
 #include <lengine.h>
 
 //These globals transfer information between L-system
-//and other part of program
-
+//and other part of program. 
 double L_age, L_H;
 
 extern int ran3_seed;
@@ -22,10 +21,16 @@ extern double  rel_bud;
 extern bool  bud_variation;
 extern double branch_angle;
 
+//If foliage area density in the view cone of the bud affects
+//the number of lateral buds created
+extern ParametricCurve bud_view_f;
+extern bool is_bud_view_function;   ///if it is in use 
+
+
 
 //============
 
-//Start tne namespace (compiles to "namespace Pine{")
+//Start the namespace (compiles to "namespace Pine{")
 //The matching "close" statement closes the namespace 
 open Pine;
 
@@ -39,6 +44,7 @@ const double l1 = 0.9;
 const double PI = 3.1415926535897932384;
 //const double pitch = 45.0*PI/180.0; //the angle of branching in the main axis    = 45
 double pitch = 45.0*PI/180.0; //the angle of branching in the main axis    = 45
+//double pitch = branch_angle;    //branch_agle may vary, it is set in GrowthLoopI.h
 const double roll  = 137.5*PI/180.0; //137.5 is convenient to distribute buds (137.5*N never overlaps)
 const double turn_branch = 30.0*PI/180.0;//the angle of branching in branches  = 30
 const double pitch_down = 2.0*PI/180.0;//branches bending down annually
@@ -57,18 +63,19 @@ const double rollmain8  =(360.0/8.0)*PI/180.0;
 //L system runs in two modes. first create the new segments and
 //after their lengths are adjusted, the second mode creates the new buds.
 //There are two calls to derive in the main program in pine.cc
-//NOTE for pine-forest: As the 'mode' is a global variable, it is visible to a l l L-systems.
+//NOTE for pine-forest: As the 'mode' is a global variable, it is visible to all L-systems.
 //Consequently each l[i].derive() will change the mode and alternately the L-systems 
 //will receive 0 and 1 as the mode. This is not what we want but what is needed is an additional
 //explicit call to l[i].endEach() after each l[i].derive() in pine-forest.cc that resets the mode.
 int mode = 0; //0 = new segment, 1 = new buds
 
 //Number of buds as the function of foliage mass
-const ParametricCurve fnbuds("fnbuds.fun");
+ParametricCurve fnbuds("fnbuds.fun");
+
 //Adjust the number of buds, more light more buds, less light less buds
-const ParametricCurve fnbudslight("fnbudslight.fun");
-//Fipi for buds, the death zone
-const ParametricCurve fipbud("fip-bud.fun");
+ParametricCurve fnbudslight("fnbudslight.fun");
+//Fip for buds, the death zone
+ParametricCurve fipbud("fip-bud.fun");
 module F(double);
 //Bud(data, omega, initial length)
 module B(PineBudData,int,double);
@@ -83,7 +90,14 @@ derivation length: 9;
 
 Start:
 {
+// If L-system is initilized several times in one program, the functions
+// are read in with every initilization
+   fnbuds.install("fnbuds.fun");
+   fnbudslight.install("fnbudslight.fun"); 
+fipbud.install("fip-bud.fun");
+
 pitch = branch_angle;
+
   PineBudData data(ALIVE,0.0,1.0,0.1);
   mode = 0;
   int n_buds_ini = n_buds_ini_min + (int)(ran3(&ran3_seed)*(double)(n_buds_ini_max-n_buds_ini_min+1));
@@ -152,7 +166,7 @@ StartEach:
 
 EndEach:
 {
-/*  mode = (mode+1) % 2;*/
+//mode = (mode+1) % 2;
 } 
 
 B(data,omega,l):
@@ -171,39 +185,37 @@ pitch = branch_angle;
        produce B(data,omega,l);
    }
   }
-  else{//mode == 1
-    //first, use the fnbuds for the number of buds
-	double rel = 1.0;
-	if(bud_variation) {
-	  rel += rel_bud*(ran3(&ran3_seed)-0.5)/0.5;
-	if(rel < 0.0) rel = 0.0;
-        }
-    //int nbuds = static_cast<int>(fnbuds(data.fm));
+else{//mode == 1
+//Here also the effect of crowding (in terms of foliage area density)
+//on number of lateral buds via function bud_view_f
+
+    double rel = 1.0;
+    if(bud_variation) {
+      rel += rel_bud*(ran3(&ran3_seed)-0.5)/0.5;
+      if(rel < 0.0) rel = 0.0;
+    }
+
     int nbuds = static_cast<int>(rel*fnbuds(data.fm));
-  //    double buds = 0.5585 + 0.0426*100.0*data.length + 0.6643*data.ip;
-//	if(omega < 2.0)
-//	  buds += 2.9629;
-//	else if(omega < 3.0)
-//	  buds += 1.0927;
-//	else if(omega < 4)
-//	  buds += 0.2205;
-//	else
-//	  buds += 0.0;
-//     int nbuds = static_cast<int>(buds);
-//	if(data.length < 0.10) nbuds = 0;
 
     //then adjust the number of buds with relative light  
     //nbuds = static_cast<int>(max(nbuds+fnbudslight(data.ip),0.0));
     //cout << "ip " << data.ip << " fip(ip) " << fip(data.ip) 
-    //     << " FM " << data.fm << " fnbuds.fun " << nbuds <<endl; 
+   //     << " FM " << data.fm << " fnbuds.fun " << nbuds <<endl;
+
     if(fipbud(data.ip) == 0.0) nbuds = 0;
+
     if (nbuds == 1 || nbuds == 2){
-    //cout << "NBUDS " << nbuds << " " << fipbud(data.ip) <<  endl;
- //     if (fipbud(data.ip) < 0.6){
- //       nbuds = 0;
- //     }
-    }  
-    if (nbuds == 0 && L_age < 6)  
+       if (fipbud(data.ip) < 0.6){
+           nbuds = 0;
+       }
+    }
+
+    // Local density (foliage area density) possibly affects number of buds  
+    if (is_bud_view_function) {
+      nbuds = static_cast<int>(static_cast<double>(nbuds) * bud_view_f(data.view));
+    }
+
+    if (nbuds == 0 && L_age < 4)  
        nbuds = 1;                
 
     if (data.state == DEAD){

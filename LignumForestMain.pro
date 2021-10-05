@@ -6,7 +6,7 @@ CONFIG += qt
 QT += xml
 TEMPLATE = app
 TARGET = lig-forest 
-INCLUDEPATH += . include ../c++adt/include ../stl-lignum/include ../Firmament/include ../stl-voxelspace/include ../LEngine/include ../Pine ../XMLTree  ../Graphics ../ForestRadiation/include
+INCLUDEPATH += . include ../c++adt/include ../stl-lignum/include ../Firmament/include ../stl-voxelspace/include ../LEngine/include ../Pine ../XMLTree  ../Graphics
 DEPENDPATH += $$INCLUDEPATH
 LIBS += -L../c++adt/lib -L../stl-lignum/lib -L../Firmament/lib -L../LEngine/lib -L../stl-voxelspace/lib   -lsky -lL -lvoxel -lLGM  -lcxxadt 
 # Input
@@ -56,4 +56,5 @@ SOURCES += branchfunctor.cc \
            self-thinning.cc\
            lignum-forest.cc \
            src/metabolism.cc \
-           src/borderforest.cc
+           src/borderforest.cc \
+           src/space.cc

@@ -1,10 +1,8 @@
 #Gravelius order effect on segment length
 #Main axis is 1 first branch 2 etc.
-0.0 1.0
 1.0 1.0
-2.0 0.70
-3.0 0.50
-4.0 0.30
-5.0 0.096
+2 0.781441
+3 0.63762
+4 0.359108
+5 0.1
 6.0 0.0
-7.0 0.0

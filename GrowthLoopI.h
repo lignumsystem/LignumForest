@@ -1,13 +1,12 @@
 #ifndef GROWTHLOOPI_H
 #define GROWTHLOOPI_H
 
-
 // Tama GrowthLoopI tiedosto ajaa kokonaan voxelspaessa, muutokset
 // merkattu: run-voxel
 
 namespace Pine{
 
-  extern int mode;  //For  L-system; change of mode disabled there (/LignumForest/pine-em98.L)
+  extern int mode;  //Declared in L-system (/LignumForest/pine-em98.L)
 
 }
 using namespace Pine;
@@ -22,6 +21,13 @@ extern double L_age;
 extern double rel_bud;                   //Variation in no. buds
 extern bool bud_variation;             //If bud variation is on
 extern double branch_angle;
+
+
+//If foliage area density in the view cone of the bud affects
+//the number of lateral buds created
+extern ParametricCurve bud_view_f;
+extern bool is_bud_view_function;   ///if it is in use 
+
 
 
 /* template <class TS, class BUD> */
@@ -64,7 +70,9 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::usage()const
   cout << "[-H_0_ini <value>] [-H_var_ini <value>] [-n_buds_ini_min <num>] [-n_buds_ini_max <vlaue>]" << endl;
   cout << "[-p0Var <value>] [-segLenVar <value>] [-pairwiseSelf] [-budVariation <value>] [-eero]" << endl;
   cout << "[-gFunVar <value>] [-branchAngleVar <value>]" << endl;
-
+  cout << "[-space0] [-space1] [-space2] [-adHoc]" << endl;
+  cout << "[-budViewFunction] [-EBH] -EBH1 <value>]" << endl;
+  cout << "[-space2Distance <Value>]" << endl;
   cout << endl;
   cout << "-generateLocations <num>  In this case <num> trees will be generated to random locations. If this" << endl;
   cout << "          is not on, tree locations will be read from file Treelocations.txt. This file can be changed" << endl;
@@ -92,12 +100,21 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::usage()const
   cout << "-p0Var <value>                Random variation of p0 +- max <value> per cent from the value in Tree.txt" << endl;
   cout << "-segLenVar <value>         Random variation of length of new segments around Lnew, per cent" << endl;
   cout << "-pairwiseSelf      Pairwise radiation calculation for the tree itself." << endl;
-
+  cout << "-eero              For studying the relationships between a) leaf light climate and b) syncronized variation" << endl;
+  cout << "                   in leaf nitrogen concentration, leaf mass per area and leaf longevity, shoot length and" << endl;
+  cout << "                   shoot leaf area and c) axis thickness scaling from the base of the stem to the axis tips." << endl;
+  cout << "EBH resource distn can be in use in two ways. Both are set by command line arguments." << endl;
+  cout << "-EBH               means EBH is in use and values (of lambda parameter) are" << endl;
+  cout << "                   specified for all Gravelius orders (function SPEBHF, ScotsPine.h, function" << endl;
+  cout << "                   file is specified the constructor of the tree)." << endl;
+  cout << "-EBH1 <value>      means that EBH is in use and one value <value> is used" << endl;
+  cout << "                   for all Gravelius orders. Option -EBH1 <value> overrides option -EBH" << endl;
+  cout << "                   (EBH is set as SPis_EBH (Scots Pine Parameter Double SPPD), thus 0 == false, 1 == true)" << endl;
+  cout << "                   EBH is according to W. Palubicki and K. Horel and S. Longay and" << endl;
+  cout << "                   A. Runions and B. Lane and R. Mech and P. Prusinkiewicz. 2009." << endl;
+  cout << "                   Self-organizing tree models for image synthesis ACM Transactions on Graphics 28 58:1-10." << endl;
   cout << endl;
-
 }
-
-
 
 template<class TREE, class TS, class BUD, class LSYSTEM>
 void GrowthLoop<TREE,TS,BUD,LSYSTEM>::checkCommandLine(int argc, char** argv)const
@@ -364,6 +381,60 @@ clarg.clear();
    ba_variation = atof(clarg.c_str())*PI_VALUE/100.0;
  }
 
+  is_adhoc = false;
+  if(CheckCommandLine(argc,argv,"-adHoc")) {
+    is_adhoc = true;
+  }
+
+  is_bud_view_function = false;
+  if(CheckCommandLine(argc,argv,"-budViewFunction")) {
+    is_bud_view_function = true;
+  }
+
+  space0 = false;
+  space1 = false;
+  space2 = false;
+  if(CheckCommandLine(argc,argv,"-space0")) {
+    space0 = true;
+  }
+  if(CheckCommandLine(argc,argv,"-space1")) {
+    space1 = true;
+  }
+  if(CheckCommandLine(argc,argv,"-space2")) {
+    space2 = true;
+    clarg.clear();
+    if (ParseCommandLine(argc,argv,"-space2Distance",clarg)) {
+      space2_distance = atof(clarg.c_str());
+    }
+  }
+
+  //These are parameters are set (e.g. SetValue(tree, SPis_EBH, value);) in initializeTrees()
+  growthloop_is_EBH = false;
+  if(CheckCommandLine(argc,argv,"-EBH")) {
+    growthloop_is_EBH = true;
+  }
+
+  growthloop_is_EBH1 = false;
+  growthloop_EBH1_value = 0.0;
+  if (ParseCommandLine(argc,argv,"-EBH1",clarg)) {
+    growthloop_is_EBH1 = true;
+    growthloop_EBH1_value = atof(clarg.c_str());
+    growthloop_is_EBH = true;
+  }
+
+  if(growthloop_is_EBH  && growthloop_is_EBH1) { //a bit nonelegant but may work, see initializeTrees()
+    ofstream fout("ebh.fun", ofstream::trunc);
+    fout << "#Extended Borchert-Honda lambda as a f. of Gravelius order" << endl;
+    fout << "#Main axis is 1 first branch 2 etc." << endl;
+    LGMdouble x = 1.0;
+    for(int i = 0; i < 3; i++) {
+      fout << x << " "  <<  growthloop_EBH1_value << endl;
+      x += 1.0;
+    }
+    fout << "6.0 " <<  growthloop_EBH1_value << endl;
+    fout.close();
+  }
+
 
   if (verbose){
     cout << "parseCommandLine end" <<endl;
@@ -427,10 +498,11 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
   for (int i = 0; i < no_trees; i++){
     pair<double,double> p = locations[i];
     LSYSTEM *l = new LSYSTEM();
+
     TREE* t = new TREE(Point(p.first,p.second,0.0),PositionVector(0,0,1),
 		       "sf.fun","fapical.fun","fgo.fun",
 		       "fsapwdown.fun","faf.fun","fna.fun", "fwd.fun",
-		       "flr.fun");
+		       "flr.fun","ebh.fun","bvf.fun");
 
     if (verbose){
       cout << "Created a tree at: " << p.first << " " << p.second <<endl;
@@ -473,18 +545,33 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
 }
 
 template<class TREE, class TS,class BUD, class LSYSTEM>
-  void GrowthLoop<TREE, TS,BUD,LSYSTEM>::initializeTrees()
+void GrowthLoop<TREE, TS,BUD,LSYSTEM>::initializeTrees()
 {
   LGMVERBOSE vrb=QUIET;
   if (verbose)
     vrb = VERBOSE;
+
+  ParametricCurve ebh("ebh.fun");
+
   InitializeTree<TS,BUD> init(metafile,vrb);
   for (unsigned int i=0; i < vtree.size(); i++){
     SetValue(*vtree[i],SPHwStart,(double)hw_start);
     init.initialize(*vtree[i]);
     SetValue(*vtree[i],TreeQinMax,GetFirmament(*vtree[i]).diffuseBallSensor());
     SetValue(*vtree[i], LGPlen_random, seg_len_var);
+    if(growthloop_is_EBH) {
+      SetValue(*vtree[i], SPis_EBH, 1.0);
+      SetFunction(*vtree[i],ebh,SPEBHF);
+    } else {
+      SetValue(*vtree[i], SPis_EBH, 0.0);
+    }
   }
+
+  // Bud View Function to Lsystem
+  // Its use is controlled by the global variable is_bud_view_function
+  // If it is == false, bud_view_f is ignored
+  //  Bud View Function file is specifed in the constructor of the tree
+  bud_view_f = GetFunction(*vtree[0], SPBVF);
 
   //Random variation in the photosynthetic parameter
 
@@ -526,10 +613,10 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
       //SLA - assumes that the function is defined at argument values 0.0, 1.0, and 1.1
       LGMdouble SLA_change = 1.0 + ((ran3(&ran3_seed)-0.5)/0.5) * SLA_factor;
       while(SLA_change < 0.0) {
-	 SLA_change = 1.0 + ((ran3(&ran3_seed)-0.5)/0.5) * SLA_factor;
+	SLA_change = 1.0 + ((ran3(&ran3_seed)-0.5)/0.5) * SLA_factor;
       }
-/*       if(SLA_change < 0.0) */
-/* 	SLA_change = 0.0; */
+      /*       if(SLA_change < 0.0) */
+      /* 	SLA_change = 0.0; */
       ParametricCurve SLA_fun = GetFunction(*vtree[i], SPFSF);
 
       ostringstream to_new_SLA_fun;
@@ -609,7 +696,6 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
     }
     vtree[i]->setBranchAngle(branch_angle);
   }  
-
 }
 
 template<class TREE, class TS,class BUD, class LSYSTEM>
@@ -796,7 +882,6 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
 	first = false;
       }
     }
-
   }
 }
 
@@ -932,14 +1017,20 @@ bool GrowthLoop<TREE, TS,BUD,LSYSTEM>::allocation(TREE& t, bool verbose)
 template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::allocationAndGrowth()
 {
-  mode = 1;     //For  L-system; change of mode disabled there (/LignumForest/pine-em98.L)
-
   list<unsigned int> dead_trees;
   dead_trees.clear();
- 
+
+  //Create new buds by making derive with mode == 1 (global variable)
+  mode = 1;
+
   for (unsigned int k = 0; k < (unsigned int)no_trees; k++){
     TREE* t = vtree[k];
     LSYSTEM* l = vlsystem[k];
+
+    ///This is for Pipe model calculations:
+    ///Initialize calculation of thickness growth induced by adding new shoots.
+    double alku = 1.0;    //= Gravelius order of main axis
+    PropagateUp(*t,alku,SetSapwoodDemandAtJunction());
 
     if(!allocation(*t,bracket_verbose))
  
@@ -984,12 +1075,38 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
     PropagateUp(*t,lentobuds,ForwardSegLen<TS,BUD>());
     l->lignumToLstring(*t,1,PBDATA);
 
-    //Create new buds by making derive again (done in createNewSegments()). This
-    // works since l.derive() makes new buds with every second call
+        //============================================================================
+    // Here is calculation of estimation of local needle area density for
+    // using in estimation of bud fate
+    //=============================================================================
+    if (is_bud_view_function) {
+      BoundingBox b1;
+      bool foliage = true;
+      FindCfBoundingBox<TS,BUD> fb1(foliage);
+      b1 = Accumulate(*t, b1, fb1);
+
+      Point ll = b1.getMin();
+      Point ur = b1.getMax();
+
+      VoxelSpace vs1(Point(0.0,0.0,0.0),Point(1.0,1.0,1.0),
+             0.05,0.05,0.05,5,5,5,GetFirmament(*t));
+      vs1.resize(ll, ur);
+      vs1.reset();
+      int num_parts = 5;
+      DumpCfTree(vs1, *t, num_parts);
+
+      LGMdouble cone_height = 0.5, cone_half_angle =  0.7; //= 40 degrees
+      int no_points_on_rim = 12;
+        
+      SetBudViewFunctor sbvf(&vs1, cone_height, cone_half_angle, no_points_on_rim);
+      ForEach(*t, sbvf);
+    }
+
+    //Create new buds by making derive with mode == 1 (set above)
     branch_angle = t->getBranchAngle();        //this global variable goes to pine-em98.L
     l->derive();
     l->lstringToLignum(*t,1,PBDATA);
-  }
+  }  //for (unsigned int k = 0; k < ...
 
   //Now, dead trees are removed from everywhere
   typename vector<TREE*>::iterator It = vtree.begin();
@@ -1492,15 +1609,13 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
 
 
   //HUOM: true on border forest
-
   SetStarMean<TS,BUD> setstar(ParametricCurve(0.14));
   ResetQinQabs<TS,BUD> RQQ;
-
   for (unsigned int k = 0; k < (unsigned int)no_trees; k++) {
     TREE* t = vtree[k];
     ForEach(*t,setstar);
     ForEach(*t,RQQ);
-    
+  
     if(pairwise_self) {
       if(k != 0)       //First tree was not dumped in
 	// setting up voxelspace in setVoxelSpaceAndBorderForest
@@ -1512,11 +1627,11 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
     if(pairwise_self) {
       if(k != (unsigned int)(no_trees - 1)) //Don't bother to dump the last tree,
 	//since contents of voxelspace will be erased after this
+	cout << "k " << k << endl;
+
 	DumpCfTree(*vs, *t, num_parts, wood_voxel);
     }
-
   }
-
 }
 
 //end of run-voxel
@@ -1534,9 +1649,10 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
     respiration(*t);
     collectDataBeforeGrowth(*t,k);
     treeAging(*t);
+
     //Collect  sapwood after  senescence from  all  segments.  Collect
     //again after  new growth excluding new  segments.  The difference
-    //of  the two  will tell  how much  sapwood was  need  in diameter
+    //of  the two  will tell how much sapwood was needed  in diameter
     //growth
     ws_after_senescence[k] = collectSapwoodMass(*t);
 
@@ -1548,9 +1664,9 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
 // NOTE that the sizes of these new segments will be iterated later
 //===================================================================
 template<class TREE, class TS,class BUD, class LSYSTEM>
-  void GrowthLoop<TREE, TS,BUD,LSYSTEM>::createNewSegments()
+void GrowthLoop<TREE, TS,BUD,LSYSTEM>::createNewSegments()
 {
-  mode = 0;    //For  L-system; change of mode disabled there (/LignumForest/pine-em98.L)
+  mode = 0;    //For  L-system
      
   for (unsigned int k = 0; k < (unsigned int)no_trees; k++){
     TREE* t = vtree[k];
@@ -1569,18 +1685,61 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
     //Set the needle angle for newly created segments
     ForEach(*t,SetScotsPineSegmentNeedleAngle());
 
+    //The variable apical (now attribute of ScotsPineSegment) is set in new segments
+    //before length growth by vigor index
+    double o0 = 1.0;
+    PropagateUp(*t,o0,SetScotsPineSegmentApical());
+
     TreePhysiologyVigourIndex(*t);
 
     //QinMax
     SetValue(*t,TreeQinMax,GetFirmament(*t).diffuseBallSensor());
 
+    //Length of path from base of tree to each segment
     LGMdouble plength = 0.0;
     PropagateUp(*t,plength,PathLength<TS,BUD>());
 
-    double alku = 1.0;    //= Gravelius order of main axis
-    PropagateUp(*t,alku,SetSapwoodDemandAtJunction());
-  }
+    //============================================================================
+    // Space colonialization
+    //=============================================================================
+    if (space0 || space1 || space2) {
+      BoundingBox bbs;
+      FindCfBoundingBox<TS,BUD> fbs(true); 
+      //Segments with needles considered only
+      bbs = Accumulate(*t, bbs, fbs);
 
+      Point lls = bbs.getMin();
+      Point urs = bbs.getMax();
+
+      space_occupancy.resize(lls+Point(-0.5,-0.5,-0.5), urs+Point(0.5,0.5,0.5));
+      DumpTreeOccupy<TS,BUD> dto(3);     //in 3 parts, only foliage parts
+      dto.space = &space_occupancy;
+
+      ForEach(*t, dto);
+    }
+
+    //==============================================================================
+    // Extended Borchert-Honda calculation if it is in use
+    //==============================================================================
+
+    if(GetValue(*t, SPis_EBH) > 0.0) {
+
+      ParametricCurve lambda_fun = GetFunction(*t,SPEBHF);
+      EBH_basipetal_info EBHbI0, EBHbI1;
+      EBHbI1 = AccumulateDown(*t, EBHbI0, EBH_basipetal(lambda_fun) );
+
+      EBH_acropetal_info EBHaI0(1.0, 1.0/lambda_fun(1.0), 1.0);
+      PropagateUp(*t, EBHaI0, EBH_acropetal(lambda_fun) );
+
+      MaxEBHResource_info m0, m1;
+      m0.my_resource = -R_HUGE;
+
+      m1 = AccumulateDown(*t, m0, MaxEBHResource() );
+
+      ForEach(*t, NormalizeEBHResource(m1.my_resource) );
+    }
+    
+  }
 }
 
 //=====================================================================
@@ -1611,16 +1770,17 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
       center_stand.writeOutput(*cstand_output);
 
 
-    for (unsigned int k = 0; k < (unsigned int)no_trees; k++){
-      TREE* t = vtree[k];
+      //    for (unsigned int k = 0; k < (unsigned int)no_trees; k++){
+      //      TREE* t = vtree[];
+      TREE* t = vtree[target_tree];
       //Annual (time  step) output: tree, its position  in the vector
       //and iteration
-      writeOutput(*t,k,year);
+      writeOutput(*t,target_tree,year);
       writeCrownLimitData(*t,year);
       //      writeVoxels(*t);
       writeTreeToXMLFile(*t,GetValue(*t,LGAage),interval);
       writeFip(*t,interval);
-    }
+      //    }
   }
 }
 
@@ -1756,198 +1916,5 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::writeProductionBalance(TREE& t,const stri
 {
   ForEach(t, SegmentProductionBalance(file));
 }
-
-//=========================================================================================================================
-#define HIT_THE_FOLIAGE 1
-#define NO_HIT 0
-#define HIT_THE_WOOD -1
-
-
-//Tassa valonlasenta voxelspacessa
-
-// Calculation of radiation: voxel space & border forest with storing of
-// Qin_stand into the segment (is otherwise as EvaluateRadiationForCfTreeSegment_1)
-
-//This functor EvaluateRadiationForCfTreeSegment evaluates shading
-//caused by all other segments on this conifer segment. This functor
-//uses functor ShadingEffectOfCfTreeSegment<TS,BUD> to go through all
-//segments to check the shading.
-
-//If the attributes voxel_space and border_forest are set (then
-//voxel_space != NULL), the attenuation of the bean in the voxel_space
-//and border_forest is taken into consideration.
-
-/* template <class TS, class BUD> */
-/* class EvaluateRadiationForCfTreeSegment_3 { */
-/* public: */
-/*   EvaluateRadiationForCfTreeSegment_3(const ParametricCurve& k) : K(k), */
-/*     evaluate_border(false) {} */
-/*     EvaluateRadiationForCfTreeSegment_3(const ParametricCurve& k, */
-/* 					VoxelSpace* vs,BorderForest* bf, bool border, */
-/* 					LGMdouble a, LGMdouble b, bool sd, LGMdouble kbc, */
-/* 					bool pws): */
-/*       K(k),voxel_space(vs), border_forest(bf), evaluate_border(border), */
-/* 	par_a(a), par_b(b), dump_self(sd), k_border_conifer(kbc), */
-/* 	pairwise_self(pws){} */
-
-/*   TreeCompartment<TS,BUD>* operator()(TreeCompartment<TS,BUD>* tc)const; */
-/* private: */
-/*   const ParametricCurve& K; */
-/*   VoxelSpace* voxel_space; */
-/*   BorderForest* border_forest; */
-/*   bool evaluate_border; */
-/*   LGMdouble par_a, par_b; */
-/*   bool dump_self; */
-/*   LGMdouble k_border_conifer; */
-/*   bool pairwise_self; */
-/* }; */
-
-
-/* This functor EvaluateRadiationForCfTreeSegment evaluates shading */
-/* caused by all other segments on this conifer segment. This functor */
-/* uses functor ShadingEffectOfCfTreeSegment<TS,BUD> to go through all */
-/* segments to check the shading. */
-
-
-/* template <class TS, class BUD> */
-/*   TreeCompartment<TS,BUD>* EvaluateRadiationForCfTreeSegment_3<TS,BUD>::operator() (TreeCompartment<TS, BUD>* tc)const */
-/* { */
-/*   if (TS* ts = dynamic_cast<TS*>(tc)){ */
-/*     SetValue(*ts, LGAQin, 0.0); */
-/*     SetValue(*ts, LGAQabs, 0.0); */
-/*     Radiation  conditions are not  evaluated if  the segment  has no */
-/*     foliage (in practice  there would be division by  0 in computing */
-/*     absorbed radiation) */
-/*     if (GetValue(*ts, LGAWf) < R_EPSILON){ */
-/* 	return tc; */
-/*     } */
-
-/*     Tree<TS,BUD>& tt = GetTree(*ts); */
-/*     FirmamentWithMask& firmament = GetFirmament(tt); */
-/*     int number_of_sectors = firmament.numberOfRegions(); */
-/*     double a_dot_b = 0.0; */
-/*     vector<double> radiation_direction(3); */
-/*     Point middle = GetMidPoint(*ts); */
-
-/*     vector<double> v(number_of_sectors,0.0);  */
-/*     ShadingEffectOfCfTreeSegment_1<TS,BUD> s_e(ts,K,v); */
-/*     This  goes  through  the  tree  and computes  shading  based  on */
-/*     1)distance  light beam traverses  in foliage,  2)foliage density */
-/*     and 3) inclination light beam hits the segment. */
-
-/*     if(pairwise_self) */
-/*       ForEach(tt,s_e); */
-    
-/*     implement  "Ip  =  Iope^(-Vp)",  s[i] =  radiation  coming  from */
-/*     direction i after this */
-/*     vector<double>& s = s_e.getS(); */
-/*     vector<double> s(number_of_sectors, 0.0); */
-/*     vector<double> qis(number_of_sectors, 0.0); */
-
-/*     AccumulateOpticalThickness AOT(voxel_space->getXSideLength(), par_a, par_b); */
-
-/*     for (int i = 0; i < number_of_sectors; i++){ */
-/*       MJ Iop = firmament.diffuseRegionRadiationSum(i,radiation_direction); */
-      
-
-/* 	first attenuation in the voxel space */
-/* 	LGMdouble transmission_voxel = 1.0; */
-/* 	vector<VoxelMovement> vm; */
-/* 	PositionVector dir(radiation_direction); */
-/* 	voxel_space->getRoute(vm, middle, dir, K, false);  this shoud return only the "box route" */
-/* 	with traveled lengths */
-/* 	calculate the extinction coeffient */
-/* 	LGMdouble optical_thickness = accumulate(vm.begin(),vm.end(),0.0,AOT); */
-/* 	cout << "OD " << optical_thickness << endl; */
-/* 	exit(0); */
-/* 	cout << "Optical thickness " << optical_thickness << endl; */
-/*       Vahenna oma (segmentti) vaikutus pois jos puu mukana laskuissa */
-/* 	if(dump_self) { */
-/* 	  LGMdouble k; */
-/* 	  if(vm[0].n_segs_real > 0.0) */
-/* 	    k = max(0.0,-0.014+1.056*vm[0].STAR_mean); */
-/* 	  else */
-/* 	    k = 0.0; */
-/* 	  optical_thickness -= k * GetValue(*ts,LGAAf) * vm[0].l / voxel_space->getBoxVolume(); */
-
-/* 	  if(optical_thickness < 0.0) */
-/* 	    optical_thickness = 0.0; */
-/* 	} */
-/* 	if(optical_thickness > R_EPSILON){ */
-/* 	  if(optical_thickness < 20.0){ */
-/* 	    transmission_voxel = exp(-optical_thickness); */
-/* 	  } */
-/* 	  else{ */
-/* 	    transmission_voxel = 0.0; */
-/* 	  } */
-/* 	} */
-/* 	Iop *= transmission_voxel; */
-
-/* 	then attenuation in the BorderForest */
-/* 	if(evaluate_border) */
-/* 	   Iop *= border_forest->getBorderForestExtinction(middle, dir, k_border_conifer); */
-      
-/*       qis[i] = Iop; */
-
-/*       if(pairwise_self) { */
-/* 	if (s[i] == HIT_THE_WOOD){ */
-/* 	  s[i] = 0.0; */
-/* 	} */
-/* 	else */
-/* 	  s[i] = Iop*exp(-s[i]); */
-/*       } */
-/*       else { */
-/* 	s[i] = Iop; */
-/*       }	 */
-
-/*     } End of no_sectors ... */
-
-
-/*    Total incoming radiation and radiation after stand */
-/*     LGMdouble Qin_stand = accumulate(qis.begin(),qis.end(),0.0); */
-/*     ts->setQinStand(Qin_stand); */
-
-/*     MJ Q_in = accumulate(s.begin(),s.end(),0.0); */
-    
-/*     s contains now incoming radiation from each sector. Evaluate how */
-/*     much segment absorbs from incoming radation. */
-/*     LGMdouble Lk, inclination, Rfk, Ack, extinction, sfk, Ask, Wfk; */
-/*     Lk = Rfk = Ack =  extinction = sfk = Ask = Wfk = 0.0; */
-/*     Lk = GetValue(*ts, LGAL);   length is > 0.0, otherwise we would not bee here */
-/*     Rfk = GetValue(*ts, LGARf);  Radius to foliage limit  */
-/*     Wfk = GetValue(*ts, LGAWf); Foliage mass */
-/*     sfk  = GetValue(tt, LGPsf); //Foliage m2/kg from tree */
-/*     sfk  = GetValue(*ts, LGAsf); Foliage m2/kg from segment!!! */
-
-/*     for (int i = 0; i < number_of_sectors; i++){ */
-/*       firmament.diffuseRegionRadiationSum(i,radiation_direction); */
-/*       a_dot_b = Dot(GetDirection(*ts), PositionVector(radiation_direction)); */
-/*       inclination = PI_DIV_2 - acos(fabs(a_dot_b)); */
-
-/*       Ack = 2.0*Lk*Rfk*cos(inclination) + PI_VALUE*pow(Rfk,2.0)*sin(inclination); */
-/*       extinction = (double)K(inclination); */
-
-/*       if (Ack == 0.0){ */
-/* 	cout << "ERROR EvaluateRadiationForCfTreeSegment: Ack == 0 (division by 0)" */
-/* 	     << endl; */
-/*       } */
-
-/*       implement I(k)p = Ip*Ask, Note  Ack must be greater than 0 (it */
-/*       should if there is any foliage) */
-/*       Ask = (1.0 - exp(-extinction*((sfk*Wfk)/Ack)))*Ack; */
-/*       s[i] *= Ask; */
-/*     } */
-/*     MJ Q_abs = accumulate(s.begin(),s.end(),0.0); */
-/*     SetValue(*ts, LGAQabs, Q_abs); */
-/*     SetValue(*ts, LGAQin, Q_in); */
-/*   } */
-/*   return tc; */
-/* } */
-
-
-#undef HIT_THE_FOLIAGE
-#undef NO_HIT
-#undef HIT_THE_WOOD
-
 
 #endif

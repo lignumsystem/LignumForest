@@ -19,21 +19,55 @@
 //and for pine, see also pine9bp.L in lsys.
 namespace Pine{
 #include <LSystem.h>
-
 }
 
-extern double L_age;
+#include <SomeFunctors.h>
+#include <DiameterGrowth.h>
+//#include <RadiationCrownDens.h>
+#include <Palubicki_functors.h>
+#include <Space.h>
 
-int ran3_seed;         //is initialized in GrowthloopI.h
 
-double H_0_ini, H_var_ini;         //For variation of initial heights and
-int n_buds_ini_min, n_buds_ini_max;  // and number of buds (in .L file)
-double rel_bud;                   //Variation in no. buds
-bool bud_variation;             //If bud variation is on
-double branch_angle;
+///Declaration of a number of global variables -- they are easy to add to
+///the program but maybe should be made function arguments or ...
+
+bool is_adhoc = false;      ///If growth is promoted in lower parts of crown
+ParametricCurve adhoc("adhoc.fun");  ///Increase as a function rel. dist from crown b.
+double global_hcb;      ///Height of grown base to SetScotsPineSegmentLength (if is_adhoc)
+
+///Space colonialization options for SetScotsPineSegmentLength (in ScotsPine.h)
+///roughly: a shoot can grow only if there is free space around it
+bool space0 = false;  ///only voxelbox at the end of new Segment is checked
+bool space1 = false;  ///also neighboring boxes in dierction of new Segment are checked
+bool space2 = false;  ///also all neighboring boxes are checked
+double space2_distance = 0.3; ///search distance of neighboring boxes for space2
+///VoxelSpace for space occupancy in case space colonialization
+Firmament dummy_firm;
+VoxelSpace space_occupancy(Point(0.0,0.0,0.0),Point(1.0,1.0,1.0),
+			   0.1,0.1,0.1,5,5,5,dummy_firm);
+
+///This global variable conveys the Bud View Function to L-system
+ParametricCurve bud_view_f;
+bool is_bud_view_function = false;   ///if it is in use 
+
+
+///These global variables have been declared in pine-em98.L and convey 
+///tree age and height to L-system
+extern double L_age, L_H;
+
+int ran3_seed;         ///is initialized in GrowthloopI.h
+
+///These variables are used to generate random variation between tree individuals
+/// in the Lindenmayer systen (*.L file, as externals). 
+double H_0_ini, H_var_ini;           ///For variation of initial heights and
+int n_buds_ini_min, n_buds_ini_max;  /// and number of buds (in .L file)
+double rel_bud;                      ///Variation in no. buds
+bool bud_variation;                  ///If bud variation is on
+double branch_angle;                ///For variation of branching_angle
 
 typedef GrowthLoop<ScotsPineTree,ScotsPineSegment,ScotsPineBud,
 		   Pine::LSystem<ScotsPineSegment,ScotsPineBud,PBNAME,PineBudData> > ScotsPineForest;
+
 int main(int argc, char** argv)
 {
   Sensitivity<ScotsPineSegment,ScotsPineBud> sensitivity;
@@ -63,7 +97,6 @@ int main(int argc, char** argv)
   gloop.initializeVoxelSpace();
   gloop.initializeGrowthLoop();
 
-
   //   //Growth loop
   //   gloop.growthLoop();
   int year;
@@ -72,9 +105,8 @@ int main(int argc, char** argv)
       cout << "No trees left. Stop." << endl;
       exit(0);
     }
-    L_age = (double)year;                                //This is for L-system and dangerous
+    L_age = (double)year;     //This is for L-system and dangerous
     gloop.setHPrev();
-    gloop.setYear(year);
     gloop.setYear(year);
     gloop.evaluateStandVariables();
     gloop.setVoxelSpaceAndBorderForest();
