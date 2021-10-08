@@ -53,7 +53,6 @@ SOURCES += branchfunctor.cc \
            generate-tree-locations.cc \
            harvest-stand.cc \
            forest-trees.cc \
-           self-thinning.cc\
            lignum-forest.cc \
            src/metabolism.cc \
            src/borderforest.cc \
