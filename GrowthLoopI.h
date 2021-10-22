@@ -92,7 +92,7 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::usage()const
   cout << "-n_buds_ini_min, -n_buds_ini_max  For variation of initial number of buds (defaults = 4 and 4)" << endl;
   cout << "-p0Var <value>                Random variation of p0 +- max <value> per cent from the value in Tree.txt" << endl;
   cout << "-segLenVar <value>         Random variation of length of new segments around Lnew, per cent" << endl;
-  cout << "-pairwiseSelf      NOT ACTIVE AT THE MOMENTPairwise radiation calculation for the tree itself." << endl;
+  cout << "-pairwiseSelf      Pairwise radiation calculation for the tree itself." << endl;
   cout << "-eero              For studying the relationships between a) leaf light climate and b) syncronized variation" << endl;
   cout << "                   in leaf nitrogen concentration, leaf mass per area and leaf longevity, shoot length and" << endl;
   cout << "                   shoot leaf area and c) axis thickness scaling from the base of the stem to the axis tips." << endl;
@@ -1278,33 +1278,6 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
       <</*40*/ setw(11) << lambda << " " //Lambda s.t. G(L) = 0.
       <</*41*/ setw(11) << w_af << " " //Foliage area of tree
       << endl; 
-
-
-
-     // if(pairwise_self) {
-    //   if(iter == 9){
-    // 	Point p = GetPoint(*GetFirstTreeSegment(GetAxis(t)));
-    // 	LGMdouble xx = p.getX();
-    // 	LGMdouble yy = p.getY();
-    // 	if((abs(xx-12.2775) < 0.0001) && (abs(yy-7.57141)<0.0001))
-    // 	  ForEach(t, SegmentProductionBalance("phprod-10.dat"));
-    //   }
-
-    //   if(iter == 14){
-    // 	Point p = GetPoint(*GetFirstTreeSegment(GetAxis(t)));
-    // 	LGMdouble xx = p.getX();
-    // 	LGMdouble yy = p.getY();
-    // 	if((abs(xx-12.2775) < 0.0001) && (abs(yy-7.57141)<0.0001))
-    // 	  ForEach(t, SegmentProductionBalance("phprod-15.dat"));
-    //   }
-    //   if(iter == 19){
-    // 	Point p = GetPoint(*GetFirstTreeSegment(GetAxis(t)));
-    // 	LGMdouble xx = p.getX();
-    // 	LGMdouble yy = p.getY();
-    // 	if((abs(xx-12.2775) < 0.0001) && (abs(yy-7.57141)<0.0001))
-    // 	  ForEach(t, SegmentProductionBalance("phprod-20.dat"));
-    //   }
-    // }
   }
 }
   
@@ -1538,7 +1511,7 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
 
   EvaluateRadiationForCfTreeSegmentInVoxelSpace
     <ScotsPineSegment,ScotsPineBud> Rad(K, vs, &border_forest, evaluate_border_forest,
-					k_border_conifer, false); //false = wood not considered
+					k_border_conifer, wood_voxel, pairwise_self);
 
   //HUOM: true on border forest
   SetStarMean<TS,BUD> setstar(ParametricCurve(0.14));
@@ -1548,15 +1521,15 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
     ForEach(*t,setstar);
     ForEach(*t,RQQ);
   
-    // if(pairwise_self) {
-    // 	UnDumpScotsPineTree(*vs,*t,num_parts,wood_voxel);
-    // }
+    if(pairwise_self) {
+	UnDumpScotsPineTree(*vs,*t,num_parts,wood_voxel);
+    }
 
     ForEach(*t,Rad);
 
-    // if(pairwise_self) {
-    //   DumpCfTree(*vs, *t, num_parts, wood_voxel);
-    // }
+    if(pairwise_self) {
+      DumpCfTree(*vs, *t, num_parts, wood_voxel);
+    }
   }
 }
 

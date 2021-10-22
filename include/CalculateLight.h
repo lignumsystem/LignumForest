@@ -25,23 +25,24 @@ using namespace sky;
 template <class TS, class BUD>
 class EvaluateRadiationForCfTreeSegmentInVoxelSpace {
 public:
-    EvaluateRadiationForCfTreeSegmentInVoxelSpace(const ParametricCurve& k) : K(k),
-        evaluate_border(false) {}
-    EvaluateRadiationForCfTreeSegmentInVoxelSpace(const ParametricCurve& k,
-                                        VoxelSpace* vs,BorderForest* bf, bool border,
-                                        LGMdouble kbc, bool wd):
-        K(k),voxel_space(vs), border_forest(bf), evaluate_border(border),
-	k_border_conifer(kbc), wood(wd) {}
+  EvaluateRadiationForCfTreeSegmentInVoxelSpace(const ParametricCurve& k) : K(k),
+									    evaluate_border(false) {}
+  EvaluateRadiationForCfTreeSegmentInVoxelSpace(const ParametricCurve& k,
+						VoxelSpace* vs,BorderForest* bf, bool border,
+						LGMdouble kbc, bool wd, bool ps):
+    K(k),voxel_space(vs), border_forest(bf), evaluate_border(border),
+    k_border_conifer(kbc), wood(wd), pairwise_self(ps) {}
 
-    TreeCompartment<TS,BUD>* operator()(TreeCompartment<TS,BUD>* tc)const;
+  TreeCompartment<TS,BUD>* operator()(TreeCompartment<TS,BUD>* tc)const;
 
 private:
-    const ParametricCurve& K;
-    VoxelSpace* voxel_space;
-    BorderForest* border_forest;
-    bool evaluate_border;
-    LGMdouble k_border_conifer;
-    bool wood;         //If the needleless woody parts are included into calculation
+  const ParametricCurve& K;
+  VoxelSpace* voxel_space;
+  BorderForest* border_forest;
+  bool evaluate_border;
+  LGMdouble k_border_conifer;
+  bool wood;         //If the needleless woody parts are included into calculation
+  bool pairwise_self; //If self-shading is evaluated by ray casting
 };
 
 class AccumulateOpticalDepth{

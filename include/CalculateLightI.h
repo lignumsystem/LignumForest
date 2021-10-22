@@ -39,19 +39,17 @@ TreeCompartment<TS,BUD>* EvaluateRadiationForCfTreeSegmentInVoxelSpace<TS,BUD>::
         vector<double> radiation_direction(3);
         Point middle = GetMidPoint(*ts);
 
-        vector<double> v(number_of_sectors,0.0);
-        //    ShadingEffectOfCfTreeSegment_1<TS,BUD> s_e(ts,K,v);
-        //This  goes  through  the  tree  and computes  shading  based  on
-        //1)distance  light beam traverses  in foliage,  2)foliage density
-        //and 3) inclination light beam hits the segment.
-        //HUOMMMM   !!!!!!!!
-        //ForEach(tt,s_e);
-
-        //implement  "Ip  =  Iope^(-Vp)",  s[i] =  radiation  coming  from
-        //direction i after this
-        //    vector<double>& s = s_e.getS();
+        vector<double> v_pairwise_self(number_of_sectors,0.0);
+	if(pairwise_self) {
+	  ShadingEffectOfCfTreeSegment<TS,BUD> s_e(ts,K,v_pairwise_self);
+	  //This  goes  through  the  tree  and computes  shading  based  on
+	  //1)distance  light beam traverses  in foliage,  2)foliage density
+	  //and 3) inclination light beam hits the segment.
+	  //vector v_pairwise_self now contains optical depths (== -ln(transmittance))
+	  //in the directions of sky sectors
+	  ForEach(tt,s_e);
+	}
         vector<double> s(number_of_sectors, 0.0);
-        vector<double> qis(number_of_sectors, 0.0);
  
         AccumulateOpticalDepth AOD(voxel_space->getXSideLength(), wood);
         for (int i = 0; i < number_of_sectors; i++){
@@ -64,39 +62,36 @@ TreeCompartment<TS,BUD>* EvaluateRadiationForCfTreeSegmentInVoxelSpace<TS,BUD>::
             voxel_space->getRoute(vm, middle, dir, K, false,false);
             LGMdouble optical_depth = accumulate(vm.begin(),vm.end(),0.0,AOD);
 
-            //Subtract the effect of own foliage
+	    optical_depth += v_pairwise_self[i]; //Possible contribution of own crown by ray casting
+
+            //Subtract the effect of own foliage in the case of not pairwise_self
             //NOTE Assumes that all own foliage is in the first voxel box
 	    //(= the one that contains the middle point of the segment)
-
-            LGMdouble k =  vm[0].STAR_mean;
-            optical_depth -= k * GetValue(*ts,LGAAf) * vm[0].l / voxel_space->getBoxVolume();
-
-	    LGMdouble transmission_voxel = 1.0;
-            if(optical_depth < 0.0) {
-                    optical_depth = 0.0;
-            }
-            if(optical_depth > R_EPSILON){
-	      if(optical_depth < 20.0) {
-                    transmission_voxel = exp(-optical_depth);
-	      }
-	      else {
-                    transmission_voxel = 0.0;
+	    if(!pairwise_self) {
+	      LGMdouble k =  vm[0].STAR_mean;
+	      optical_depth -= k * GetValue(*ts,LGAAf) * vm[0].l / voxel_space->getBoxVolume();
+	      if(optical_depth < 0.0) {
+		optical_depth = 0.0;
 	      }
 	    }
-            Iop *= transmission_voxel;
+	     
+	    LGMdouble transmittance = 1.0;
+            if(optical_depth > R_EPSILON){
+	      if(optical_depth < 20.0) {
+                    transmittance = exp(-optical_depth);
+	      }
+	      else {
+                    transmittance = 0.0;
+	      }
+	    }
+            Iop *= transmittance;
 
             //then attenuation in the BorderForest
-            if(evaluate_border)
+            if(evaluate_border) {
                 Iop *= border_forest->getBorderForestExtinction(middle, dir,k_border_conifer);
-
-            qis[i] = Iop;
+	    }
             s[i] = Iop;
         } //End of no_sectors ...
-
-
-        //Total incoming radiation and radiation after stand
-        LGMdouble Qin_stand = accumulate(qis.begin(),qis.end(),0.0);
-        ts->setQinStand(Qin_stand);
 
         MJ Q_in = accumulate(s.begin(),s.end(),0.0);
 
