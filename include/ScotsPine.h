@@ -193,7 +193,7 @@ public:
 		const string& bvffun)
     :Tree<ScotsPineSegment,ScotsPineBud>(p,d),sf(sffun),adf(apicalfun),
      gof(gofun),spsd(sapwdownfun),af(affun),naf(nafun),wd(wdfun),lr(lrfun),
-     hw_start(0.0),hc(0.0),is_EBH(0.0), ebhf(ebhfun), bvf(bvffun){}
+     ebhf(ebhfun),bvf(bvffun),hw_start(0.0),hc(0.0),is_EBH(0.0){}
   LGMdouble getBranchAngle() {return branch_angle;}
   void setBranchAngle(LGMdouble ba) {branch_angle = ba;}
 
