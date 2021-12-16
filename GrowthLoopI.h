@@ -1358,7 +1358,7 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::writeCrownLimitData(TREE& t, int iter)
     //File is CrownLimit+iter+.txt, e.g., "CrownLimit-25.5-22.0-10.txt"
     ofstream cl_file(crown_limit_file.str().c_str());
     if (!cl_file){
-      cout << "Could not open " << crown_limit_file << " exit" << endl;
+      cout << "Could not open " << crown_limit_file.str() << " exit" << endl;
       exit(0);
     }
     const list<pair<double,double> >& hwf_ls = cld.WfHList();
@@ -1629,7 +1629,7 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
 	//since contents of voxelspace will be erased after this
 	cout << "k " << k << endl;
 
-	DumpCfTree(*vs, *t, num_parts, wood_voxel);
+      DumpCfTree(*vs, *t, num_parts, wood_voxel);
     }
   }
 }
