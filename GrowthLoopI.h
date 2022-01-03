@@ -1008,6 +1008,7 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
   mode = 1;
 
   for (unsigned int k = 0; k < (unsigned int)no_trees; k++){
+    cout << "Allocation loop with k: " << k << " No trees " << no_trees <<endl; 
     TREE* t = vtree[k];
     LSYSTEM* l = vlsystem[k];
 
@@ -1016,16 +1017,20 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
     double alku = 1.0;    //= Gravelius order of main axis
     PropagateUp(*t,alku,SetSapwoodDemandAtJunction());
 
-    if(!allocation(*t,bracket_verbose))
- 
+    if(!allocation(*t,bracket_verbose)){
+      cout << "Allocation failed, P - M < 0" <<endl;
       dead_trees.push_back(k);       //iteration failed, this tree is dead
-    else
-      if(GetValue(*t,LGAH) - h_prev[(int)k] < 0.001) {
-	cout << L_age << " " << k << " " << no_h[(int)k] << endl;
-	no_h[(int)k] += 1;
-	if(no_h[(int)k] >= 3)
-	   dead_trees.push_back(k);
+      cout << "Pushed " << k << " to dead trees" <<endl;
+      continue;
+    }
+    else if(GetValue(*t,LGAH) - h_prev[(int)k] < 0.001) {
+      cout << L_age << " " << k << " " << no_h[(int)k] << endl;
+      no_h[(int)k] += 1;
+      if(no_h[(int)k] >= 3){
+	dead_trees.push_back(k);
       }
+      continue;
+    }
 
     //Calculate  the  LGAsf  for   newly  created  segments,  sf  in  P
     //Kaitaniemi data depens on segment length
@@ -1528,13 +1533,9 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
     ForEach(*t,Rad);
 
     if(pairwise_self) {
-<<<<<<< HEAD
       if(k != (unsigned int)(no_trees - 1)) //Don't bother to dump the last tree,
 	//since contents of voxelspace will be erased after this
 	cout << "k " << k << endl;
-
-=======
->>>>>>> c68c68d4db223c3eef62e3913ad502f097f0e797
       DumpCfTree(*vs, *t, num_parts, wood_voxel);
     }
   }
