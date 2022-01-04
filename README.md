@@ -23,7 +23,7 @@ To remove all compilation work type `make distclean`.
 The Reference Guide for the LignumForest will be based on comments and other information
 available in the software. Extraction of the comments, rendition of the software content and 
 architecture, generation of the structure of the document and formatting the document to html 
-and LaTeX will be done `doxygen`. To generate the documentation run `doxygen` in LignumForest directory:
+and LaTeX will be done by `doxygen`. To generate the documentation run `doxygen` in LignumForest directory:
     
      doxygen Doxyfile 2> errors.txt
      
