@@ -46,7 +46,7 @@ class StandDescriptor{
       int getAge()	{ return age; }
       LGMdouble getBasalAreaAtCrownBase() { return basalAreaAtCrownBase; }
       Point getCornerLl( ) {return corner_ll;}
-      LGMdouble getCornerUr() {return corner_ur;};
+      Point getCornerUr() {return corner_ur;};
       LGMdouble getMinDBH() { return minDBH; }
       LGMdouble getMaxDBH() { return maxDBH; }
       LGMdouble getMinH() {return minH;}
