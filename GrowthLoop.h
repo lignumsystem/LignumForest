@@ -62,7 +62,7 @@ public:
      crown_limit_data(false),
      writevoxels(false),increase_xi(false),
      self_thinning(false), generate_locations(false), location_file("Treelocations.txt"),
-     no_trees(0), wood_voxel(true), dump_self(false), evaluate_border_forest(true),seg_len_var(0.0),
+     no_trees(0), wood_voxel(true), evaluate_border_forest(true),seg_len_var(0.0),
      pairwise_self(false), eero(false), g_fun_var(0.0), g_fun_varies(false),
      random_branch_angle(false), ba_variation(0.0) {}
   ~GrowthLoop();
@@ -225,7 +225,6 @@ private:
   unsigned int target_tree;   //one of the trees can be identified as target tree
   bool write_output;
   ofstream* stand_output;
-  bool dump_self;
   StandDescriptor<TREE> center_stand;
   ofstream* cstand_output;
   bool evaluate_border_forest;

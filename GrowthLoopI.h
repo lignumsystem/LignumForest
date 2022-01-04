@@ -30,12 +30,6 @@ extern bool is_bud_view_function;   ///if it is in use
 
 
 
-/* template <class TS, class BUD> */
-/*   class EvaluateRadiationForCfTreeSegment_3; */
-
-
-
-
 template<class TREE, class TS, class BUD, class LSYSTEM>
 GrowthLoop<TREE,TS,BUD,LSYSTEM>::~GrowthLoop()
 {
@@ -90,7 +84,6 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::usage()const
   cout << "-writeOutput                Most of the things are written to their respctive file at -writeInterval interval (default false)" << endl;
     cout << "-verbose                  Output of progress of run if set (default = not set)." << endl;
   cout << "-bracketVerbose             If set, iteration information is printed out in allocation (default = not set)." << endl;
-  cout << "-dumpSelf                   If the subject tree is dumped to vox-space (default no)" << endl;
   cout << "-noBorderForest             No border forest around the stand (default = there is border forest)"
        << endl;
   cout << "-seed <value>               seed for random number generator." << endl;
@@ -291,11 +284,6 @@ clarg.clear();
     target_tree = (unsigned int)atoi(clarg.c_str());
 
 
-  dump_self = false;
-  if (CheckCommandLine(argc,argv,"-dumpSelf"))
-    dump_self = true;
-
-
   bracket_verbose = false;
   if (CheckCommandLine(argc,argv,"-bracketVerbose"))
     bracket_verbose = true;
@@ -448,10 +436,6 @@ clarg.clear();
 template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::resolveCommandLineAttributes()
 {
-  if(pairwise_self) {
-    dump_self = false;
-  }
-
   if(eero) {
     p0_var = 0.0;
     bud_variation = false;
@@ -1024,6 +1008,7 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
   mode = 1;
 
   for (unsigned int k = 0; k < (unsigned int)no_trees; k++){
+    cout << "Allocation loop with k: " << k << " No trees " << no_trees <<endl; 
     TREE* t = vtree[k];
     LSYSTEM* l = vlsystem[k];
 
@@ -1032,16 +1017,20 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
     double alku = 1.0;    //= Gravelius order of main axis
     PropagateUp(*t,alku,SetSapwoodDemandAtJunction());
 
-    if(!allocation(*t,bracket_verbose))
- 
+    if(!allocation(*t,bracket_verbose)){
+      cout << "Allocation failed, P - M < 0" <<endl;
       dead_trees.push_back(k);       //iteration failed, this tree is dead
-    else
-      if(GetValue(*t,LGAH) - h_prev[(int)k] < 0.001) {
-	cout << L_age << " " << k << " " << no_h[(int)k] << endl;
-	no_h[(int)k] += 1;
-	if(no_h[(int)k] >= 3)
-	   dead_trees.push_back(k);
+      cout << "Pushed " << k << " to dead trees" <<endl;
+      continue;
+    }
+    else if(GetValue(*t,LGAH) - h_prev[(int)k] < 0.001) {
+      cout << L_age << " " << k << " " << no_h[(int)k] << endl;
+      no_h[(int)k] += 1;
+      if(no_h[(int)k] >= 3){
+	dead_trees.push_back(k);
       }
+      continue;
+    }
 
     //Calculate  the  LGAsf  for   newly  created  segments,  sf  in  P
     //Kaitaniemi data depens on segment length
@@ -1294,38 +1283,6 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
       <</*40*/ setw(11) << lambda << " " //Lambda s.t. G(L) = 0.
       <</*41*/ setw(11) << w_af << " " //Foliage area of tree
       << endl; 
-
-
-
-    if(pairwise_self) {
-      if(iter == 9){
-	Point p = GetPoint(*GetFirstTreeSegment(GetAxis(t)));
-	LGMdouble xx = p.getX();
-	LGMdouble yy = p.getY();
-	if((abs(xx-12.2775) < 0.0001) && (abs(yy-7.57141)<0.0001))
-	  ForEach(t, SegmentProductionBalance("phprod-10.dat"));
-      }
-
-      if(iter == 14){
-	Point p = GetPoint(*GetFirstTreeSegment(GetAxis(t)));
-	LGMdouble xx = p.getX();
-	LGMdouble yy = p.getY();
-	if((abs(xx-12.2775) < 0.0001) && (abs(yy-7.57141)<0.0001))
-	  ForEach(t, SegmentProductionBalance("phprod-15.dat"));
-      }
-      if(iter == 19){
-	Point p = GetPoint(*GetFirstTreeSegment(GetAxis(t)));
-	LGMdouble xx = p.getX();
-	LGMdouble yy = p.getY();
-	if((abs(xx-12.2775) < 0.0001) && (abs(yy-7.57141)<0.0001))
-	  ForEach(t, SegmentProductionBalance("phprod-20.dat"));
-      }
-
-
-    }
-
-
-
   }
 }
   
@@ -1358,7 +1315,7 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::writeCrownLimitData(TREE& t, int iter)
     //File is CrownLimit+iter+.txt, e.g., "CrownLimit-25.5-22.0-10.txt"
     ofstream cl_file(crown_limit_file.str().c_str());
     if (!cl_file){
-      cout << "Could not open " << crown_limit_file << " exit" << endl;
+      cout << "Could not open " << crown_limit_file.str() << " exit" << endl;
       exit(0);
     }
     const list<pair<double,double> >& hwf_ls = cld.WfHList();
@@ -1523,54 +1480,12 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
   Point ur = bb.getMax();
 
   vs->resize(ll, ur);
-
   vs->reset();
 
-  //Note: not first tree, since it will be the first to be calculated
-  //and its foliage won't be in the voxelspace
- // unless dump_self is set
-
-  //  for (unsigned int k = 1; k < (unsigned int)no_trees; k++)
-  if(dump_self)
-      DumpCfTree(*vs, *vtree[0], num_parts, wood_voxel);
-  for (unsigned int k = 1; k < (unsigned int)no_trees; k++)
+  //All tree are dumped to the voxelspace
+  for (unsigned int k = 0; k < (unsigned int)no_trees; k++) {
     DumpCfTree(*vs, *vtree[k], num_parts, wood_voxel);
-
-  if((int)GetValue(*vtree[0],LGAage) == 10){
-    LGMdouble Hmin, Hmax;
-    int nz;
-    vector<pair<double,double> > NAD;
-    vs->evaluateVerticalNeedleAreaDensity(Hmax, Hmin, nz, NAD);
-    cout << "DISTN DISTN" << endl;
-    cout << "nz Hmin Hmax " << nz << " " << Hmin << " " << Hmax << endl;
-    for(int i = 0; i < nz; i++) {
-      cout << NAD[i].first << " " << NAD[i].second << endl;
-    }
   }
-
-  if((int)GetValue(*vtree[0],LGAage) == 15){
-    LGMdouble Hmin, Hmax;
-    int nz;
-    vector<pair<double,double> > NAD;
-    vs->evaluateVerticalNeedleAreaDensity(Hmax, Hmin, nz, NAD);
-    cout << "DISTN DISTN" << endl;
-    cout << "nz Hmin Hmax " << nz << " " << Hmin << " " << Hmax << endl;
-    for(int i = 0; i < nz; i++) {
-      cout << NAD[i].first << " " << NAD[i].second << endl;
-    }
-  }
-  if((int)GetValue(*vtree[0],LGAage) == 20){
-    LGMdouble Hmin, Hmax;
-    int nz;
-    vector<pair<double,double> > NAD;
-    vs->evaluateVerticalNeedleAreaDensity(Hmax, Hmin, nz, NAD);
-    cout << "DISTN DISTN" << endl;
-    cout << "nz Hmin Hmax " << nz << " " << Hmin << " " << Hmax << endl;
-    for(int i = 0; i < nz; i++) {
-      cout << NAD[i].first << " " << NAD[i].second << endl;
-    }
-  }
-
 
   //After dumping all trees to VoxelSpace it is necessary to evaluate
   //sum quantities (e.g. STAR_mean)
@@ -1599,14 +1514,9 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::calculateRadiation()
 {
 
-  LGMdouble a = 1.0, b = 1.0;
-  EvaluateRadiationForCfTreeSegment_3
-    <ScotsPineSegment,ScotsPineBud> Rad(K, vs, &border_forest, evaluate_border_forest, a, b, dump_self,
-					k_border_conifer, false, false, false, false, false);
-/*    EvaluateRadiationForCfTreeSegment_3<ScotsPineSegment,ScotsPineBud> */
-/*      Rad3(K, vs, &border_forest, false, a, b, virittely_dump, k_border_conifer, */
-/*          box_dir_effect, wood_voxel, correct_star, constant_star,calculateDirectionalStar); */
-
+  EvaluateRadiationForCfTreeSegmentInVoxelSpace
+    <ScotsPineSegment,ScotsPineBud> Rad(K, vs, &border_forest, evaluate_border_forest,
+					k_border_conifer, wood_voxel, pairwise_self);
 
   //HUOM: true on border forest
   SetStarMean<TS,BUD> setstar(ParametricCurve(0.14));
@@ -1617,9 +1527,7 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
     ForEach(*t,RQQ);
   
     if(pairwise_self) {
-      if(k != 0)       //First tree was not dumped in
-	// setting up voxelspace in setVoxelSpaceAndBorderForest
-	UnDumpScotsPineTree(*vs,*vtree[k],num_parts,wood_voxel);
+	UnDumpScotsPineTree(*vs,*t,num_parts,wood_voxel);
     }
 
     ForEach(*t,Rad);
@@ -1628,8 +1536,7 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
       if(k != (unsigned int)(no_trees - 1)) //Don't bother to dump the last tree,
 	//since contents of voxelspace will be erased after this
 	cout << "k " << k << endl;
-
-	DumpCfTree(*vs, *t, num_parts, wood_voxel);
+      DumpCfTree(*vs, *t, num_parts, wood_voxel);
     }
   }
 }
