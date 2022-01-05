@@ -32,7 +32,7 @@ Errors and warnings will appear in *errors.txt*. To see html version of the docu
 
     open DoxygenDoc/html/index.html
     
-The growth loop for LignumForest is implementes in lignum-forest.cc in main() function.
+The growth loop for LignumForest is implementes in *lignum-forest.cc* in *main()* function.
 To generate LaTeX version go to latex subdirectory and use make:
 
     cd DoxygenDoc/latex
