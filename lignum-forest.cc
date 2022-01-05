@@ -1,7 +1,10 @@
-//Include Lignum implementation
+/// \file 
+/// \brief The main program for the LignumForest.
+
+///Lignum implementation
 #include <Lignum.h>
 #include <GrowthLoop.h> 
-//Include the implementation of the tree segment and bud
+///Implementation of the Scotspine tree segment and bud
 #include <ScotsPine.h>
 
 //#include <MixedForest.h>
@@ -13,10 +16,10 @@
 #include <OpenGLUnix.h>
 #include <LGMVisualization.h>
 #endif
-//Includes all kinds of stuff, turtle graphics etc.
+///Includes L-system, turtle graphics etc.
 #include <lengine.h>
 
-//and for pine, see also pine9bp.L in lsys.
+///L-system for pine and for pine, see also pine9bp.L in lsys.
 namespace Pine{
 #include <LSystem.h>
 }
@@ -27,7 +30,8 @@ namespace Pine{
 #include <Palubicki_functors.h>
 #include <Space.h>
 
-
+///\defgroup mainglobals Global variables
+/// @{
 ///Declaration of a number of global variables -- they are easy to add to
 ///the program but maybe should be made function arguments or ...
 
@@ -49,8 +53,9 @@ bool space2 = false;
 ///search distance of neighboring boxes for space2
 double space2_distance = 0.3;
 
-///VoxelSpace for space occupancy in case space colonialization
+///Dummy firmament for space_occupancy
 Firmament dummy_firm;
+///VoxelSpace for space occupancy in case space colonialization
 VoxelSpace space_occupancy(Point(0.0,0.0,0.0),Point(1.0,1.0,1.0),
 			   0.1,0.1,0.1,5,5,5,dummy_firm);
 
@@ -63,7 +68,7 @@ bool is_bud_view_function = false;   ///if it is in use
 ///tree age and height to L-system
 extern double L_age, L_H;
 
-///is initialized in GrowthloopI.h
+/// Random seed is initialized in GrowthloopI.h
 int ran3_seed;
 
 ///These variables are used to generate random variation between tree individuals
@@ -78,16 +83,38 @@ double rel_bud;
 bool bud_variation;
 ///For variation of branching_angle
 double branch_angle;
+///@}
 
+/// \typedef GrowthLoop<ScotsPineTree,ScotsPineSegment,ScotsPineBud, Pine::LSystem<ScotsPineSegment,ScotsPineBud,PBNAME,PineBudData> > ScotsPineForest
+/// ScotsPineForest (i.e. GrowthLoop template instance) captures the growth loop of a forest stand.
 typedef GrowthLoop<ScotsPineTree,ScotsPineSegment,ScotsPineBud,
 		   Pine::LSystem<ScotsPineSegment,ScotsPineBud,PBNAME,PineBudData> > ScotsPineForest;
 
+/// \defgroup groupmain Main program for growth loop
+/// @{
+/// Content of the main program to run Growth loop for LignumForest.
+/// @}
+
+/// \ingroup groupmain
+/// \fn int main(int argc, char** argv)
+/// \brief Main function for growth.
+/// Check and parse command line. The  command line includes switches to control
+/// the simulation.
+/// \param argc An integer counter number of command line arguments.
+/// \param argv Vector of command line argument strings.
 int main(int argc, char** argv)
 {
-  Sensitivity<ScotsPineSegment,ScotsPineBud> sensitivity;
-  GrowthLoop<ScotsPineTree,ScotsPineSegment,ScotsPineBud,
-    Pine::LSystem<ScotsPineSegment,ScotsPineBud,PBNAME,PineBudData> > gloop;
- 
+
+  /// \subsection variables Variables for the growth loop
+  // \var Sensitivity sensitivity
+  /// \snippet{lineno} lignum-forest.cc Vars
+  /// \internal
+  // [Vars]
+  Sensitivity<ScotsPineSegment,ScotsPineBud> sensitivity;                                                           
+  GrowthLoop<ScotsPineTree,ScotsPineSegment,ScotsPineBud,Pine::LSystem<ScotsPineSegment,ScotsPineBud,PBNAME,PineBudData> > gloop;
+  // [Vars]
+  /// \endinternal
+  
   ran3(&ran3_seed);
 
   //MixedForest  will  implement a  class  that  can  manage a  forest
@@ -97,9 +124,11 @@ int main(int argc, char** argv)
   //mf.initialize(argc,argv);
   //mf.growthLoop();
   //mf.afterGrowth();
-
-  //Check and parse command line, the  command line includes switches to control
-  //the simulation
+  
+  /// \subsection initf  Initialize forest
+  /// \snippet{lineno} lignum-forest.cc InitForest
+  /// \internal
+  // [InitForest]
   gloop.parseCommandLine(argc,argv);
   gloop.resolveCommandLineAttributes();
   gloop.printVariables();
@@ -110,9 +139,15 @@ int main(int argc, char** argv)
   gloop.initializeTrees();
   gloop.initializeVoxelSpace();
   gloop.initializeGrowthLoop();
+  // [InitForest]
+  /// \endinternal
+  
+  // gloop.growthLoop();
 
-  //   //Growth loop
-  //   gloop.growthLoop();
+  /// \subsection growthloop Growth loop
+  /// \snippet{lineno} lignum-forest.cc GLoop
+  /// \internal
+  // [GLoop]
   int year;
   for(year = 0; year < gloop.getIterations(); year++) {
     if(gloop.getNumberOfTrees() < 1) {
@@ -133,8 +168,13 @@ int main(int argc, char** argv)
     //Prune dead parts from the trees 
     gloop.prune();
   } // End of  for(year = 0; ...
-
-  //After growth
+  // [GLoop]
+  /// \endinternal
+  
+  /// \subsection aftegrowth After growth
+  /// \snippet{lineno} lignum-forest.cc AGrowth
+  /// \internal
+  // [AGrowth]
   gloop.cleanUp();
   gloop.printSegmentQin();
   gloop.printBranchMeans();
@@ -144,7 +184,9 @@ int main(int argc, char** argv)
   gloop.writeFip(gloop.getTargetTree(),1);
   gloop.writeBranchInformation(gloop.getTargetTree(),"BranchInformation.dat");
   gloop.writeProductionBalance(gloop.getTargetTree(),"ProductionBalance.dat");
-
+  // [AGrowth]
+  /// \endinternal
+  
 #if defined (__APPLE__) || defined(__MACOSX__)
   if(CheckCommandLine(argc,argv,"-viz")) {
     LGMVisualization viz;
@@ -159,7 +201,5 @@ int main(int argc, char** argv)
     viz.StartVisualization();
   }
 #endif
-
-
- 
+  return 0;
 }
