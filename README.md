@@ -1,8 +1,8 @@
 # LignumForest
-Project for simulating a growing tree community using individual Lignum trees.
+LignumForest is a project for simulating a growing tree community using individual LIGNUM trees.
 This project must reside under *lignum-core* directory. That means first
-clone *https://github.com/lignumsystem/lignum-core.git* repository and then
-in lignum-core clone *https://github.com/lignumsystem/LignumForest.git*.
+clone [lignum-core](https://github.com/lignumsystem/lignum-core.git) repository and then
+in lignum-core clone [LignumForest](https://github.com/lignumsystem/LignumForest.git).
 
 ## Compilation
 To compile LignumForest (and lignum-core) type:
@@ -25,7 +25,7 @@ available in the software. Extraction of the comments, rendition of the software
 architecture, generation of the structure of the document and formatting the document to html 
 and LaTeX will be done by `doxygen`. To generate the documentation run `doxygen` in LignumForest directory:
     
-     doxygen Doxyfile 2> errors.txt
+    doxygen Doxyfile 2> errors.txt
      
 Doxyfile is the configuration file for `doxygen`. The documentation will appear in DoxygenDoc directory. 
 Errors and warnings will appear in *errors.txt*. To see html version of the document type (on macOS):
