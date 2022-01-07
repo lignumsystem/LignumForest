@@ -17,7 +17,8 @@ To compile with optimization on (faster, no debug) type:
     make
 
 To remove all compilation work type `make distclean`.
-    
+
+The growth loop for LignumForest is implemented in *lignum-forest.cc* in *main()* function.
 ## Documentation
 
 The Reference Guide for the LignumForest will be based on comments and other information
@@ -32,7 +33,6 @@ Errors and warnings will appear in *errors.txt*. To see html version of the docu
 
     open DoxygenDoc/html/index.html
     
-The growth loop for LignumForest is implemented in *lignum-forest.cc* in *main()* function.
 To generate LaTeX version go to latex subdirectory and use make:
 
     cd DoxygenDoc/latex
