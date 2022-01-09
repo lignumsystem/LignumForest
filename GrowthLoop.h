@@ -80,7 +80,7 @@ public:
   void timeStep(int year);
   ///After Growth: clean up, write output
   void afterGrowth();
-
+  ///Print usage information
   void usage()const;
   void checkCommandLine(int argc, char** argv)const;
   void parseCommandLine(int argc, char** argv);
@@ -97,8 +97,6 @@ public:
   void initializeVoxelSpace();
   void initializeFunctions();
   void initializeGrowthLoop();
-
-
 
   void increaseXi(int& year);
   void setTreeLocations();
