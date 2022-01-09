@@ -25,7 +25,9 @@
 #include <BorderForest.h>
 #include <Space.h>
 #include <Palubicki_functors.h>
-
+///\class CollectP
+///\brief Collect photosynthates from the tree
+///Use with Accumulate algorithm in stl-lignum 
 template <class TS, class BUD>
     class CollectP
     { 
@@ -46,7 +48,8 @@ template <class TS, class BUD>
     };
 
 
-
+///\class GrowthLoop GrowthLoop.h
+///\brief Implement the LignumForest growth loop
 template <class TREE, class TS, class BUD,class LSYSTEM>
 class GrowthLoop{
 public:
@@ -66,13 +69,16 @@ public:
      pairwise_self(false), eero(false), g_fun_var(0.0), g_fun_varies(false),
      random_branch_angle(false), ba_variation(0.0) {}
   ~GrowthLoop();
-  //These three methods  wrap the growth of the  forest in three parts
-  //1) Initialize:  parse command line, initialize  trees, voxel space
-  //and growth loop.
+  ///Initialize:  parse command line, initialize  trees, voxel space
+  ///and growth loop.
+  ///\param argc Numebr of command line arguments 
+  ///\param argv Command line arguments
+  ///\sa timeStep afterGrowth
   void initialize(int argc, char** argv);
-  //2) One time step   
+  ///One time step
+  ///\param year Number of growth steps
   void timeStep(int year);
-  //3) After Growth: clean up, write output 
+  ///After Growth: clean up, write output
   void afterGrowth();
 
   void usage()const;
