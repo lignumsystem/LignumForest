@@ -274,7 +274,10 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::parseCommandLine(int argc, char** argv)
 //  }
 
   ///Parse forest generation
-  ///+ Parse `generateLocations`, argument is number of trees. \sa no_trees, generate_locations 
+  ///+ Parse `-generateLocations`, if present the argument is the number of trees.
+  ///\pre defaults `generate_locations == false`,
+  ///\post `generate_locations == true`.
+  ///\sa no_trees, generate_locations 
   generate_locations = false;
   clarg.clear();
   if (ParseCommandLine(argc,argv,"-generateLocations", clarg)) {
