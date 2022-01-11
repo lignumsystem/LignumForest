@@ -82,7 +82,9 @@ public:
   void afterGrowth();
   ///Print usage information
   void usage()const;
+  ///Command line check
   void checkCommandLine(int argc, char** argv)const;
+  ///Command line parser.
   void parseCommandLine(int argc, char** argv);
   void resolveCommandLineAttributes();
 

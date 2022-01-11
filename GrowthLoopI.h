@@ -109,23 +109,27 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::usage()const
   cout << endl;
 }
 
+///Check mandatory arguments and that number of arguments are at least three.
 template<class TREE, class TS, class BUD, class LSYSTEM>
 void GrowthLoop<TREE,TS,BUD,LSYSTEM>::checkCommandLine(int argc, char** argv)const
 {
-  //At least three  mandatory arguments required 
+  ///At least three  mandatory arguments required. 
   if (argc < 4){
     cout << "Three mandatory arguments are required!" << endl << endl;
     usage();
     exit(0);
   }
+  ///Mandatory argument -iter
   else if (CheckCommandLine(argc,argv,"-iter") == false){
     cout << "Mandatory -iter <num> option missing" << endl;
     exit(0);
   }
+  ///Mandatory argument -metafile
   else if (CheckCommandLine(argc,argv,"-metafile") == false){
     cout << "Mandatory -metafile <MetaFile.txt> option missing" << endl;
     exit(0);
   }
+  ///Mandatory argument -voxelspace
   else if (CheckCommandLine(argc,argv,"-voxelspace") == false){
     cout << "Mandatory -voxelspace <VoxelSpace.txt> option missing" << endl;
     exit(0);
@@ -135,6 +139,7 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::checkCommandLine(int argc, char** argv)con
   } 
 }
 
+///Parse command line arguments. Note the hard coded parameter files.
 template<class TREE, class TS, class BUD, class LSYSTEM>
 void GrowthLoop<TREE,TS,BUD,LSYSTEM>::parseCommandLine(int argc, char** argv)
 {
@@ -147,14 +152,21 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::parseCommandLine(int argc, char** argv)
   if (verbose){
     cout << "parseCommandLine begin" <<endl;
   }
-
+  //Check the command line.
   checkCommandLine(argc,argv);
 
-  //Mandatory arguments
+  ///Parse arguments to `clarg`. Clear the sring before each new argument. \sa `checkCommandLine`
+  ///\snippet{lineno} GrowthLoopI.h InitClarg
+  ///\internal
+  // [InitClarg]
   string clarg;
+  // [InitClarg]
+  ///\endinternal
+  ///Parse mandatory arguments
   if (ParseCommandLine(argc,argv,"-iter", clarg)){
     iterations = atoi(clarg.c_str());
   }
+  
 
   clarg.clear();
   if (ParseCommandLine(argc,argv,"-metafile", clarg)){
@@ -173,79 +185,81 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::parseCommandLine(int argc, char** argv)
 //    tree_distance = atof(clarg.c_str());
 
 
-  //Output to data file. This is  the base name each tree will add its
-  //coordinates to make unique files
+  /// + Parse `-toFile`, output to data file. This is  the base name
+  ///each tree will add its coordinates to make unique files
   clarg.clear();
   to_file = ParseCommandLine(argc,argv,"-toFile", clarg);
   if (to_file){
     datafile = clarg;
   }
 
+  ///+ Parse `-cstandFile`, default *cstand.dat*.
   cstand_file = "cstand-values.dat"; 
   clarg.clear();
   ParseCommandLine(argc,argv,"-cstandFile", clarg);
-    cstand_file = clarg;
+  cstand_file = clarg;
 
-
-stand_file = "stand-values.dat"; 
-clarg.clear();
+  ///+ Parse `-standFile`, default *stand-values.dat*.
+  stand_file = "stand-values.dat"; 
+  clarg.clear();
   if(ParseCommandLine(argc,argv,"-standFile", clarg))
     stand_file = clarg;
- //sensitivity analysis file
+  ///+ Parse sensitivity analysis file, no default value.
   clarg.clear();
   sensitivity_analysis = ParseCommandLine(argc,argv,"-sensitivity", clarg);
   if (sensitivity_analysis){
     sensitivity.printHeader(clarg);
   }
 
-  //Write  crown limit data
+  ///Parse simulation parameters
+  ///+ Parse `-crownLimitData`, Wrrite  crown limit data.
   crown_limit_data =  CheckCommandLine(argc,argv,"-crowmLimitData");
 
-  //XML file where the tree can be saved and restored from
+  ///+ Parse `-xml`, XML file where the tree can be saved and restored from.
   clarg.clear();
   ParseCommandLine(argc,argv,"-xml", clarg);
   xmlfile = clarg;
 
-  //The vertical distribution of fip from segments
+  ///+ Parse `-fipdistrib`, the vertical distribution of fip from segments.
   clarg.clear();
   ParseCommandLine(argc,argv,"-fipdistrib", clarg);
   fipfile = clarg;
 
-  //Write voxels, the file will be named as 'VoxelSpace-x-y-age.txt'
+  ///+ Parse and check boolean `-writeVoxels`, Write voxels, the file will be named as `VoxelSpace-x-y-age.txt`, default `false`.
   if (CheckCommandLine(argc,argv,"-writeVoxels")){
     writevoxels = true;
   }
 
-  //Number of segment parts used to assess Qabs
+  ///+ Parse `-numParts`, Number of segment parts used to assess Qabs.
   num_parts = 1;
   clarg.clear();
   if (ParseCommandLine(argc,argv,"-numParts", clarg))
     num_parts = atoi(clarg.c_str());
-  
+
+  ///+ Parse boolean `-noWoodVoxel`, no woody parts into voxels, default `true`. 
   wood_voxel = true;
   if (CheckCommandLine(argc,argv,"-noWoodVoxel"))
     wood_voxel = false;
 
-  //Write interval in output
+  ///+ Parse `-writeInterval`, write interval (timesteps) in output, default `1`.
   interval = 1;
   clarg.clear();
   if (ParseCommandLine(argc,argv,"-writeInterval", clarg))
     interval = atoi(clarg.c_str());
-
+  ///+ Parse and check boolean `-writeOutput`, write output in the first place, default `false`. 
   write_output = false;
   if (CheckCommandLine(argc,argv,"-writeOutput"))
     write_output = true;
 
 		     
-  //Increase LGPxi value
-
+  ///+ Parse `-increaseXi`, increase LGPxi from a start year. \sa increase_xi xi_start. 
   clarg.clear();
   if (ParseCommandLine(argc,argv,"-increaseXi", clarg)){
     increase_xi = true;
     xi_start = atoi(clarg.c_str());
   }
 
-  //The start of heartwood build up
+  ///+ Parse `-hw`, the start of heartwood build up, default `15` years.
   clarg.clear();
   hw_start = 15;
   if (ParseCommandLine(argc,argv,"-hw", clarg))
@@ -259,6 +273,8 @@ clarg.clear();
   //  initRan3(s);
 //  }
 
+  ///Parse forest generation
+  ///+ Parse `generateLocations`, argument is number of trees. \sa no_trees, generate_locations 
   generate_locations = false;
   clarg.clear();
   if (ParseCommandLine(argc,argv,"-generateLocations", clarg)) {
@@ -267,31 +283,37 @@ clarg.clear();
   }
   else {
     clarg.clear();
+    ///+ Parse `-treeLocations`, use file for tree locations, default `Treelocations.txt`.
+    ///\pre `generate_locations == false`;
     if (ParseCommandLine(argc,argv,"-treeLocations", clarg)) 
       location_file = clarg;
     else
       location_file = "Treelocations.txt";
   }
 
+  ///+ Parse `-treeDist`, set tree distance. \sa tree_distance.
   tree_distance = 0.0;
   clarg.clear();
   if (ParseCommandLine(argc,argv,"-treeDist", clarg))
     tree_distance = atof(clarg.c_str());
 
+  ///+ Parse `-targetTree`, set the target tree to be analysed.\sa `target_tree`
   target_tree = 0;
   clarg.clear();
   if (ParseCommandLine(argc,argv,"-targetTree", clarg))
     target_tree = (unsigned int)atoi(clarg.c_str());
 
-
+  ///+ Parse boolean `-bracketVerbose`, set allocation of photosynthates verbose mode, default `false`.
   bracket_verbose = false;
   if (CheckCommandLine(argc,argv,"-bracketVerbose"))
     bracket_verbose = true;
 
+  ///+ Parse boolean `-noBordeForest`, use  homogenous border forest, default `true`. \sa evaluate_border_forest.
   evaluate_border_forest = true;
   if (CheckCommandLine(argc,argv,"-noBorderForest"))
     evaluate_border_forest = false;
 
+  ///+ Parse `-seed`, seed for ran3() random number generator, default `-123321`. \sa ran3_seed. 
   ran3_seed = -123231;
   int s_ini;
   if (ParseCommandLine(argc,argv,"-seed", clarg)){
@@ -300,7 +322,7 @@ clarg.clear();
       ran3_seed = -abs(s_ini);
     }
   }
-
+  ///+ Parse `kBorderConifer`, extinction coefficient for homgenous conifer border forest. default 0.14. \sa k_border_conifer.
   k_border_conifer = 0.14;
   clarg.clear();
   if (ParseCommandLine(argc,argv,"-kBorderConifer", clarg))
