@@ -139,7 +139,7 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::checkCommandLine(int argc, char** argv)con
   } 
 }
 
-///Parse command line arguments. Note the hard coded parameter files.
+///Parse command line arguments. Note some hard coded files as default values.
 template<class TREE, class TS, class BUD, class LSYSTEM>
 void GrowthLoop<TREE,TS,BUD,LSYSTEM>::parseCommandLine(int argc, char** argv)
 {
@@ -163,16 +163,17 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::parseCommandLine(int argc, char** argv)
   // [InitClarg]
   ///\endinternal
   ///Parse mandatory arguments
+  ///+ `-iter`, number of iterations (i.e. years)
   if (ParseCommandLine(argc,argv,"-iter", clarg)){
     iterations = atoi(clarg.c_str());
   }
   
-
+  ///+ `-metafile`, file containing actual parameter files etc.
   clarg.clear();
   if (ParseCommandLine(argc,argv,"-metafile", clarg)){
     metafile = clarg;
   }
-
+  ///+ `-voxelspace`, voxel space definition
   clarg.clear();
   if (ParseCommandLine(argc,argv,"-voxelspace", clarg)){
     voxelfile = clarg;
@@ -184,9 +185,9 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::parseCommandLine(int argc, char** argv)
 //  if (ParseCommandLine(argc,argv,"-treeDist", clarg))
 //    tree_distance = atof(clarg.c_str());
 
-
-  /// + Parse `-toFile`, output to data file. This is  the base name
-  ///each tree will add its coordinates to make unique files
+  ///Parse output files
+  ///+ Parse `-toFile`, output to data file. This is  the base name
+  ///each tree will add its coordinates to make unique files.
   clarg.clear();
   to_file = ParseCommandLine(argc,argv,"-toFile", clarg);
   if (to_file){
@@ -325,12 +326,17 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::parseCommandLine(int argc, char** argv)
       ran3_seed = -abs(s_ini);
     }
   }
-  ///+ Parse `kBorderConifer`, extinction coefficient for homgenous conifer border forest. default 0.14. \sa k_border_conifer.
+  ///+ Parse `-kBorderConifer`, extinction coefficient for homogenous conifer border forest, default 0.14. \sa k_border_conifer.
   k_border_conifer = 0.14;
   clarg.clear();
   if (ParseCommandLine(argc,argv,"-kBorderConifer", clarg))
     k_border_conifer = atof(clarg.c_str());
 
+  ///+ Parse parameters to adjust tree growth. Needs to be documented.
+  ///\sa H_0_ini, H_var_ini, n_buds_ini_min, n_buds_ini_max, p0_var, seg_len_var,
+  ///\sa parwise_self, rel_bud, eero, g_fun_var, ba_variation, is_adhoc,
+  ///\sa is_bud_view_function, space0, space1, space2, space2_distance,
+  ///\sa growthloop_is_EBH, growthloop_is_EBH1, growthloop_EBH1_value
   H_0_ini = 0.3;
   clarg.clear();
   if (ParseCommandLine(argc,argv,"-H_0_ini", clarg))
@@ -435,6 +441,10 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::parseCommandLine(int argc, char** argv)
     growthloop_is_EBH = true;
   }
 
+  ///+ Parse `ebh.fun` function file.
+  ///\snippet{lineno} GrowthLoopI.h ebhfun
+  ///\internal
+  //[ebhfun]
   if(growthloop_is_EBH  && growthloop_is_EBH1) { //a bit nonelegant but may work, see initializeTrees()
     ofstream fout("ebh.fun", ofstream::trunc);
     fout << "#Extended Borchert-Honda lambda as a f. of Gravelius order" << endl;
@@ -447,7 +457,8 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::parseCommandLine(int argc, char** argv)
     fout << "6.0 " <<  growthloop_EBH1_value << endl;
     fout.close();
   }
-
+  //[ebhfun]
+  ///\endinternal
 
   if (verbose){
     cout << "parseCommandLine end" <<endl;
