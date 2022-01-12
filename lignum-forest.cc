@@ -31,17 +31,17 @@ namespace Pine{
 #include <Space.h>
 
 ///\defgroup mainglobals Global variables
+///\brief Declaration of a number of global variables.
+///
+///They are easy to add to the program but maybe should be implemented as function arguments or something else.
 /// @{
-///Declaration of a number of global variables -- they are easy to add to
-///the program but maybe should be made function arguments or ...
 
-///If growth is promoted in lower parts of crown
-bool is_adhoc = false;
-///Increase as a function rel. dist from crown b.
+bool is_adhoc = false;///<If growth is promoted in lower parts of crown. \sa adhoc
+
+///Increase as a function relative  distance from crown b.
 ParametricCurve adhoc("adhoc.fun");
 ///Height of grown base to SetScotsPineSegmentLength (if is_adhoc)
 double global_hcb;
-
 ///Space colonialization options for SetScotsPineSegmentLength (in ScotsPine.h)
 ///roughly: a shoot can grow only if there is free space around it
 ///only voxelbox at the end of new Segment is checked
@@ -59,30 +59,39 @@ Firmament dummy_firm;
 VoxelSpace space_occupancy(Point(0.0,0.0,0.0),Point(1.0,1.0,1.0),
 			   0.1,0.1,0.1,5,5,5,dummy_firm);
 
-///This global variable conveys the Bud View Function to L-system
+///Global *bud view function* variable to be used in L-system.
+///Foliage area density in the view cone of the bud affects
+///the number of lateral buds created. \sa is_bud_view_function
 ParametricCurve bud_view_f;
-bool is_bud_view_function = false;   ///if it is in use 
+///If *bud view function* is in use. \sa bud_view_f 
+bool is_bud_view_function = false;   
 
 
-///These global variables have been declared in pine-em98.L and convey 
-///tree age and height to L-system
+///These global variables have been declared in L-system and convey 
+///tree age and height to L-system. \sa pine-em98.L
 extern double L_age, L_H;
 
-/// Random seed is initialized in GrowthloopI.h
+///Random seed for `ran3` function
 int ran3_seed;
 
-///These variables are used to generate random variation between tree individuals
-/// in the Lindenmayer systen (*.L file, as externals).
+///\defgroup  ranvar Global variables for variation
+/// @{
+/// \brief Variables to generate random variation.
+///
+/// Variables to generate random variation between tree individuals
+/// in the Lindenmayer system. \sa pine-em98.L 
+
 ///For variation of initial heights
 double H_0_ini, H_var_ini;
-/// and number of buds (in .L file)
+/// For the number of buds. \sa pine-em98.L
 int n_buds_ini_min, n_buds_ini_max;
-///Variation in no. buds
+///Variation in number of buds
 double rel_bud;
-///If bud variation is on
+///If bud variation is on. \sa n_buds_ini_min n_buds_ini_max
 bool bud_variation;
 ///For variation of branching_angle
 double branch_angle;
+///@}
 ///@}
 
 /// \typedef GrowthLoop<ScotsPineTree,ScotsPineSegment,ScotsPineBud, Pine::LSystem<ScotsPineSegment,ScotsPineBud,PBNAME,PineBudData> > ScotsPineForest

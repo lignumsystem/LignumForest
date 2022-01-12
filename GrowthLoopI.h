@@ -1,34 +1,37 @@
 #ifndef GROWTHLOOPI_H
 #define GROWTHLOOPI_H
 
-// Tama GrowthLoopI tiedosto ajaa kokonaan voxelspaessa, muutokset
-// merkattu: run-voxel
+///\file  GrowthLoopI.h
+///\brief GrowthLoop implementation.
+///GrowthLoopI.h runs completely in voxel space.
+///Changes marked with **run-voxel**.
 
+//The following addtogroup seems to help doxygen to understand L-files
+//to some extent!
+///\addtogroup mainglobals
+///@{
 namespace Pine{
 
-  extern int mode;  //Declared in L-system (/LignumForest/pine-em98.L)
+  extern int mode;  ///<Declared in L-system. \sa pine-em98.L
 
 }
+///@}
+
 using namespace Pine;
 
-
-extern int ran3_seed;
-extern double H_0_ini, H_var_ini;         //For variation of initial heights and
-extern int n_buds_ini_min, n_buds_ini_max;  // and number of buds (in .L file)
-
-extern double L_age;
-
-extern double rel_bud;                   //Variation in no. buds
-extern bool bud_variation;             //If bud variation is on
-extern double branch_angle;
-
-
-//If foliage area density in the view cone of the bud affects
-//the number of lateral buds created
-extern ParametricCurve bud_view_f;
-extern bool is_bud_view_function;   ///if it is in use 
-
-
+ 
+extern int ran3_seed; ///<Initialized in GrowthLoopI.h
+extern double H_0_ini; ///<Initialized in GrowthLoopI.h
+extern double H_var_ini;///<Initialized in GrowthLoopI.h
+extern int n_buds_ini_min;///<Initialized in GrowthLoopI.h
+extern int n_buds_ini_max;///<Initialized in GrowthLoopI.h
+extern double L_age; ///<Initialized in GrowthLoopI.h
+extern double rel_bud;///<Initialized in GrowthLoopI.h
+extern bool bud_variation;///<Initialized in GrowthLoopI.h
+extern double branch_angle;///<Initialized in GrowthLoopI.h
+extern ParametricCurve bud_view_f;///<Initialized in GrowthLoopI.h
+extern bool is_bud_view_function;///<Reinitialized in GrowthLoopI.h.
+                                 
 
 template<class TREE, class TS, class BUD, class LSYSTEM>
 GrowthLoop<TREE,TS,BUD,LSYSTEM>::~GrowthLoop()
