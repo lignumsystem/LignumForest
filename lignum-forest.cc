@@ -38,7 +38,7 @@ namespace Pine{
 
 bool is_adhoc = false;///<If growth is promoted in lower parts of crown. \sa adhoc
 
-///Increase as a function relative  distance from crown b.
+///Increase as a function relative  distance from crown b
 ParametricCurve adhoc("adhoc.fun");
 ///Height of grown base to SetScotsPineSegmentLength (if is_adhoc)
 double global_hcb;
@@ -87,6 +87,11 @@ double H_0_ini, H_var_ini;
 int n_buds_ini_min, n_buds_ini_max;
 ///Variation in number of buds
 double rel_bud;
+
+///
+/// Mita tapahtuu????
+///
+
 ///If bud variation is on. \sa n_buds_ini_min n_buds_ini_max
 bool bud_variation;
 ///For variation of branching_angle
