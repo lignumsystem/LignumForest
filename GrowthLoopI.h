@@ -1103,7 +1103,7 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
     PropagateUp(*t,lentobuds,ForwardSegLen<TS,BUD>());
     l->lignumToLstring(*t,1,PBDATA);
 
-        //============================================================================
+    //============================================================================
     // Here is calculation of estimation of local needle area density for
     // using in estimation of bud fate
     //=============================================================================
