@@ -118,11 +118,9 @@ typedef GrowthLoop<ScotsPineTree,ScotsPineSegment,ScotsPineBud,
 /// \param argv Vector of command line argument strings.
 int main(int argc, char** argv)
 {
-
-  /// \subsection variables Variables for the growth loop
-  // \var Sensitivity sensitivity
-  /// \snippet{lineno} lignum-forest.cc Vars
+  /// \subsection varsg Growth loop variables
   /// \internal
+  /// \snippet{lineno} lignum-forest.cc Vars
   // [Vars]
   Sensitivity<ScotsPineSegment,ScotsPineBud> sensitivity;                                                           
   GrowthLoop<ScotsPineTree,ScotsPineSegment,ScotsPineBud,Pine::LSystem<ScotsPineSegment,ScotsPineBud,PBNAME,PineBudData> > gloop;
@@ -131,13 +129,18 @@ int main(int argc, char** argv)
   
   ran3(&ran3_seed);
 
-  //MixedForest  will  implement a  class  that  can  manage a  forest
-  //consting of several tree species
-  //This is a quick way to test that the class compiles 
-  //MixedForest<ScotsPineForest,ScotsPineForest> mf;
-  //mf.initialize(argc,argv);
-  //mf.growthLoop();
-  //mf.afterGrowth();
+  /// \internal
+  /// MixedForest  will  implement a  class  that  can  manage a  forest
+  /// consting of several tree species.
+  /// This is a quick way to test that the class compiles.
+  /// \snippet{lineno} lignum-forest.cc Mf
+  // [Mf] 
+  // MixedForest<ScotsPineForest,ScotsPineForest> mf;
+  // mf.initialize(argc,argv);
+  // mf.growthLoop();
+  // mf.afterGrowth();
+  // [Mf]
+  /// \endinternal
   
   /// \subsection initf  Initialize forest
   /// \snippet{lineno} lignum-forest.cc InitForest
