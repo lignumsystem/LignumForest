@@ -199,7 +199,7 @@ private:
   ///passed over, treeP holds the value
   ///of the last tree in the vector \sa allocationAndGrowth
   double treeP;
-  double treeM; ///< Respiration of tree. WARNING: the same warning as for treeP \sa TreeP
+  double treeM; ///< Respiration of tree. \warning The same warning as for treeP \sa TreeP
 
   ///
   /// \brief lambda = Iteration parameter of new growth
