@@ -47,7 +47,10 @@ double global_hcb;///< Height of grown base for function adhoc \sa adhoc
 /// \brief Eq 10 in Sievanen et al. 2018 \sa SetScotsPineSegmentLength
 
 Firmament dummy_firm;
-/// If foliage in growth direction, Eq 10 in Sievanen et al. 2018 \sa SetScotsPineSegmentLength
+///
+/// \brief VoxelSpace for calculation if foliage in growth direction
+///
+/// Eq 10 in Sievanen et al. 2018 \sa SetScotsPineSegmentLength
 VoxelSpace space_occupancy(Point(0.0,0.0,0.0),Point(1.0,1.0,1.0),
 			   0.1,0.1,0.1,5,5,5,dummy_firm);
 ///only voxelbox at the end of new Segment is checked
@@ -72,9 +75,8 @@ ParametricCurve bud_view_f;
 bool is_bud_view_function = false;   
 ///@}
 
-///These global variables have been declared in L-system and convey 
-///tree age and height to L-system. \sa pine-em98.L
-extern double L_age, L_H;
+extern double L_age; /// Conveys tree age to the L-system \sa pine-em98.L
+extern double L_H;   /// Conveys tree height to the L-system \sa pine-em98.L
 
 ///Random seed for `ran3` function
 int ran3_seed;
@@ -146,13 +148,14 @@ int main(int argc, char** argv)
   gloop.parseCommandLine(argc,argv);
   gloop.resolveCommandLineAttributes();
   gloop.printVariables();
-  gloop.initializeFunctions();
+  gloop.initializeFunctions();   //Reads in some functions from files
   gloop.setTreeLocations();
   gloop.createTrees();  //to locations set above
   gloop.printTreeLocations(0);
+  //initializeTrees reads in/sets a number of parameters and functions for each tree
   gloop.initializeTrees();
   gloop.initializeVoxelSpace();
-  gloop.initializeGrowthLoop();
+  gloop.initializeGrowthLoop();    //Sets initial values of some variables in trees
   // [InitForest]
   /// \endinternal
   

@@ -252,11 +252,11 @@ private:
   /// It is in action in stl-lignum/include/ShadingI.h
   /// \sa EvaluateRadiationForCfTreeSegmentInVoxelSpace
   ParametricCurve K;
-  ParametricCurve stems_ha;///< density of the forest
-  ParametricCurve fdensity_ha;///< density of the border forest
+  ParametricCurve stems_ha;///< Density of the forest as a function of age if it is forced
+  ParametricCurve fdensity_ha;///< Density of border forest as a f. of age if forced
   Sensitivity<TS,BUD> sensitivity; ///< For printing out sensitivity analysis results
   bool generate_locations; ///< If tree positions are set by the program. \sa setTreeLocations
-  string location_file; ///< Tree ositions are read from here. \sa setTreeLocation
+  string location_file; ///< Tree positions are read from here. \sa setTreeLocation
   ifstream location_stream; ///< SEEMS SUPERFLUOUS!
   int no_trees; ///< Number of trees in the forest
   bool noWoodVoxel; ///< SUPERFLUOUS!
@@ -269,8 +269,13 @@ private:
   ofstream* cstand_output; ///< Stream for center stand output
   bool evaluate_border_forest; ///< If border forest in radiation calculations? \sa calculateRadiation
   LGMdouble k_border_conifer;///< Extinction coeffient for border forest conifers \sa calculateRadiation
-  vector<int> no_h; ///< To keep track of trees that do not grow in height. \sa allocationAndGrowth
-  vector<double> h_prev; ///< Tree height of previous time step. \sa allocationAndGrowth
+  
+  /// \brief To keep track of trees that do not grow in height
+
+  /// If a tree does not grow for a while it is considered dead.
+  /// This variable keeps track of non-growing trees. \sa h_prev \sa allocationAndGrowth
+  vector<int> no_h;
+  vector<double> h_prev; ///< Tree height of previous time step. \sa no_h \sa allocationAndGrowth
   LGMdouble p0_var; ///< Random variation in photosynthetic efficiency between trees. \sa initializeTree
   string stand_file; ///< File name for output of stand values \sa output
   string cstand_file; ///< File name for output of center stand values \sa output
