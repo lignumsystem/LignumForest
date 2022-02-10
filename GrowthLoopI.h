@@ -116,23 +116,22 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::usage()const
 template<class TREE, class TS, class BUD, class LSYSTEM>
 void GrowthLoop<TREE,TS,BUD,LSYSTEM>::checkCommandLine(int argc, char** argv)const
 {
-  ///At least three  mandatory arguments required. 
   if (argc < 4){
     cout << "Three mandatory arguments are required!" << endl << endl;
     usage();
     exit(0);
   }
-  ///Mandatory argument -iter
+  ///+ Mandatory argument -iter
   else if (CheckCommandLine(argc,argv,"-iter") == false){
     cout << "Mandatory -iter <num> option missing" << endl;
     exit(0);
   }
-  ///Mandatory argument -metafile
+  ///+ Mandatory argument -metafile
   else if (CheckCommandLine(argc,argv,"-metafile") == false){
     cout << "Mandatory -metafile <MetaFile.txt> option missing" << endl;
     exit(0);
   }
-  ///Mandatory argument -voxelspace
+  ///+ Mandatory argument -voxelspace
   else if (CheckCommandLine(argc,argv,"-voxelspace") == false){
     cout << "Mandatory -voxelspace <VoxelSpace.txt> option missing" << endl;
     exit(0);
@@ -158,6 +157,7 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::parseCommandLine(int argc, char** argv)
   //Check the command line.
   checkCommandLine(argc,argv);
 
+  ///\subsection parse_args Parse arguments
   ///Parse arguments to `clarg`. Clear the sring before each new argument. \sa `checkCommandLine`
   ///\snippet{lineno} GrowthLoopI.h InitClarg
   ///\internal
