@@ -180,10 +180,11 @@ int main(int argc, char** argv)
     gloop.photosynthesisAndRespiration();
     gloop.createNewSegments();
     gloop.allocationAndGrowth();
-    gloop.output();   //does this if gloop.write_output == true
-    //Prune dead parts from the trees 
+    /// Command line  -writeOutput exists
+    gloop.output();   
+    /// Prune dead parts from the trees 
     gloop.prune();
-  } // End of  for(year = 0; ...
+  } /// End of  for(year = 0; ...)
   // [GLoop]
   /// \endinternal
   
