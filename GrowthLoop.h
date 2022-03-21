@@ -1,4 +1,6 @@
 #ifndef GROWTH_LOOP_H
+/// \file GrowthLoop.h
+/// \brief Implements the growth loop for LignumForest
 #define GROWTH_LOOP_H
 #include <cmath>
 #include <cstdio>
