@@ -9,7 +9,9 @@
 #include <mathsym.h>
 #include <Point.h>
 #include <PositionVector.h>
+#include <TMatrix3D.h>
 #include <Bisection.h>
+#include <LGMHDF5File.h>
 #include <Sensitivity.h> 
 #include <VoxelSpace.h>
 #include <TreeLocations.h>
@@ -27,9 +29,12 @@
 #include <BorderForest.h>
 #include <Space.h>
 #include <Palubicki_functors.h>
+#include <TreeDataAfterGrowth.h>
 ///\class CollectP
 ///\brief Collect photosynthates from the tree
-///Use with Accumulate algorithm in stl-lignum 
+///Use with Accumulate algorithm in stl-lignum
+/// \tparam TS TreeSegment
+/// \tparam BUD Bud
 template <class TS, class BUD>
     class CollectP
     { 
@@ -46,9 +51,11 @@ template <class TS, class BUD>
   }
     };
 
-///\class GrowthLoop GrowthLoop.h
-///\brief Implement the LignumForest growth loop
-
+/// \brief Implement the LignumForest growth loop
+/// \tparam TREE Tree
+/// \tparam TS Tree segment
+/// \tparam BUD Bud
+/// \tparam LSYSTEM Lindenmayer system
 template <class TREE, class TS, class BUD,class LSYSTEM>
 class GrowthLoop{
 public:
@@ -65,7 +72,7 @@ public:
      writevoxels(false),increase_xi(false),
      self_thinning(false), generate_locations(false), location_file("Treelocations.txt"),
      no_trees(0), wood_voxel(true), evaluate_border_forest(true),seg_len_var(0.0),
-     pairwise_self(false), eero(false), g_fun_var(0.0), g_fun_varies(false),
+     pairwise_self(false), eero(false),  g_fun_varies(false), g_fun_var(0.0),
      random_branch_angle(false), ba_variation(0.0) {}
   ~GrowthLoop();
   ///Initialize:  parse command line, initialize  trees, voxel space
@@ -92,7 +99,24 @@ public:
     int neg_init=-abs(init);
     ran3(&neg_init);
   }
+  /// \brief Create trees of the forest stand.
+  ///
+  /// Create trees in predefined locations. Create also L-systems, data vectors and vector of file streams.
+  /// Position of a tree in a tree vector defines its position in all othe vectors
+  /// \pre Tree locations have been generated
+  /// \sa CreateLocations
+  /// \sa locations Tree locations
+  /// \sa vtree vlsystem Vector of trees and their respective L-systems
+  /// \sa no_h h_prev wsapwood wfoliage wroot ws_after_senescence Data vectors
+  /// \sa vdatafile Tree output file streams
   void createTrees();
+  /// Resize 3D Matrix for tree data to be collected during the simulation
+  /// Data will be stored in an HDF5 file after simulation.
+  /// \pre Number of simulation years and trees as well as number of data columns are known
+  /// \post 3D Matrix filled with 0:s and can be used to enter tree data
+  /// \sa createTrees  parseCommandLine
+  /// \sa TREE_DATA_COLUMN_NAMES
+  void resizeTreeDataMatrix();
   void initializeTrees();
   void initializeVoxelSpace();
   void initializeFunctions();
@@ -101,19 +125,61 @@ public:
   void setTreeLocations();
   void photosynthesis(TREE& t);
   void respiration(TREE& t);
+  /// \brief Collect data before growth
+  ///
+  /// Collect tree data for sapwood mass, foliage mass and root mass
+  /// \param t tree
+  /// \param i position of the tree in the tree vector
+  /// \tparam TREE Lignum tree
+  /// \sa wsapwood wfoliage and wroot vectors
+  /// \sa vtree Tree vector
   void collectDataBeforeGrowth(TREE& t,unsigned int i);
+  /// Collect tree data after growth and update data for HDF5 file
+  /// \param t The tree
+  /// \param year Simulation year (i.e. iteration)
+  /// \sa  vtree hdf5_tree_data  wsapwood wfoliage wroot ws_after_senescence
+  void collectDataAfterGrowth(const int year);
   void treeAging(TREE& t);
   double collectSapwoodMass(TREE& t);
   void setSapwoodDemandAtJunction(TREE& t);
+  /// \brief Allocation of photosynthates to growth.
+  /// \param t Lignum tree
+  /// \param verbose Verbose output
   bool allocation(TREE& t,bool verbose);
-  void writeOutput(TREE& t,unsigned int tree_n,int iteration);
+  /// \brief Output of simulation to files.
+  ///
+  /// Write stand level data, target tree data, crown limit data, Fip data and the target tree xml file.
+  /// \sa writeOutput writeCrownLimitData writeTreeToXMLFile writeFip
+  void output();
+  /// \brief Tree level output.
+  ///
+  /// Write tree level output to its file. 
+  /// \param t The tree
+  /// \param tree_n Tree position in the tree vector
+  /// \param iter Current iteration year in the similation
+  /// \sa vdatafile Vector for output files for each tree
+  void writeOutput(TREE& t,unsigned int tree_n,int iter);
   void writeSensitivityAnalysisData(TREE& t);
+  /// \brief Write crown limit data to study crown rise.
+  /// \param t The tree
+  /// \param iteration Current iteration year in the similation
   void writeCrownLimitData(TREE& t,int iteration);
+  /// \brief Write voxel space content (voxels)
+  /// \param t The tree 
   void writeVoxels(TREE& t);
+  /// \brief Write tree to file.
+  /// \param t The tree
+  /// \param age Tree age
+  /// \param interval The write interval
+  /// \pre age mod interval = 0
   void writeTreeToXMLFile(TREE& t,int age,int interval)const;
   void writeBranchInformation(TREE& t,const string& file)const;
   void writeProductionBalance(TREE& t,const string& file)const;
-  //vertical distribution of fip
+  /// \brief Vertical distribution of fip
+  /// \param t The tree
+  /// \param interval The write interval
+  /// \pre Tree age mod interval = 0 and !fipfile.empty()
+  /// \sa fipfile
   void writeFip(TREE& t,int interval)const;
   void prune();
   void printVariables()const;
@@ -130,17 +196,25 @@ public:
       return *(vtree[target_tree]);}
   int getTargetTreePosition()const{return (int)target_tree;}
   int getIterations()const{return iterations;}
+  int getIterations() {return iterations;}
+  TMatrix3D<double>& getHDF5TreeData(){return hdf5_tree_data;} 
   void setVoxelSpaceAndBorderForest();
   void calculateRadiation();
   StandDescriptor<TREE>& getStand() {return stand;}
   vector<TREE*>& getTrees() {return  vtree;}
   void increaseXi();
+  ///\brief Photosynthesis, respiration, tree aging and data collection.
   void photosynthesisAndRespiration();
   void evaluateStandVariables();
   void createNewSegments();
+  /// \brief Allocation of net photosynthates to growth.
+  ///
+  /// Also responsible of keeping record of tree death.
+  /// Dead trees are removed from the list of trees, L-systems
+  /// and from the vectors of collected data.
+  /// \sa vtree vlsystem locations
+  /// \sa wsapwood wfoliage wroot ws_after_senescence vdatafile
   void allocationAndGrowth();
-  void output();
-  int getIterations() {return iterations;}
   int getNumberOfTrees() {return no_trees;}
   void setYear(const int& y) {year = y;}
   void setHPrev(){
@@ -151,18 +225,19 @@ private:
   vector<TREE*> vtree; ///< Vector of trees
   vector<LSYSTEM*> vlsystem; ///< Vector of L-systems, one for each tree
   vector<pair<double,double> > locations; ///< Positions of trees
-  vector<ofstream*> vdatafile;
+  vector<ofstream*> vdatafile;///< Vector of output files (as file streams) for each tree. 
   VoxelSpace *vs; ///< The voxel space spanning the forest
   StandDescriptor<TREE> stand; ///< Class to handle and print stand level quantities
   BorderForest border_forest;  ///< Homogeneous forest surrounding forest of individual trees.
+  TMatrix3D<double> hdf5_tree_data; ///< 3D array[years][ntrees][ndata_cols] for trees in the stand,
+                            ///< dimensions will be known after trees are generated.
   bool verbose;
   bool bracket_verbose;
   int iterations; ///< Number of years simulation goes on.
-  int start_voxel_calculation; ///< NOT IN USE CURRENTLY!
-  
+  int start_voxel_calculation; ///< NOT IN USE CURRENTLY!  
   ///
   /// \brief Division of shoot foliage in dumping it to VoxelSpace
-
+  ///
   /// Shoot is split in num_parts and foliage of each part
   /// is dumped to the corresponding voxel box. \sa setVoxelSpaceAndBorderForest
   int num_parts;
@@ -193,7 +268,6 @@ private:
   double wstem; ///< Wood mass in the main axis (stem)
   double wbranches; ///< Wood mass in branches
   double stem_sw; ///< Sapwood mass in the main stem
-
   ///
   /// \brief Photosynthetic production of the tree.
   ///
@@ -240,7 +314,7 @@ private:
   bool writevoxels; ///< If output about the voxelspace \sa writeVoxels
 
   /// \brief If the primary wood proportion (denoted xi) in new shoots increases
-
+  ///
   /// The effect of primary wood for sapwood proportion in new segments is described in
   /// Perttunen et al. 1996. Primary wood proportion = LGPXi LIGNUM parameter, see
   /// stl-lignum/include/LGMSymbols.h \sa increaseXi
@@ -249,7 +323,7 @@ private:
   bool self_thinning;///< NOT IN USE CURRENTLY! If forced self thinning.
 
   /// \brief The function K appears in radiation interception calculation.
-  
+  ///
   /// The K function is defined in Perttunen et al. 1998, Eq. 8
   /// It is in action in stl-lignum/include/ShadingI.h
   /// \sa EvaluateRadiationForCfTreeSegmentInVoxelSpace
@@ -271,9 +345,8 @@ private:
   ofstream* cstand_output; ///< Stream for center stand output
   bool evaluate_border_forest; ///< If border forest in radiation calculations? \sa calculateRadiation
   LGMdouble k_border_conifer;///< Extinction coeffient for border forest conifers \sa calculateRadiation
-  
   /// \brief To keep track of trees that do not grow in height
-
+  ///
   /// If a tree does not grow for a while it is considered dead.
   /// This variable keeps track of non-growing trees. \sa h_prev \sa allocationAndGrowth
   vector<int> no_h;
@@ -281,22 +354,19 @@ private:
   LGMdouble p0_var; ///< Random variation in photosynthetic efficiency between trees. \sa initializeTree
   string stand_file; ///< File name for output of stand values \sa output
   string cstand_file; ///< File name for output of center stand values \sa output
-
-   /// \brief For generation of random variation in lengths of new segments.
-  
+  /// \brief For generation of random variation in lengths of new segments.
+  ///
   /// The variability is controlled with LIGNUM parameter LGPlen_random (see
   /// stl-lignum/include/LGMSymbols.h) \sa SetScotsPineSegmentLength
   LGMdouble seg_len_var; 
   //===============  24.10.2019
-
-  /// \brief If shading in tree's own crown is analyzed with backward ray casting.
-
+  /// \brief Shading in tree's own crown is analyzed with backward ray casting.
+  ///
   /// Backward ray casting (leads to pairwise comparison of shoots) is explained in
   /// Perttunen et al. 1998 and Sievanen et al. 2008. \sa calculateRadiation
   bool pairwise_self;
-
   /// \brief For studying the effects of variation in tree's physiological properties.
-
+  ///
   /// Variation in parameter values makes it possible to study the growth effects of
   /// a) leaf light climate and b) syncronized variation in leaf nitrogen concentration,
   /// leaf mass per area and leaf longevity, shoot length, and shoot leaf area and,
@@ -305,7 +375,7 @@ private:
   bool eero;
 
   /// \brief Variability in the function: shoot growth = f(branching order)
-
+  ///
   /// Shoot growth normally depends on the branching order of the growing shoot.
   /// This function is explained in Sievanen et al. 2018 Eq. 4. This option
   /// varies the function randomly between trees. \sa initializeTrees
@@ -314,9 +384,8 @@ private:
   bool random_branch_angle; ///< Branching angle varies in trees. \sa initializeTrees
   double ba_variation;  ///< Amount of variation in braching angle. \sa random_branch_angle
   //=================== 30.9.2021
-
   /// \brief Shoot growth is controlled by Extended Borchert-Honda mechanism.
-
+  ///
   ///The mechanism is explained in Sievanen et al. 2018 Eqs 6 and 7.
   /// \sa createNewSegments \sa SetScotsPineSegmentLength
   bool growthloop_is_EBH;

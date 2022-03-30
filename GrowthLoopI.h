@@ -3,6 +3,7 @@
 
 ///\file  GrowthLoopI.h
 ///\brief GrowthLoop implementation.
+///
 ///GrowthLoopI.h runs completely in voxel space.
 ///Changes marked with **run-voxel**.
 
@@ -156,10 +157,8 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::parseCommandLine(int argc, char** argv)
   }
   //Check the command line.
   checkCommandLine(argc,argv);
-
-  ///\subsection parse_args Parse arguments
-  ///Parse arguments to `clarg`. Clear the sring before each new argument. \sa `checkCommandLine`
   ///\snippet{lineno} GrowthLoopI.h InitClarg
+  ///Parse arguments to `clarg`. Clear the sring before each new argument. \sa `checkCommandLine`
   ///\internal
   // [InitClarg]
   string clarg;
@@ -567,6 +566,16 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
   }
 }
 
+//Resize the 3D TMatrix3D for HDF5 3D data array  
+template<class TREE, class TS,class BUD, class LSYSTEM>
+void GrowthLoop<TREE,TS,BUD,LSYSTEM>::resizeTreeDataMatrix()
+{
+  int iter = getIterations();
+  int ntrees = getNumberOfTrees();
+  hdf5_tree_data.resize(iter,ntrees,TREE_DATA_COLUMN_NAMES.size());
+  hdf5_tree_data.init(0.0);
+}
+
 template<class TREE, class TS,class BUD, class LSYSTEM>
 void GrowthLoop<TREE, TS,BUD,LSYSTEM>::initializeTrees()
 {
@@ -941,8 +950,8 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::respiration(TREE& t)
 template<class TREE, class TS,class BUD, class LSYSTEM>
 void GrowthLoop<TREE, TS,BUD,LSYSTEM>::collectDataBeforeGrowth(TREE& t,unsigned int i)
 {
-  //To print  consistent P and  respirations we must  collect masses
-  //now before senescense and new growth
+  ///To print  consistent P and  respirations we must  collect masses
+  ///now (before growth) before senescense and new growth
   wroot[i] = GetValue(t,TreeWr);  //root mass
   //Collect foliage 
   double wf = 0.0;
@@ -954,14 +963,100 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::collectDataBeforeGrowth(TREE& t,unsigned 
   wsapwood[i] = ws;
 }
 
+template<class TREE, class TS, class BUD, class LSYSTEM>
+void GrowthLoop<TREE,TS,BUD,LSYSTEM>::collectDataAfterGrowth(const int year)
+{
+  ///Collect data for each tree for a single year to tdafter dictionary (map in STL)
+  ///Add a row for each tree in 3D matrix hdf5_tree_data
+  for (unsigned int tree_num = 0; tree_num < vtree.size(); tree_num++){
+    map<string,double> tdafter;
+    summing bs; // Branch summaries for mean branch.
+    DCLData dcl; //Crown base: Diameter and height
+    TREE& t = *vtree[tree_num];
+    bs = Accumulate(t,bs,Branchmeans());
+    dcl = AccumulateDown(t,dcl,AddBranchWf(),DiameterCrownBase<TS,BUD>());
+    Point tpoint = GetPoint(t);
+    tdafter["X"] = tpoint.getX();
+    tdafter["Y"] = tpoint.getY();
+    tdafter["Z"] = tpoint.getZ();
+    int nsegment=0;
+    tdafter["TreeNseg"]=static_cast<double>(AccumulateDown(t,nsegment,CountTreeSegments<TS,BUD>()));
+    tdafter["TreeCrownVol"] = cv(t);
+    tdafter["TreeH"] = GetValue(t,LGAH);
+    tdafter["TreeDBase"] = GetValue(t,LGADbase);
+    tdafter["TreeDbh"] = GetValue(t,LGADbh);
+    tdafter["TreeDCrownBase"] = dcl.DCrownBase();
+    tdafter["TreeHCrownBase"] = dcl.HCrownBase();
+    tdafter["TreeAsBase"] = GetValue(t,LGAAsbase);
+    tdafter["TreeAsDbh"] = GetValue(t,LGAAsDbh);
+    tdafter["TreeAsCrownBase"] = dcl.ASwCrownBase();
+    double tree_af = 0.0;
+    tdafter["TreeAf"] = Accumulate(t,tree_af,CollectFoliageArea<TS,BUD>());
+    tdafter["AxisVol"] = mav(t);
+    tdafter["TreeP"] = GetValue(t,TreeP);
+    tdafter["TreeM"] = GetValue(t,TreeM);
+    ///\note wroot collected *before* new growth
+    tdafter["Mr_prev"] = GetValue(t,LGPmr)*wroot[tree_num];
+    tdafter["M_above"] = GetValue(t,TreeP)- GetValue(t,LGPmr)*wroot[tree_num];
+    ///\note wsapwood and wfoliage collected *before* new growth
+    tdafter["Ms"] = GetValue(t,LGPms)*wsapwood[tree_num];
+    tdafter["Mf"] = GetValue(t,LGPmf)*wfoliage[tree_num];
+    double wf=0.0;
+    tdafter["Wf"] = Accumulate(t,wf,CollectFoliageMass<TS,BUD>());
+    double wf_new=0.0;
+    tdafter["Wf_new"] = Accumulate(t,wf_new,CollectNewFoliageMass<TS,BUD>());
+    double ws_old=0.0;
+    double ws=0.0;
+    tdafter["Ws"] = Accumulate(t,ws,CollectSapwoodMass<TS,BUD>());
+    tdafter["Ws_old"] = Accumulate(t,ws_old,CollectOldSegmentSapwoodMass<TS,BUD>());
+    ///\note ws_after_senescence vector collected *before* new growth
+    tdafter["Ws_D_growth"] = tdafter["Ws_old"]-ws_after_senescence[tree_num];
+    double ws_new=0.0;
+    tdafter["Ws_new"] = Accumulate(t,ws_new,CollectNewSegmentSapwoodMass<TS,BUD>());
+    tdafter["Ws_D_growth+Ws_new"] = tdafter["Ws_D_growth"]+tdafter["Ws_new"];
+    tdafter["Wr"] = GetValue(t,TreeWr);
+    tdafter["Wr_new"] = GetValue(t,LGPar)*tdafter["Wf_new"];
+    list<TreeCompartment<TS,BUD>*>& ls = GetTreeCompartmentList(GetAxis(t));
+    //GetTopQin located in Pine.h
+    double qin_top=0.0;
+    tdafter["QinTop"] = accumulate(ls.begin(),ls.end(),qin_top,GetTopQin<TS,BUD>());
+    tdafter["QinMax"] = GetValue(t,TreeQinMax);
+    tdafter["QinTop/QinMax"] =tdafter["QinTop"]/tdafter["QinMax"];
+    double qabs=0.0;
+    tdafter["Qabs"] = Accumulate(t,qabs,CollectQabs<TS,BUD>());
+    tdafter["Qabs/DiffBallSensor"] = tdafter["Qabs"]/(GetFirmament(t).diffuseBallSensor()*tdafter["TreeAf"]);
+    tdafter["Wf_P"] = wfoliage[tree_num];
+    tdafter["TreeP/Wf_P"] = tdafter["TreeP"]/tdafter["Wf_P"];
+    double aseg0 = 0.0;
+    ///\note SurfaceAreaOfNewSegments already implemented as a concreate ScotsPineSegment type.
+    tdafter["ASeg0"] = Accumulate(t,aseg0,SurfaceAreaOfNewSegments());
+    double wood = 0.0;
+    tdafter["W"] = Accumulate(t,wood,CollectWoodMass<TS,BUD>());
+    tdafter["Wstem"] = GetValue(t,LGAWstem);
+    tdafter["Wbranch"] = tdafter["W"]-tdafter["Wstem"];
+    double ws_stem=0.0;
+    tdafter["Ws_stem"] = Accumulate(t,ws_stem,CollectStemSapwoodMass<TS,BUD>());
+    tdafter["MeanBranch_SumD^2"] = bs.d2;
+    tdafter["MeanBranch_SumL"] = bs.lsum;
+    tdafter["MeanBranch_SumD^2*L"] = bs.d2l;
+    tdafter["MeanBranch_SumD^2*L/SumD^2"] = bs.d2l/bs.d2;
+    tdafter["MeanBranch_Nbranch"] = bs.n_br;
+    tdafter["MeanBranch_SumL/Nbranch"] = bs.lsum/bs.n_br;
+    tdafter["lambda"] = lambda;
+    //Single row for for the tree
+    for (unsigned int i=0; i < TREE_DATA_COLUMN_NAMES.size(); i++){
+      hdf5_tree_data[year][tree_num][i]=tdafter[TREE_DATA_COLUMN_NAMES[i]];
+    }
+  }
+}
+
 template<class TREE, class TS,class BUD, class LSYSTEM>
 void GrowthLoop<TREE, TS,BUD,LSYSTEM>::treeAging(TREE& t)
 {
-  //TreeAging takes care of senescence in segments (above ground part)
-    ForEach(t,TreeAging<TS,BUD>()); 
-    //Root mortality
-    SetValue(t,TreeWr, 
-	     GetValue(t,TreeWr)-GetValue(t,LGPsr)*GetValue(t,TreeWr));
+  ///TreeAging takes care of senescence in segments (above ground part) and root mortality.
+  ForEach(t,TreeAging<TS,BUD>()); 
+  SetValue(t,TreeWr, 
+	   GetValue(t,TreeWr)-GetValue(t,LGPsr)*GetValue(t,TreeWr));
 }
 
 template<class TREE, class TS,class BUD, class LSYSTEM>
@@ -980,15 +1075,16 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::setSapwoodDemandAtJunction(TREE& t)
    PropagateUp(t,alku,SetSapwoodDemandAtJunction());
 }
 
-//========================================================================
-// allocation() does the allocation, that is, finding value of lambda that
-// makes demand to match available resources: P _ M = use in growth
-// with the aid of iteration.
-// In the case P - M < 0 or iteration cannot find solution, the tree
-// can be considered to be dead, and  allocation() returns false,
-// otherwise it returns true.
-//========================================================================
 
+/// The Allocation of photosynthates P after respiration costs M,  that is,
+/// finding value of lambda parameter that makes demand, P-M, to match available
+/// resources G with the aid of iteration:
+///    P - M = G 
+/// that can be use in growth.
+///
+/// In the case P - M < 0 or iteration cannot find solution, the tree
+/// can be considered to be dead, and  allocation returns false,
+/// otherwise it returns true.
 template<class TREE, class TS,class BUD, class LSYSTEM>
 bool GrowthLoop<TREE, TS,BUD,LSYSTEM>::allocation(TREE& t, bool verbose)
 
@@ -1202,11 +1298,35 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
 	  
 }
 
-//This method will print various data of a tree into a given file. If you call this method
-//after GrowthLoop::allocationAndGrowth() then the tree has newly created segments. The GrowthLoop::treeP
-//and GrowthLoop::treeM 
+/// \tparam TREE Tree
+/// \tparam TS Tree segment
+/// \tparam BUD Bud
+/// \tparam LSYSTEM L-system
 template<class TREE, class TS,class BUD, class LSYSTEM>
-  void GrowthLoop<TREE, TS,BUD,LSYSTEM>::writeOutput(TREE& t, unsigned int tree_n,int iter)
+void GrowthLoop<TREE, TS,BUD,LSYSTEM>::output()
+{
+  if(write_output) {
+    *stand_output << year << " ";
+    stand.writeOutput(*stand_output);
+    *cstand_output << year << " ";
+    center_stand.writeOutput(*cstand_output);
+    //    for (unsigned int k = 0; k < (unsigned int)no_trees; k++){
+    //      TREE* t = vtree[];
+    TREE* t = vtree[target_tree];
+    //Annual (time  step) output: tree, its position  in the vector
+    //and iteration
+    writeOutput(*t,target_tree,year);
+    writeCrownLimitData(*t,year);
+    //      writeVoxels(*t);
+    writeTreeToXMLFile(*t,GetValue(*t,LGAage),interval);
+    writeFip(*t,interval);
+  }
+}
+
+/// If you call this method after GrowthLoop::allocationAndGrowth() then the tree has newly created segments.
+/// The GrowthLoop::treeP  and GrowthLoop::treeM.
+template<class TREE, class TS,class BUD, class LSYSTEM>
+void GrowthLoop<TREE, TS,BUD,LSYSTEM>::writeOutput(TREE& t, unsigned int tree_n,int iter)
 {
   if (to_file){
     
@@ -1582,9 +1702,9 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
 
 //end of run-voxel
 
-//===================================================================
-// Photosynthesis and respiration & collection of some mass variables
-//===================================================================
+
+/// Photosynthesis and respiration
+/// Tree aging and collection of some mass variables
 template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::photosynthesisAndRespiration()
 {
@@ -1605,10 +1725,9 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
   }
 }
 
-//===================================================================
-// Create new segments and set some some variables
-// NOTE that the sizes of these new segments will be iterated later
-//===================================================================
+
+/// Create new segments and set some some variables
+/// \note The sizes of these new segments will be iterated later
 template<class TREE, class TS,class BUD, class LSYSTEM>
 void GrowthLoop<TREE, TS,BUD,LSYSTEM>::createNewSegments()
 {
@@ -1688,46 +1807,11 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::createNewSegments()
   }
 }
 
-//=====================================================================
-// Evaluate stand variables of stand and center_stand
-//=====================================================================
-
+/// Evaluate stand variables of stand and center_stand
 template<class TREE, class TS,class BUD, class LSYSTEM>
-  void GrowthLoop<TREE, TS,BUD,LSYSTEM>::evaluateStandVariables() {
-
+void GrowthLoop<TREE, TS,BUD,LSYSTEM>::evaluateStandVariables() {
   stand.evaluateStandVariables(vtree, locations);
   center_stand.evaluateStandVariables(vtree, locations);
-}
-
-
-
-
-//===================================================================
-// Output all
-//===================================================================
-template<class TREE, class TS,class BUD, class LSYSTEM>
-  void GrowthLoop<TREE, TS,BUD,LSYSTEM>::output()
-{
-  if(write_output) {
-      *stand_output << year << " ";
-      stand.writeOutput(*stand_output);
-
-      *cstand_output << year << " ";
-      center_stand.writeOutput(*cstand_output);
-
-
-      //    for (unsigned int k = 0; k < (unsigned int)no_trees; k++){
-      //      TREE* t = vtree[];
-      TREE* t = vtree[target_tree];
-      //Annual (time  step) output: tree, its position  in the vector
-      //and iteration
-      writeOutput(*t,target_tree,year);
-      writeCrownLimitData(*t,year);
-      //      writeVoxels(*t);
-      writeTreeToXMLFile(*t,GetValue(*t,LGAage),interval);
-      writeFip(*t,interval);
-      //    }
-  }
 }
 
 bool comp_height(pair<unsigned int,LGMdouble> p1, pair<unsigned int,LGMdouble> p2) {
