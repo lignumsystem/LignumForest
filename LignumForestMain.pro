@@ -6,9 +6,14 @@ CONFIG += qt
 QT += xml
 TEMPLATE = app
 TARGET = lig-forest 
-INCLUDEPATH += . include ../c++adt/include ../stl-lignum/include ../Firmament/include ../stl-voxelspace/include ../LEngine/include ../Pine ../XMLTree  ../Graphics
+#Silence "depricated" warnings from OpenGL in Graphics library
+DEFINES += GL_SILENCE_DEPRECATION
+INCLUDEPATH += /opt/local/include . include  ../c++adt/include ../stl-lignum/include ../Firmament/include ../stl-voxelspace/include ../LEngine/include
+INCLUDEPATH += ../Pine ../XMLTree  ../Graphics
 DEPENDPATH += $$INCLUDEPATH
-LIBS += -L../c++adt/lib -L../stl-lignum/lib -L../Firmament/lib -L../LEngine/lib -L../stl-voxelspace/lib   -lsky -lL -lvoxel -lLGM  -lcxxadt 
+LIBS += -L/opt/local/lib -L../c++adt/lib -L../stl-lignum/lib -L../Firmament/lib -L../LEngine/lib -L../stl-voxelspace/lib
+LIBS += -lsky -lL -lvoxel -lLGM  -lcxxadt
+LIBS += -lhdf5_cpp -lhdf5 -lz -ldl -lm
 # Input
 unix{
    system(../LEngine/bin/l2c pine-em98.L pine-em98.cpp){
@@ -41,6 +46,7 @@ HEADERS += include/CalculateLight.h \
            include/SomeFunctors.h \
            include/Sensitivity.h \
            include/TreeLocations.h \
+           include/TreeDataAfterGrowth.h\
 	   GrowthLoop.h \
            include/BorderForest.h \
            include/StandDescriptor.h \
