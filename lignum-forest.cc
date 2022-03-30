@@ -110,7 +110,6 @@ typedef GrowthLoop<ScotsPineTree,ScotsPineSegment,ScotsPineBud,
 /// @{
 /// Content of the main program to run Growth loop for LignumForest.
 /// @}
-
 /// \ingroup groupmain
 /// \fn int main(int argc, char** argv)
 /// \brief Main function for growth.
@@ -120,9 +119,9 @@ typedef GrowthLoop<ScotsPineTree,ScotsPineSegment,ScotsPineBud,
 /// \param argv Vector of command line argument strings.
 int main(int argc, char** argv)
 {
-  /// \subsection varsg Growth loop variables
-  /// \internal
+  /// **Growth loop variables**
   /// \snippet{lineno} lignum-forest.cc Vars
+  /// \internal
   // [Vars]
   Sensitivity<ScotsPineSegment,ScotsPineBud> sensitivity;                                                           
   GrowthLoop<ScotsPineTree,ScotsPineSegment,ScotsPineBud,Pine::LSystem<ScotsPineSegment,ScotsPineBud,PBNAME,PineBudData> > gloop;
@@ -144,7 +143,7 @@ int main(int argc, char** argv)
   // [Mf]
   /// \endinternal
   
-  /// \subsection initf  Initialize forest
+  /// **Initialize forest**
   /// \snippet{lineno} lignum-forest.cc InitForest
   /// \internal
   // [InitForest]
@@ -157,13 +156,14 @@ int main(int argc, char** argv)
   gloop.printTreeLocations(0);
   //initializeTrees reads in/sets a number of parameters and functions for each tree
   gloop.initializeTrees();
+  gloop.resizeTreeDataMatrix();
   gloop.initializeVoxelSpace();
   gloop.initializeGrowthLoop();    //Sets initial values of some variables in trees
   // [InitForest]
   /// \endinternal
   
 
-  /// \subsection growthloop Growth loop
+  /// **Growth loop**
   /// \snippet{lineno} lignum-forest.cc GLoop
   /// \internal
   // [GLoop]
@@ -183,15 +183,17 @@ int main(int argc, char** argv)
     gloop.photosynthesisAndRespiration();
     gloop.createNewSegments();
     gloop.allocationAndGrowth();
-    /// Command line  -writeOutput exists
-    gloop.output();   
-    /// Prune dead parts from the trees 
+    // Command line  -writeOutput exists
+    gloop.output();
+    // Prune dead parts from the trees 
     gloop.prune();
-  } /// End of  for(year = 0; ...)
+    //collectDataAfterGrowth collects data for HDF5 file.
+    gloop.collectDataAfterGrowth(year);
+  } // End of  for(year = 0; ...)
   // [GLoop]
   /// \endinternal
-  
-  /// \subsection aftegrowth After growth
+
+  /// **After growth collect and write results**
   /// \snippet{lineno} lignum-forest.cc AGrowth
   /// \internal
   // [AGrowth]
@@ -204,6 +206,10 @@ int main(int argc, char** argv)
   gloop.writeFip(gloop.getTargetTree(),1);
   gloop.writeBranchInformation(gloop.getTargetTree(),"BranchInformation.dat");
   gloop.writeProductionBalance(gloop.getTargetTree(),"ProductionBalance.dat");
+  TMatrix3D<double>& hdf5_data = gloop.getHDF5TreeData();
+  LGMHDF5File hdf5_file("HDF5ForestData.h5");
+  hdf5_file.createDataSet(TREE_DATA_DATASET_NAME,hdf5_data.rows(),hdf5_data.cols(),hdf5_data.zdim(),hdf5_data);
+  hdf5_file.createColumnNames(TREE_DATA_DATASET_NAME,TREE_DATA_COLUMN_ATTRIBUTE_NAME,TREE_DATA_COLUMN_NAMES);
   // [AGrowth]
   /// \endinternal
   
