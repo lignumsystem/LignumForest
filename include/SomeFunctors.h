@@ -106,25 +106,35 @@ public:
   }
 };
 
+/// \brief Collect the *sums* of main axis branch data
+///
+/// Collect the sums of branch diameters, branch lengths
+/// and the number of branches to calculate branch means.
+/// \sa Accumulate Branchmeans
 class summing {
  public:
   summing():d2(0.0),d2l(0.0),lsum(0.0),n_br(0){}
-  double d2;
-  double d2l;
-  double lsum;
-  int n_br;
+  double d2;///< The diameter of branch (the first segment in Axis)
+  double d2l;///< Defined as d2*L, L=branch length
+  double lsum;///< Branch length as the sum of its segments
+  int n_br; ///< Number of branches 
 };
   
-
+///\brief Calculate data for mean branch
 class Branchmeans{
  public:
-  summing& operator ()(summing&, TreeCompartment<ScotsPineSegment,
+  /// The operator to be used  with Accumulate and summing
+  /// \param id The identity element for Accumulate
+  /// \param tc The tree segment for Accumulate
+  /// \note Implemented in branchfunctor.cc
+  summing& operator ()(summing& id, TreeCompartment<ScotsPineSegment,
 		       ScotsPineBud>* ts)const;
 };
 
-//Set  STAR  mean based  on  segment age.  See  Smolander  et al  1994
-//TreePhys.    Simply   initialize   the  functor   with   appropriate
-//ParametricCurve and use ForEach.
+///\brief Set  STAR  mean based  on  segment age.
+///
+/// See  Smolander  et al  1994 TreePhys. Simply   initialize   the  functor
+/// with   appropriate ParametricCurve and use ForEach.
 template <class TS, class BUD>
 class SetStarMean{
 public:

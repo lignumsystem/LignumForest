@@ -5,10 +5,12 @@
 #include <mathsym.h>
 #include <vector>
 #include <utility> 
-
+///\file TreeLocations.h
 using namespace std;
 using namespace cxxadt;
 
+/// Representation of a circular gap: <<x,y>,r>
+/// where x,y is the center of gap of raius r
 typedef pair<pair<double,double>,double> ForestGap;
 
 
