@@ -11,7 +11,8 @@
 const string TREE_DATA_DATASET_NAME("ForestTreeData");
 /// HDF5 attribute name for tree data (i.e. the dataset) column names 
 const string TREE_DATA_COLUMN_ATTRIBUTE_NAME("TreeDataColumnNames");
-/// Column names for the HDF5 file for tree data. \sa collectDataAfterGrowth
+/// Column names for the HDF5 file for tree data.
+/// \sa collectDataAfterGrowth TREE_DATA_COLUMN_NAMES 
 const array<string,51> tdcn={"TreeId","X","Y","Z","TreeNseg","TreeCrownVol","TreeH","TreeDBase","TreeDbh","TreeDCrownBase",
   "TreeHCrownBase","TreeAsBase","TreeAsDbh", "TreeAsCrownBase","TreeAf","AxisVol","TreeP","TreeM","Mr_prev","M_above",
   "Ms","Mf","Wf","Wf_new","Ws","Ws_old","Ws_D_growth","Ws_new","Ws_D_growth+Ws_new", "Wr","Wr_new",
