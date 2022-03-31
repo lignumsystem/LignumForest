@@ -525,7 +525,8 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
 		       "sf.fun","fapical.fun","fgo.fun",
 		       "fsapwdown.fun","faf.fun","fna.fun", "fwd.fun",
 		       "flr.fun","ebh.fun","bvf.fun");
-
+    //Set the TreeId
+    SetValue(*t,TreeId,static_cast<double>(i));
     if (verbose){
       cout << "Created a tree at: " << p.first << " " << p.second <<endl;
     }
@@ -976,6 +977,7 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::collectDataAfterGrowth(const int year)
     bs = Accumulate(t,bs,Branchmeans());
     dcl = AccumulateDown(t,dcl,AddBranchWf(),DiameterCrownBase<TS,BUD>());
     Point tpoint = GetPoint(t);
+    tdafter["TreeId"] = GetValue(t,TreeId);
     tdafter["X"] = tpoint.getX();
     tdafter["Y"] = tpoint.getY();
     tdafter["Z"] = tpoint.getZ();
