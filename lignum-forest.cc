@@ -154,8 +154,10 @@ int main(int argc, char** argv)
   gloop.setTreeLocations();
   gloop.createTrees();  //to locations set above
   gloop.printTreeLocations(0);
-  //initializeTrees reads in/sets a number of parameters and functions for each tree
+  //InitializeTrees reads in/sets a number of parameters and functions for each tree
   gloop.initializeTrees();
+  //Resize the 3D data array for HDF5 file to right dimensions
+  //Simulation years and number of trees are known
   gloop.resizeTreeDataMatrix();
   gloop.initializeVoxelSpace();
   gloop.initializeGrowthLoop();    //Sets initial values of some variables in trees
