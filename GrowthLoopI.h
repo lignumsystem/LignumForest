@@ -976,6 +976,7 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::collectDataAfterGrowth(const int year)
     TREE& t = *vtree[tree_num];
     bs = Accumulate(t,bs,Branchmeans());
     dcl = AccumulateDown(t,dcl,AddBranchWf(),DiameterCrownBase<TS,BUD>());
+    double crown_volume = cv(t);//Crown volume
     Point tpoint = GetPoint(t);
     tdafter["TreeId"] = GetValue(t,TreeId);
     tdafter["X"] = tpoint.getX();
@@ -1018,6 +1019,7 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::collectDataAfterGrowth(const int year)
     tdafter["Ws_D_growth+Ws_new"] = tdafter["Ws_D_growth"]+tdafter["Ws_new"];
     tdafter["Wr"] = GetValue(t,TreeWr);
     tdafter["Wr_new"] = GetValue(t,LGPar)*tdafter["Wf_new"];
+    tdafter["CrownVol"] = crown_volume;
     list<TreeCompartment<TS,BUD>*>& ls = GetTreeCompartmentList(GetAxis(t));
     //GetTopQin located in Pine.h
     double qin_top=0.0;

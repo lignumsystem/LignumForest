@@ -13,10 +13,10 @@ const string TREE_DATA_DATASET_NAME("ForestTreeData");
 const string TREE_DATA_COLUMN_ATTRIBUTE_NAME("TreeDataColumnNames");
 /// Column names for the HDF5 file for tree data.
 /// \sa GrowthLoop::collectDataAfterGrowth TREE_DATA_COLUMN_NAMES 
-const array<string,51> tdcn={
+const array<string,52> tdcn={
   "TreeId","X","Y","Z","TreeNseg","TreeCrownVol","TreeH","TreeDBase","TreeDbh","TreeDCrownBase",
   "TreeHCrownBase","TreeAsBase","TreeAsDbh", "TreeAsCrownBase","TreeAf","AxisVol","TreeP","TreeM","Mr_prev","M_above",
-  "Ms","Mf","Wf","Wf_new","Ws","Ws_old","Ws_D_growth","Ws_new","Ws_D_growth+Ws_new", "Wr","Wr_new",
+  "Ms","Mf","Wf","Wf_new","Ws","Ws_old","Ws_D_growth","Ws_new","Ws_D_growth+Ws_new", "Wr","Wr_new","CrownVol",
   "QinTop","QinMax","QinTop/QinMax","Qabs","Qabs/(DiffBallSensor*TreeAf)","Wf_P","TreeP/Wf_P","ASeg0","W","Wstem","Wbranch","Ws_stem","Nsegment",
   "MeanBranch_SumD^2","MeanBranch_SumL","MeanBranch_SumD^2*L","MeanBranch_SumD^2*L/SumD^2","MeanBranch_Nbranch","MeanBranch_SumL/Nbranch","lambda"
 };
