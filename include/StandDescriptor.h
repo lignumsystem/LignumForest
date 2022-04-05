@@ -87,7 +87,7 @@ public:
    
 
 private:
-  Point corner_ll, corner_ur; ///Lower left and upper right corners
+  Point corner_ll, corner_ur; ///< Lower left and upper right corners
   LGMdouble dbh_mean, hdom, stemVolume;
   LGMdouble minCrownLimit, standBasalArea;
   LGMdouble maxCrownLimit, meanCrownLimit;
@@ -96,7 +96,7 @@ private:
   LGMdouble minDBH, maxDBH;
   int  noTrees, age;
   LGMdouble minH, maxH, LAI;
-  LGMdouble area;  ///Area in hectars
+  LGMdouble area;  ///< Area in hectars
   LGMdouble dbase_mean;
   LGMdouble minDbase, maxDbase;
   LGMdouble Wf;
