@@ -110,12 +110,14 @@ public:
   /// \sa no_h h_prev wsapwood wfoliage wroot ws_after_senescence Data vectors
   /// \sa vdatafile Tree output file streams
   void createTrees();
-  /// Resize 3D Matrix for tree data to be collected during the simulation
+  /// Resize 3D array for tree data to be collected during the simulation
+  /// Resize 2D array for stand data to be collected during the simulation
   /// Data will be stored in an HDF5 file after simulation.
   /// \pre Number of simulation years and trees as well as number of data columns are known
-  /// \post 3D Matrix filled with 0:s and can be used to enter tree data
+  /// \post 3D array and 2D array filled with 0:s and can be used to enter tree data
   /// \sa createTrees  parseCommandLine
-  /// \sa TREE_DATA_COLUMN_NAMES
+  /// \sa TREE_DATA_COLUMN_NAMES STAND_DATA_COLUMN_NAMES
+  /// \sa hdf5_tree_data hdf5_stand_data hdf5_center_stand_data
   void resizeTreeDataMatrix();
   void initializeTrees();
   void initializeVoxelSpace();
@@ -137,7 +139,8 @@ public:
   /// Collect tree data after growth and update data for HDF5 file
   /// \param t The tree
   /// \param year Simulation year (i.e. iteration)
-  /// \sa  vtree hdf5_tree_data  wsapwood wfoliage wroot ws_after_senescence
+  /// \pre collectDataBeforeGrowth StandDescriptor::evaluateStandVariables
+  /// \sa  vtree hdf5_tree_data  hdf5_stand_data hdf5_center_stand_data wsapwood wfoliage wroot ws_after_senescence
   void collectDataAfterGrowth(const int year);
   void treeAging(TREE& t);
   double collectSapwoodMass(TREE& t);
@@ -197,7 +200,9 @@ public:
   int getTargetTreePosition()const{return (int)target_tree;}
   int getIterations()const{return iterations;}
   int getIterations() {return iterations;}
-  TMatrix3D<double>& getHDF5TreeData(){return hdf5_tree_data;} 
+  TMatrix3D<double>& getHDF5TreeData(){return hdf5_tree_data;}
+  TMatrix2D<double>& getHDF5StandData(){return hdf5_stand_data;}
+  TMatrix2D<double>& getHDF5CenterStandData(){return hdf5_center_stand_data;}
   void setVoxelSpaceAndBorderForest();
   void calculateRadiation();
   StandDescriptor<TREE>& getStand() {return stand;}
@@ -231,6 +236,8 @@ private:
   BorderForest border_forest;  ///< Homogeneous forest surrounding forest of individual trees.
   TMatrix3D<double> hdf5_tree_data; ///< 3D array[years][ntrees][ndata_cols] for trees in the stand,
                             ///< dimensions will be known after trees are generated.
+  TMatrix2D<double> hdf5_stand_data; ///< 2D array[years][ndata_cols] for stand level data \sa stand
+  TMatrix2D<double> hdf5_center_stand_data; ///< 2D array[years][ndata_cols] for center stand level data \sa center_stand
   bool verbose;
   bool bracket_verbose;
   int iterations; ///< Number of years simulation goes on.

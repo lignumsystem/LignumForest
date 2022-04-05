@@ -567,7 +567,8 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
   }
 }
 
-//Resize the 3D TMatrix3D for HDF5 3D data array  
+///Resize the 3D TMatrix3D for HDF5 3D data array
+///Resize the 2D TMatrix2D for HDF5 2D data array
 template<class TREE, class TS,class BUD, class LSYSTEM>
 void GrowthLoop<TREE,TS,BUD,LSYSTEM>::resizeTreeDataMatrix()
 {
@@ -575,6 +576,10 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::resizeTreeDataMatrix()
   int ntrees = getNumberOfTrees();
   hdf5_tree_data.resize(iter,ntrees,TREE_DATA_COLUMN_NAMES.size());
   hdf5_tree_data.init(0.0);
+  hdf5_stand_data.resize(iter,STAND_DATA_COLUMN_NAMES.size());
+  hdf5_stand_data.init(0);
+  hdf5_center_stand_data.resize(iter,STAND_DATA_COLUMN_NAMES.size());
+  hdf5_center_stand_data.init(0);
 }
 
 template<class TREE, class TS,class BUD, class LSYSTEM>
@@ -1051,6 +1056,51 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::collectDataAfterGrowth(const int year)
     for (unsigned int i=0; i < TREE_DATA_COLUMN_NAMES.size(); i++){
       hdf5_tree_data[year][tree_num][i]=tdafter[TREE_DATA_COLUMN_NAMES[i]];
     }
+  }//for loop
+  /// Collect data for 2D arrays from forest stand
+  map<string,double> sdafter;//stand data
+  map<string,double> csdafter;//center stand data
+  sdafter["Year"] = year;
+  csdafter["Year"] = year;
+  sdafter["10000*N_trees/StandArea"] = 10000.0*stand.getNoTrees()*stand.getArea();
+  csdafter["10000*N_trees/StandArea"] = 10000.0*center_stand.getNoTrees()*stand.getArea();
+  sdafter["Dbase_mean"] = stand.getMeanDbase();
+  csdafter["Dbase_mean"] = center_stand.getMeanDbase();
+  sdafter["Dbase_min"] = stand.getMinDbase();
+  csdafter["Dbase_min"] = center_stand.getMinDbase();
+  sdafter["Dbase_max"] = stand.getMaxDbase();
+  csdafter["Dbase_max"] = center_stand.getMaxDbase();
+  sdafter["Dbh_mean"] = stand.getMeanDbh();
+  csdafter["Dbh_mean"] = center_stand.getMeanDbh();
+  sdafter["Dbh_min"] = stand.getMinDBH();
+  csdafter["Dbh_min"] = center_stand.getMinDBH();
+  sdafter["Dbh_max"] = stand.getMaxDBH();
+  csdafter["Dbh_max"] = center_stand.getMaxDBH();
+  sdafter["H_mean"] = stand.getMeanHeight();
+  csdafter["H_mean"] = center_stand.getMeanHeight();
+  sdafter["H_min"] = stand.getMinH();
+  csdafter["H_min"] = center_stand.getMinH();
+  sdafter["H_max"] = stand.getMaxH();
+  csdafter["H_max"] = center_stand.getMaxH();
+  sdafter["StandBasalArea"] = stand.getStandBasalArea();
+  csdafter["StandBasalArea"] = center_stand.getStandBasalArea();
+  sdafter["StandBasalAreaCrownBase"] = stand.getBasalAreaAtCrownBase();
+  csdafter["StandBasalAreaCrownBase"] = center_stand.getBasalAreaAtCrownBase();
+  sdafter["StandStemVol"] = stand.getStemVolume();
+  csdafter["StandStemVol"] = center_stand.getStemVolume();
+  sdafter["LAI"] = stand.getLAI();
+  csdafter["LAI"] = center_stand.getLAI();
+  sdafter["Stand_Wf"] = stand.getWfMass(); 
+  csdafter["Stand_Wf"] = center_stand.getWfMass();
+  sdafter["CrownLimit_mean"] = stand.getMeanCrownLimit();
+  csdafter["CrownLimit_mean"] = center_stand.getMeanCrownLimit();
+  sdafter["Area"] = stand.getArea();
+  csdafter["Area"] = center_stand.getArea();
+  sdafter["NoTrees"] = stand.getNoTrees();
+  csdafter["NoTrees"] = center_stand.getNoTrees();
+  for (unsigned int i = 0; i < STAND_DATA_COLUMN_NAMES.size(); i++){
+    hdf5_stand_data[year][i] = sdafter[STAND_DATA_COLUMN_NAMES[i]];
+    hdf5_center_stand_data[year][i] = csdafter[STAND_DATA_COLUMN_NAMES[i]];
   }
 }
 

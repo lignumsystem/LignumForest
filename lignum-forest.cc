@@ -156,7 +156,7 @@ int main(int argc, char** argv)
   gloop.printTreeLocations(0);
   //InitializeTrees reads in/sets a number of parameters and functions for each tree
   gloop.initializeTrees();
-  //Resize the 3D data array for HDF5 file to right dimensions
+  //Resize the 3D and 2D data arrays for HDF5 file to right dimensions
   //Simulation years and number of trees are known
   gloop.resizeTreeDataMatrix();
   gloop.initializeVoxelSpace();
@@ -212,6 +212,13 @@ int main(int argc, char** argv)
   LGMHDF5File hdf5_file("HDF5ForestData.h5");
   hdf5_file.createDataSet(TREE_DATA_DATASET_NAME,hdf5_data.rows(),hdf5_data.cols(),hdf5_data.zdim(),hdf5_data);
   hdf5_file.createColumnNames(TREE_DATA_DATASET_NAME,TREE_DATA_COLUMN_ATTRIBUTE_NAME,TREE_DATA_COLUMN_NAMES);
+  TMatrix2D<double>& hdf5_stand_data = gloop.getHDF5StandData();
+  hdf5_file.createDataSet(STAND_DATA_DATASET_NAME,hdf5_stand_data.rows(),hdf5_stand_data.cols(),hdf5_stand_data);
+  hdf5_file.createColumnNames(STAND_DATA_DATASET_NAME,STAND_DATA_COLUMN_ATTRIBUTE_NAME,STAND_DATA_COLUMN_NAMES);
+  TMatrix2D<double>& hdf5_center_stand_data = gloop.getHDF5CenterStandData();
+  hdf5_file.createDataSet(CENTER_STAND_DATA_DATASET_NAME,hdf5_center_stand_data.rows(),hdf5_center_stand_data.cols(),
+			  hdf5_center_stand_data);
+  hdf5_file.createColumnNames(CENTER_STAND_DATA_DATASET_NAME,STAND_DATA_COLUMN_ATTRIBUTE_NAME,STAND_DATA_COLUMN_NAMES);
   // [AGrowth]
   /// \endinternal
   
