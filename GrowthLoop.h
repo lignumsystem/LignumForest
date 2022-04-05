@@ -153,6 +153,9 @@ public:
   ///
   /// Write stand level data, target tree data, crown limit data, Fip data and the target tree xml file.
   /// \sa writeOutput writeCrownLimitData writeTreeToXMLFile writeFip
+  /// \todo HDF5 implementation is advancing. Remove this method when enough data collected. Consult and
+  /// agree with Risto.
+  /// \sa collectDataAfterGrowth
   void output();
   /// \brief Tree level output.
   ///
