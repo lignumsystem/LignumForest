@@ -4,7 +4,7 @@
 #include <vector>
 #include <map>
 #include <SomeFunctors.h>
-///file TreeDataAfterGrowth.h
+///\file TreeDataAfterGrowth.h
 ///\brief Define data structures to be able to write HDF5 data file after simulation.
 
 /// HDF5 Dataset name for stand level data
