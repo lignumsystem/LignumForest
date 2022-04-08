@@ -160,7 +160,10 @@ int main(int argc, char** argv)
   //Simulation years and number of trees are known
   gloop.resizeTreeDataMatrix();
   gloop.initializeVoxelSpace();
-  gloop.initializeGrowthLoop();    //Sets initial values of some variables in trees
+  //Sets initial values of some variables in trees
+  gloop.initializeGrowthLoop();
+  //The 0th Year dimension is used for intial data 
+  gloop.collectDataAfterGrowth(0);
   // [InitForest]
   /// \endinternal
   
@@ -182,6 +185,7 @@ int main(int argc, char** argv)
     gloop.setVoxelSpaceAndBorderForest();
     gloop.calculateRadiation();
     gloop.increaseXi(year);
+    // Currently data collection before new growth and tree aging
     gloop.photosynthesisAndRespiration();
     gloop.createNewSegments();
     gloop.allocationAndGrowth();
@@ -189,8 +193,9 @@ int main(int argc, char** argv)
     gloop.output();
     // Prune dead parts from the trees 
     gloop.prune();
-    //collectDataAfterGrowth collects data for HDF5 file.
-    gloop.collectDataAfterGrowth(year);
+    // collectDataAfterGrowth collects data for HDF5 file. The 0th Year dimension
+    // contains initial data
+    gloop.collectDataAfterGrowth(year+1);
   } // End of  for(year = 0; ...)
   // [GLoop]
   /// \endinternal

@@ -137,6 +137,7 @@ public:
   /// \sa vtree Tree vector
   void collectDataBeforeGrowth(TREE& t,unsigned int i);
   /// Collect tree data after growth and update data for HDF5 file
+  /// \note Intial data is collected before growth loop. Thus the method should be called year=iter+1.
   /// \param year Simulation year (i.e. iteration)
   /// \pre collectDataBeforeGrowth StandDescriptor::evaluateStandVariables
   /// \sa  vtree hdf5_tree_data  hdf5_stand_data hdf5_center_stand_data wsapwood wfoliage wroot ws_after_senescence
