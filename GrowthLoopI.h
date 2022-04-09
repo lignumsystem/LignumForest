@@ -1119,10 +1119,6 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::collectDataAfterGrowth(const int year)
   csdafter["Stand_Wf"] = center_stand.getWfMass();
   sdafter["CrownLimit_mean"] = stand.getMeanCrownLimit();
   csdafter["CrownLimit_mean"] = center_stand.getMeanCrownLimit();
-  sdafter["Area"] = stand.getArea();
-  csdafter["Area"] = center_stand.getArea();
-  sdafter["NoTrees"] = stand.getNoTrees();
-  csdafter["NoTrees"] = center_stand.getNoTrees();
   for (unsigned int i = 0; i < STAND_DATA_COLUMN_NAMES.size(); i++){
     hdf5_stand_data[year][i] = sdafter[STAND_DATA_COLUMN_NAMES[i]];
     hdf5_center_stand_data[year][i] = csdafter[STAND_DATA_COLUMN_NAMES[i]];
