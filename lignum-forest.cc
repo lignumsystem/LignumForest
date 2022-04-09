@@ -162,6 +162,8 @@ int main(int argc, char** argv)
   gloop.initializeVoxelSpace();
   //Sets initial values of some variables in trees
   gloop.initializeGrowthLoop();
+  // Evaluate stand variables before collectDataAfterGrowth
+  gloop.evaluateStandVariables();
   //The 0th Year dimension is used for intial data 
   gloop.collectDataAfterGrowth(0);
   // [InitForest]
@@ -181,7 +183,7 @@ int main(int argc, char** argv)
     L_age = (double)year;     //This is for L-system and dangerous
     gloop.setHPrev();
     gloop.setYear(year);
-    gloop.evaluateStandVariables();
+    
     gloop.setVoxelSpaceAndBorderForest();
     gloop.calculateRadiation();
     gloop.increaseXi(year);
@@ -193,6 +195,8 @@ int main(int argc, char** argv)
     gloop.output();
     // Prune dead parts from the trees 
     gloop.prune();
+    // Evaluate stand variables also after growth
+    gloop.evaluateStandVariables();
     // collectDataAfterGrowth collects data for HDF5 file. The 0th Year dimension
     // contains initial data
     gloop.collectDataAfterGrowth(year+1);
