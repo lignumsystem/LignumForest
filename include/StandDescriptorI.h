@@ -98,11 +98,11 @@ void StandDescriptor<TREE>::evaluateStandVariables(vector<TREE*> vt, vector<pair
   }
 
   if(area > 0.0) {
-  stemVolume /= area;
-  standBasalArea /= area;
-  basalAreaAtCrownBase *= PI_VALUE/(4.0*area);
-  LAI /= area;
-  Wf /= area;
+    stemVolume /= area;
+    standBasalArea /= area;
+    basalAreaAtCrownBase *= PI_VALUE/(4.0*area);
+    LAI /= area;
+    Wf /= area;
   }
 
 }

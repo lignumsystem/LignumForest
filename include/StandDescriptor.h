@@ -13,6 +13,7 @@ using namespace Lignum;
 template <class TREE>
 class StandDescriptor{
 public:
+  ///This constructor sets hard coded area and corner points  
   StandDescriptor() :
     dbh_mean(0.0), hdom(0.0), stemVolume(0.0),
     standBasalArea(0.0), meanHeight(0.0), basalAreaAtCrownBase(0.0), minDBH(R_HUGE),
@@ -22,6 +23,8 @@ public:
     area = 10.0*10.0/10000.0;
   }
 
+  ///This constructor uses given corner points for area (in voxel space)
+  ///\sa VoxelSpace 
   StandDescriptor(const Point& ll, const Point& ur):
     corner_ll(ll), corner_ur(ll),
     dbh_mean(0.0), hdom(0.0), stemVolume(0.0),
