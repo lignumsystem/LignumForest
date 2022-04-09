@@ -14,11 +14,11 @@ const string CENTER_STAND_DATA_DATASET_NAME("CenterStandData");
 /// HDF5 attribute name for stand data column names.
 const string STAND_DATA_COLUMN_ATTRIBUTE_NAME("StandDataColumnNames");
 /// Column names for stand data
-const array<string,18> sdcn={
-  "Year","10000*N_trees/StandArea","Dbase_mean","Dbase_min","Dbase_max","Dbh_mean","Dbh_min","Dbh_max",
-  "H_mean","H_max","StandBasalArea","StandBasalAreaCrownBase","StandStemVol","LAI","Stand_Wf",
+const array<string,22> sdcn={
+  "Year","StandArea","N_trees","10000*N_trees/StandArea","Dbase_mean","Dbase_min","Dbase_max","Dbh_mean","Dbh_min","Dbh_max",
+  "H_mean","H_min","H_max","StandBasalArea","StandBasalAreaCrownBase","StandStemVol","LAI","Stand_Wf",
   "CrownLimit_mean","Area","NoTrees"};
-///The same as vector
+/// The same as vector
 const vector<string> STAND_DATA_COLUMN_NAMES(sdcn.begin(),sdcn.end());
 /// HDF5 Dataset name Tree level data
 const string TREE_DATA_DATASET_NAME("ForestTreeData");
