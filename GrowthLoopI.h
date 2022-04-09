@@ -1083,6 +1083,10 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::collectDataAfterGrowth(const int year)
   map<string,double> csdafter;//center stand data
   sdafter["Year"] = year;
   csdafter["Year"] = year;
+  sdafter["StandArea"] = stand.getArea();
+  csdafter["StandArea"] = center_stand.getArea();
+  sdafter["N_trees"] = stand.getNoTrees();
+  csdafter["N_trees"] = center_stand.getNoTrees();
   sdafter["10000*N_trees/StandArea"] = 10000.0*stand.getNoTrees()/stand.getArea();
   csdafter["10000*N_trees/StandArea"] = 10000.0*center_stand.getNoTrees()/stand.getArea();
   sdafter["Dbase_mean"] = stand.getMeanDbase();
@@ -1780,7 +1784,7 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
 
 /// Photosynthesis and respiration, collectDataBeforeGrowth, treeAging and
 /// collectSapwoodMass before new growth.
-/// \todo Move collectDataBeforeGrowth visible into the main growth loop. 
+/// \todo Try to move collectDataBeforeGrowth aand treeAging visible into the main growth loop. 
 template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::photosynthesisAndRespiration()
 {
