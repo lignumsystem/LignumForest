@@ -591,6 +591,70 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::resizeTreeDataMatrix()
   hdf5_center_stand_data.init(0);
 }
 
+///Using TMatrix2D as 2D array with one row.
+///This way no need to create 1D array for HDF5 
+///Use the first tree to collect the parameters
+template<class TREE, class TS,class BUD, class LSYSTEM>
+TMatrix2D<double> GrowthLoop<TREE,TS,BUD,LSYSTEM>::getHDF5TreeParameterData()
+{
+  TMatrix2D<double> tree_parameters(1,TREE_PARAMETER_NAMES.size(),0.0);
+  map<string,double> tree_pvalues;
+  if (!vtree.empty()){
+    TREE* t = vtree[0];
+    tree_pvalues["LGPaf"] = GetValue(*t,LGPaf);
+    tree_pvalues["LGPapical"] = GetValue(*t,LGPapical);
+    tree_pvalues["LGPar"] = GetValue(*t,LGPar);
+    tree_pvalues["LGPlen_random"] = GetValue(*t,LGPlen_random);
+    tree_pvalues["LGPLmin"] = GetValue(*t,LGPLmin);
+    tree_pvalues["LGPlr"] = GetValue(*t,LGPlr);
+    tree_pvalues["LGPmf"] = GetValue(*t,LGPmf);
+    tree_pvalues["LGPmr"] = GetValue(*t,LGPmr);
+    tree_pvalues["LGPms"] = GetValue(*t,LGPms);
+    tree_pvalues["LGPna"] = GetValue(*t,LGPna);
+    tree_pvalues["LGPnl"] = GetValue(*t,LGPnl);
+    tree_pvalues["LGPpr"] = GetValue(*t,LGPpr);
+    tree_pvalues["LGPq"] = GetValue(*t,LGPq);
+    tree_pvalues["LGPrhoW"] = GetValue(*t,LGPrhoW);
+    tree_pvalues["LGPsf"] = GetValue(*t,LGPsf);
+    tree_pvalues["LGPsr"] = GetValue(*t,LGPsr);
+    tree_pvalues["LGPss"] = GetValue(*t,LGPss);
+    tree_pvalues["LGPxi"] = GetValue(*t,LGPxi);
+    tree_pvalues["LGPzbrentEpsilon"] = GetValue(*t,LGPzbrentEpsilon);
+    for (unsigned int i=0; i < TREE_PARAMETER_NAMES.size();i++){
+      tree_parameters[0][i] = tree_pvalues[TREE_PARAMETER_NAMES[i]];
+    }
+  }
+  return tree_parameters;
+}
+
+///Use the first tree to collect the function
+///\exception x=Nan and F(x) = NaN denote function not defined
+template<class TREE, class TS,class BUD, class LSYSTEM>
+TMatrix2D<double> GrowthLoop<TREE,TS,BUD,LSYSTEM>::getHDF5TreeFunctionData(const LGMF fn_enum)
+{
+  const ParametricCurve& fn = GetFunction(*vtree[0],fn_enum);
+  vector<double> v = fn.getVector();
+  //Check if function is defined
+  if (!v.empty()){
+    //The ParametricCurve is defined by (x,f(x)) pairs so the number of elements in vector v
+    //is always even. TMatrix2D fn_data is 2D data array[N,2] where N = number of (x,f(x)) pairs
+    //Note the last element in the vector is FLT_MAX to denote the end of function
+    int rows = static_cast<int>((v.size()-1)/2.0);
+    TMatrix2D<double> fn_data(rows,2,0.0);
+    //Note we raise loop index by two to the next (x,f(x)) pair
+    //Note we must stop when the last x value has been found (the v.size()-2)
+    for (unsigned int i=0,j=0; i < v.size()-2; i+=2,j++){
+      fn_data[j][0] = v[i];
+      fn_data[j][1] = v[i+1];
+    }
+    return fn_data;
+  }
+  else{
+    TMatrix2D<double> fn_data(1,2,std::nan(""));
+    return fn_data;
+  }  
+}  
+
 template<class TREE, class TS,class BUD, class LSYSTEM>
 void GrowthLoop<TREE, TS,BUD,LSYSTEM>::initializeTrees()
 {

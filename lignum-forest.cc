@@ -217,8 +217,9 @@ int main(int argc, char** argv)
   gloop.writeFip(gloop.getTargetTree(),1);
   gloop.writeBranchInformation(gloop.getTargetTree(),"BranchInformation.dat");
   gloop.writeProductionBalance(gloop.getTargetTree(),"ProductionBalance.dat");
-  TMatrix3D<double>& hdf5_data = gloop.getHDF5TreeData();
+  /// **Create HDF5 content**
   LGMHDF5File hdf5_file("HDF5ForestData.h5");
+  TMatrix3D<double>& hdf5_data = gloop.getHDF5TreeData();
   hdf5_file.createDataSet(TREE_DATA_DATASET_NAME,hdf5_data.rows(),hdf5_data.cols(),hdf5_data.zdim(),hdf5_data);
   hdf5_file.createColumnNames(TREE_DATA_DATASET_NAME,TREE_DATA_COLUMN_ATTRIBUTE_NAME,TREE_DATA_COLUMN_NAMES);
   TMatrix2D<double>& hdf5_stand_data = gloop.getHDF5StandData();
@@ -228,6 +229,20 @@ int main(int argc, char** argv)
   hdf5_file.createDataSet(CENTER_STAND_DATA_DATASET_NAME,hdf5_center_stand_data.rows(),hdf5_center_stand_data.cols(),
 			  hdf5_center_stand_data);
   hdf5_file.createColumnNames(CENTER_STAND_DATA_DATASET_NAME,STAND_DATA_COLUMN_ATTRIBUTE_NAME,STAND_DATA_COLUMN_NAMES);
+  hdf5_file.createGroup(PGROUP);
+  hdf5_file.createGroup(TFGROUP);
+  hdf5_file.createGroup(AFGROUP);
+  TMatrix2D<double> hdf5_tree_param_data = gloop.getHDF5TreeParameterData();
+  hdf5_file.createDataSet(PGROUP+TREE_PARAMETER_DATASET_NAME,hdf5_tree_param_data.rows(),hdf5_tree_param_data.cols(),
+			  hdf5_tree_param_data);
+  hdf5_file.createColumnNames(PGROUP+TREE_PARAMETER_DATASET_NAME,TREE_PARAMETER_ATTRIBUTE_NAME,TREE_PARAMETER_NAMES);
+  for (unsigned int i=0; i < FN_V.size();i++){ 
+    TMatrix2D<double> hdf5_tree_fn_data = gloop.getHDF5TreeFunctionData(FN_V[i]);
+    hdf5_file.createDataSet(TFGROUP+FNA_STR[i],hdf5_tree_fn_data.rows(),hdf5_tree_fn_data.cols(),hdf5_tree_fn_data);
+    hdf5_file.createColumnNames(TFGROUP+FNA_STR[i],TREE_FN_ATTRIBUTE_NAME,TREE_FN_COLUMN_NAMES);
+  }
+  hdf5_file.createFnDataSetsFromDir("*.fun",AFGROUP,TREE_FN_ATTRIBUTE_NAME,TREE_FN_COLUMN_NAMES); 
+  hdf5_file.close();
   // [AGrowth]
   /// \endinternal
   

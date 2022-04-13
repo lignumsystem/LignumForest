@@ -2,10 +2,20 @@
 #define TREEDATA_AFTER_GROWTH_H
 #include <array>
 #include <vector>
+#include <utility>
 #include <map>
 #include <SomeFunctors.h>
 ///\file TreeDataAfterGrowth.h
 ///\brief Define data structures to be able to write HDF5 data file after simulation.
+
+///Group name for parameters
+const string PGROUP("/Parameters/");
+///Group name for functions in Lignum Tree class
+const string TFGROUP("/TreeFunctions/");
+///Group name for all functions used, i.e. all `*.fun` files found
+const string AFGROUP("/AllFunctions/");
+///Group name for command line values
+const string CLGROUP("/CommandLine/");
 
 /// HDF5 Dataset name for stand level data
 const string STAND_DATA_DATASET_NAME("StandData");
@@ -19,7 +29,8 @@ const array<string,19> sdcn={
   "H_mean","H_min","H_max","StandBasalArea","StandBasalAreaCrownBase","StandStemVol","LAI","Stand_Wf",
   "CrownLimit_mean"
 };
-/// The same as vector
+/// It should be possible to use {} initialization throughout C++
+/// Using vectors in Lignum implementation
 const vector<string> STAND_DATA_COLUMN_NAMES(sdcn.begin(),sdcn.end());
 /// HDF5 Dataset name Tree level data
 const string TREE_DATA_DATASET_NAME("ForestTreeData");
@@ -89,5 +100,29 @@ const array<string,51> tdcn={
 /// \note Technically C++ standard defines vector initialization as with array.
 /// It seems not all compilers have implemented it yet. \sa tdcn.
 const vector<string> TREE_DATA_COLUMN_NAMES(tdcn.begin(),tdcn.end());
+
+///Tree parameters for the HDF5 file
+///\sa LGMPD
+const array<string,19> tree_param_names={
+  "LGPaf","LGPapical","LGPar","LGPlen_random","LGPLmin","LGPlr","LGPmf","LGPmr","LGPms",
+  "LGPna","LGPnl","LGPpr","LGPq", "LGPrhoW","LGPsf","LGPsr","LGPss","LGPxi","LGPzbrentEpsilon"
+};
+///It should be possible to use {} initialization throughout C++, compilers need to be implemented.
+///Using vectors in Lignum implelementations
+const vector<string> TREE_PARAMETER_NAMES(tree_param_names.begin(),tree_param_names.end());
+///Dataset name for tree parameters
+const string TREE_PARAMETER_DATASET_NAME("TreeParameters");
+///Attribute name for HDF5 parameter dataset, i.e. column names for data frame  
+const string TREE_PARAMETER_ATTRIBUTE_NAME("TreeParameterNames");
+///Column names for functions used in simulations
+const array<string,2> fn_columns={"X","F(X)"};
+const vector<string> TREE_FN_COLUMN_NAMES(fn_columns.begin(),fn_columns.end());
+///Attribute name for function datasetes, i.e. column names for data frames 
+const string TREE_FN_ATTRIBUTE_NAME("ColumnNames");
+///Vector of functions to write to HDF5 file
+const array<LGMF,7> fna={LGMAL,LGMFM,LGMIP,LGMLONB,LGMNB,LGMVI,LGMVIONB};
+const vector<LGMF> FN_V(fna.begin(),fna.end());
+const array<string,7> fna_str={"LGMAL","LGMFM","LGMIP","LGMONB","LGMNB","LGMVI","LGMVIONB"};
+const vector<string> FNA_STR(fna_str.begin(),fna_str.end());
 
 #endif
