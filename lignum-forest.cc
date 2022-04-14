@@ -242,6 +242,12 @@ int main(int argc, char** argv)
     hdf5_file.createColumnNames(TFGROUP+FNA_STR[i],TREE_FN_ATTRIBUTE_NAME,TREE_FN_COLUMN_NAMES);
   }
   hdf5_file.createFnDataSetsFromDir("*.fun",AFGROUP,TREE_FN_ATTRIBUTE_NAME,TREE_FN_COLUMN_NAMES); 
+  /// **Command line**
+  vector<string> c_vec;
+  std::copy( argv, argv+argc,back_inserter(c_vec));
+  ostringstream cline;
+  copy(c_vec.begin(),c_vec.end(),ostream_iterator<string>(cline, " "));
+  hdf5_file.createDataSet(COMMAND_LINE_DATASET_NAME,cline.str());
   hdf5_file.close();
   // [AGrowth]
   /// \endinternal
