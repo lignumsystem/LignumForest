@@ -137,6 +137,11 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::checkCommandLine(int argc, char** argv)con
     cout << "Mandatory -voxelspace <VoxelSpace.txt> option missing" << endl;
     exit(0);
   }
+  ///+ Mandatory argument -hdf5
+  else if (CheckCommandLine(argc,argv,"-hdf5") == false){
+    cout << "Mandatory -hdf5 <HDF5file.h5> option missing" <<endl;
+    exit(0);
+  }
   else if (verbose){
     cout << "Command line O.K." <<endl;
   } 

@@ -209,13 +209,6 @@ int main(int argc, char** argv)
   /// \internal
   // [AGrowth]
   gloop.cleanUp();
-  gloop.printSegmentQin();
-  gloop.printBranchMeans();
-  gloop.printVoxelObjectLocations("VoxelObjectLocations.txt");
-  gloop.writeTreeToXMLFile(gloop.getTargetTree(),GetValue(gloop.getTargetTree(),LGAage),1);
-  gloop.writeFip(gloop.getTargetTree(),1);
-  gloop.writeBranchInformation(gloop.getTargetTree(),"BranchInformation.dat");
-  gloop.writeProductionBalance(gloop.getTargetTree(),"ProductionBalance.dat");
   /// **Create HDF5 content**
   string hdf5fname;
   ParseCommandLine(argc,argv,"-hdf5", hdf5fname);
