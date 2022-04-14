@@ -192,7 +192,7 @@ int main(int argc, char** argv)
     gloop.createNewSegments();
     gloop.allocationAndGrowth();
     // Command line  -writeOutput exists
-    gloop.output();
+    //gloop.output();
     // Prune dead parts from the trees 
     gloop.prune();
     // Evaluate stand variables also after growth
@@ -211,14 +211,15 @@ int main(int argc, char** argv)
   gloop.cleanUp();
   gloop.printSegmentQin();
   gloop.printBranchMeans();
-  gloop.printTreeLocations(gloop.getIterations());
   gloop.printVoxelObjectLocations("VoxelObjectLocations.txt");
   gloop.writeTreeToXMLFile(gloop.getTargetTree(),GetValue(gloop.getTargetTree(),LGAage),1);
   gloop.writeFip(gloop.getTargetTree(),1);
   gloop.writeBranchInformation(gloop.getTargetTree(),"BranchInformation.dat");
   gloop.writeProductionBalance(gloop.getTargetTree(),"ProductionBalance.dat");
   /// **Create HDF5 content**
-  LGMHDF5File hdf5_file("HDF5ForestData.h5");
+  string hdf5fname;
+  ParseCommandLine(argc,argv,"-hdf5", hdf5fname);
+  LGMHDF5File hdf5_file(hdf5fname);
   TMatrix3D<double>& hdf5_data = gloop.getHDF5TreeData();
   hdf5_file.createDataSet(TREE_DATA_DATASET_NAME,hdf5_data.rows(),hdf5_data.cols(),hdf5_data.zdim(),hdf5_data);
   hdf5_file.createColumnNames(TREE_DATA_DATASET_NAME,TREE_DATA_COLUMN_ATTRIBUTE_NAME,TREE_DATA_COLUMN_NAMES);
