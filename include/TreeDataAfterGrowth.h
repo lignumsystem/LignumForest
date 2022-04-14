@@ -16,7 +16,8 @@ const string TFGROUP("/TreeFunctions/");
 const string AFGROUP("/AllFunctions/");
 ///Group name for command line values
 const string CLGROUP("/CommandLine/");
-
+/// HDF5 Dataset name for command line
+const string COMMAND_LINE_DATASET_NAME("CommandLine");
 /// HDF5 Dataset name for stand level data
 const string STAND_DATA_DATASET_NAME("StandData");
 /// HDF5 dataset name for center stand level data
