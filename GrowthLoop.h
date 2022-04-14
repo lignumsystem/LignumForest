@@ -5,6 +5,7 @@
 #include <cmath>
 #include <cstdio>
 #include <fstream>
+#include <sstream>
 #include <utility>
 #include <mathsym.h>
 #include <Point.h>
@@ -55,7 +56,7 @@ template <class TS, class BUD>
 /// \tparam BUD Bud
 /// \tparam LSYSTEM Lindenmayer system
 template <class TREE, class TS, class BUD,class LSYSTEM>
-class GrowthLoop{
+class GrowthLoop:public LGMHDF5{
 public:
   GrowthLoop()
     :vs(NULL),verbose(false),iterations(0),start_voxel_calculation(0),
