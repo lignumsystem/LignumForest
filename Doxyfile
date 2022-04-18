@@ -883,7 +883,11 @@ INPUT                  = . \
                          ../c++adt/include/TMatrix3DI.h \
                          ../c++adt/src/HDF5example.cc \
                          ../Pine/Pine.h \
-                         ../stl-lignum/include/LGMSymbols.h
+                         ../stl-lignum/include/LGMSymbols.h \
+                         ../XMLTree \
+                         ../LEngine/include/LSystem.h \
+                         ../c++adt/include/ParametricCurve.h \
+                         ../c++adt/src/ParametricCurve.cc
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -974,8 +978,7 @@ RECURSIVE              = YES
 
 EXCLUDE                = pine-em98.cpp \
                          pine-em98.L \
-                         pine-axiom.L \
-                         ../LEngine/include/LSystem.h
+                         pine-axiom.L
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded
@@ -2252,7 +2255,7 @@ SEARCH_INCLUDES        = YES
 # preprocessor.
 # This tag requires that the tag SEARCH_INCLUDES is set to YES.
 
-INCLUDE_PATH           =
+INCLUDE_PATH           = ../LEngine/include
 
 # You can use the INCLUDE_FILE_PATTERNS tag to specify one or more wildcard
 # patterns (like *.h and *.hpp) to filter out the header-files in the
