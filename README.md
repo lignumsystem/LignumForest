@@ -27,7 +27,7 @@ To remove all compilation work type `make distclean`.
 
 The growth loop for LignumForest is implemented in *lignum-forest.cc* in *main()* function.
 ## Documentation
-The introductionary presentation is in [GENERAL_DESCRIPTION.md](GENERAL_DESCRIPTION.md).
+The introductionary presentation and command line options for running the program are in [GENERAL_DESCRIPTION.md](GENERAL_DESCRIPTION.md).
 
 The Reference Guide for the LignumForest will be based on comments and other information
 available in the software. Extraction of the comments, rendition of the software content and 
