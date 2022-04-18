@@ -182,9 +182,11 @@ int main(int argc, char** argv)
   // [GLoop]
   int year;
   for(year = 0; year < gloop.getIterations(); year++) {
-    if(gloop.getNumberOfTrees() < 1) {
-      cout << "No trees left. Stop." << endl;
-      exit(0);
+    if(gloop.getNumberOfTrees() < 5) {
+      cout << "Number of trees left " << gloop.getNumberOfTrees() << " Stop." << endl;
+      //Do not stop abruptly, continue to the end of loop and then write data
+      //HDF5 output assumes there is at least one tree left 
+      continue;
     }
     L_age = (double)year;     //This is for L-system and dangerous
     gloop.setHPrev();
