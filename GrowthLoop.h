@@ -57,6 +57,9 @@ template <class TS, class BUD>
 /// \tparam LSYSTEM Lindenmayer system
 template <class TREE, class TS, class BUD,class LSYSTEM>
 class GrowthLoop:public LGMHDF5{
+  template <class TREE1,class TS1,class BUD1,class LSYSTEM1>
+  friend int CreateTreeXMLDataSet(const GrowthLoop<TREE,TS,BUD,LSYSTEM>& gl, LGMHDF5File& hdf5_file,const string& dataset_name,
+				  const int interval); 
 public:
   GrowthLoop()
     :vs(NULL),verbose(false),iterations(0),start_voxel_calculation(0),
@@ -202,6 +205,7 @@ public:
   int getTargetTreePosition()const{return (int)target_tree;}
   int getIterations()const{return iterations;}
   int getIterations() {return iterations;}
+  int getWriteInterval()const{return interval;}
   ///3D Data array[year][tree][data_cols] for each year for each tree 
   TMatrix3D<double>& getHDF5TreeData(){return hdf5_tree_data;}
   ///2D data array[year][data_cols] for stand level aggregate data
@@ -218,7 +222,7 @@ public:
   void setVoxelSpaceAndBorderForest();
   void calculateRadiation();
   StandDescriptor<TREE>& getStand() {return stand;}
-  vector<TREE*>& getTrees() {return  vtree;}
+  const vector<TREE*>& getTrees() const  {return  vtree;}
   void increaseXi();
   ///\brief Photosynthesis, respiration, tree aging and data collection.
   void photosynthesisAndRespiration();
