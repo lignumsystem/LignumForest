@@ -16,6 +16,8 @@ const string TFGROUP("/TreeFunctions/");
 const string AFGROUP("/AllFunctions/");
 ///Group name for command line values
 const string CLGROUP("/CommandLine/");
+///Group name for trees as xml std::string
+const string TXMLGROUP("/TreeXML/");
 /// HDF5 Dataset name for command line
 const string COMMAND_LINE_DATASET_NAME("CommandLine");
 /// HDF5 Dataset name for stand level data
