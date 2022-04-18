@@ -1,16 +1,18 @@
 #include <TreeLocations.h>
-///\file genrate-ree-locations.cc
+///\file generate-tree-locations.cc
 ///\brief Tree locations  Nonstationary Poisson process.
 extern int ran3_seed;   //is a global variable
 
 /// Generate tree locations: Nonstationary Poisson process: Stoyan, Kendall & Mecke, p. 52 -54
 /// \param nTrees    number of trees (input, output)
-/// \param corner1X  corner 1Y  lover left  corner  of forest,  X, Y  (input)
-/// \param corner2X  corner  2Y  upper  right  corner  (input)  
+/// \param corner1X  lower left  corner  of forest,  X, Y  (input)
+/// \param corner1Y  lower left  corner  of forest,  X, Y  (input)
+/// \param corner2X  upper  right  corner  (input)  
+/// \param corner2Y  upper  right  corner  (input)  
 /// \param rmin      minimum distance between  the trees  (input) 
 /// \param gap       representation of a circular gap: ForestGap is simply pair<pair<x,y>,r> 
 ///          where pair<x,y> is the position and r the radius of the circular gap
-/// \pram v         vector  containing accepted x,y tree location  coordinates (output)  
+/// \param v         vector  containing accepted x,y tree location  coordinates (output)  
 void GenerateLocations(int& nTrees, double corner1X, double corner1Y, double corner2X, 
 		       double corner2Y, double rmin, 
 		       const ForestGap& gap,

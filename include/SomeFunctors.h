@@ -125,7 +125,7 @@ class Branchmeans{
  public:
   /// The operator to be used  with Accumulate and summing
   /// \param id The identity element for Accumulate
-  /// \param tc The tree segment for Accumulate
+  /// \param ts The tree segment for Accumulate
   /// \note Implemented in branchfunctor.cc
   summing& operator ()(summing& id, TreeCompartment<ScotsPineSegment,
 		       ScotsPineBud>* ts)const;

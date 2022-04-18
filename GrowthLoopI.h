@@ -17,7 +17,7 @@ namespace Pine{
 
 }
 ///@}
-
+#include <string>
 using namespace Pine;
 
  
@@ -33,6 +33,32 @@ extern double branch_angle;///<Initialized in GrowthLoopI.h
 extern ParametricCurve bud_view_f;///<Initialized in GrowthLoopI.h
 extern bool is_bud_view_function;///<Reinitialized in GrowthLoopI.h.
                                  
+template <class TREE,class TS, class BUD, class LSYSTEM>
+int  CreateTreeXMLDataSet(const GrowthLoop<TREE,TS,BUD,LSYSTEM>& gl, LGMHDF5File& hdf5_file,const string& group_name, const int interval)
+{
+  const vector<TREE*>& vt = gl.getTrees();
+  TREE* t0 = vt[0];
+  int age = static_cast<int>(GetValue(*t0,LGAage));
+  if (age % interval == 0){
+    XMLDomTreeWriter<TS,BUD> writer;
+    string age_group = to_string(age)+"/";
+    string new_group = group_name+age_group;
+    //Groups must be created one by one
+    hdf5_file.createGroup(new_group);
+    string tree_xml;
+    for (unsigned int i=0; i < vt.size(); i++){
+      TREE* ti = vt[i];
+      int tree_id = static_cast<int>(GetValue(*ti,TreeId));
+      string id = to_string(tree_id);
+      string dset_name = "Tree_"+id;
+      cout << "DSET " << new_group+dset_name <<endl;
+      tree_xml = writer.xmlToString(*ti);
+      hdf5_file.createDataSet(new_group+dset_name,tree_xml);
+      tree_xml.clear();
+    }
+  }
+  return 0;
+}
 
 template<class TREE, class TS, class BUD, class LSYSTEM>
 GrowthLoop<TREE,TS,BUD,LSYSTEM>::~GrowthLoop()
@@ -135,6 +161,11 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::checkCommandLine(int argc, char** argv)con
   ///+ Mandatory argument -voxelspace
   else if (CheckCommandLine(argc,argv,"-voxelspace") == false){
     cout << "Mandatory -voxelspace <VoxelSpace.txt> option missing" << endl;
+    exit(0);
+  }
+  ///+ Mandatory argument -hdf5
+  else if (CheckCommandLine(argc,argv,"-hdf5") == false){
+    cout << "Mandatory -hdf5 <HDF5file.h5> option missing" <<endl;
     exit(0);
   }
   else if (verbose){

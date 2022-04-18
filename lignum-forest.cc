@@ -168,17 +168,25 @@ int main(int argc, char** argv)
   gloop.collectDataAfterGrowth(0);
   // [InitForest]
   /// \endinternal
-  
-
+  /// **Intialize  HDF5 content**
+  string hdf5fname;
+  ParseCommandLine(argc,argv,"-hdf5", hdf5fname);
+  LGMHDF5File hdf5_file(hdf5fname);
+  hdf5_file.createGroup(PGROUP);
+  hdf5_file.createGroup(TFGROUP);
+  hdf5_file.createGroup(AFGROUP);
+  hdf5_file.createGroup(TXMLGROUP);
   /// **Growth loop**
   /// \snippet{lineno} lignum-forest.cc GLoop
   /// \internal
   // [GLoop]
   int year;
   for(year = 0; year < gloop.getIterations(); year++) {
-    if(gloop.getNumberOfTrees() < 1) {
-      cout << "No trees left. Stop." << endl;
-      exit(0);
+    if(gloop.getNumberOfTrees() < 5) {
+      cout << "Number of trees left " << gloop.getNumberOfTrees() << " Stop." << endl;
+      //Do not stop abruptly, continue to the end of loop and then write data
+      //HDF5 output assumes there is at least one tree left 
+      continue;
     }
     L_age = (double)year;     //This is for L-system and dangerous
     gloop.setHPrev();
@@ -192,7 +200,7 @@ int main(int argc, char** argv)
     gloop.createNewSegments();
     gloop.allocationAndGrowth();
     // Command line  -writeOutput exists
-    gloop.output();
+    //gloop.output();
     // Prune dead parts from the trees 
     gloop.prune();
     // Evaluate stand variables also after growth
@@ -200,47 +208,44 @@ int main(int argc, char** argv)
     // collectDataAfterGrowth collects data for HDF5 file. The 0th Year dimension
     // contains initial data
     gloop.collectDataAfterGrowth(year+1);
+    ///Save as xml
+    CreateTreeXMLDataSet(gloop,hdf5_file,TXMLGROUP,gloop.getWriteInterval());
   } // End of  for(year = 0; ...)
   // [GLoop]
   /// \endinternal
-
   /// **After growth collect and write results**
   /// \snippet{lineno} lignum-forest.cc AGrowth
   /// \internal
   // [AGrowth]
   gloop.cleanUp();
-  // gloop.printSegmentQin();
-  // gloop.printBranchMeans();
-  // gloop.printTreeLocations(gloop.getIterations());
-  // gloop.printVoxelObjectLocations("VoxelObjectLocations.txt");
-  // gloop.writeTreeToXMLFile(gloop.getTargetTree(),GetValue(gloop.getTargetTree(),LGAage),1);
-  // gloop.writeFip(gloop.getTargetTree(),1);
-  // gloop.writeBranchInformation(gloop.getTargetTree(),"BranchInformation.dat");
-  // gloop.writeProductionBalance(gloop.getTargetTree(),"ProductionBalance.dat");
-  /// **Create HDF5 content**
-  LGMHDF5File hdf5_file("HDF5ForestData.h5");
+  /// **Collect HDF5 data**
+  ///
+  /// **Year by year, tree by tree data**
   TMatrix3D<double>& hdf5_data = gloop.getHDF5TreeData();
   hdf5_file.createDataSet(TREE_DATA_DATASET_NAME,hdf5_data.rows(),hdf5_data.cols(),hdf5_data.zdim(),hdf5_data);
   hdf5_file.createColumnNames(TREE_DATA_DATASET_NAME,TREE_DATA_COLUMN_ATTRIBUTE_NAME,TREE_DATA_COLUMN_NAMES);
+  /// **Aggregate stand data**
   TMatrix2D<double>& hdf5_stand_data = gloop.getHDF5StandData();
   hdf5_file.createDataSet(STAND_DATA_DATASET_NAME,hdf5_stand_data.rows(),hdf5_stand_data.cols(),hdf5_stand_data);
   hdf5_file.createColumnNames(STAND_DATA_DATASET_NAME,STAND_DATA_COLUMN_ATTRIBUTE_NAME,STAND_DATA_COLUMN_NAMES);
+  /// **Aggregate center stand data**
   TMatrix2D<double>& hdf5_center_stand_data = gloop.getHDF5CenterStandData();
   hdf5_file.createDataSet(CENTER_STAND_DATA_DATASET_NAME,hdf5_center_stand_data.rows(),hdf5_center_stand_data.cols(),
 			  hdf5_center_stand_data);
   hdf5_file.createColumnNames(CENTER_STAND_DATA_DATASET_NAME,STAND_DATA_COLUMN_ATTRIBUTE_NAME,STAND_DATA_COLUMN_NAMES);
-  hdf5_file.createGroup(PGROUP);
-  hdf5_file.createGroup(TFGROUP);
-  hdf5_file.createGroup(AFGROUP);
+  
+  /// **Parameters used**  
   TMatrix2D<double> hdf5_tree_param_data = gloop.getHDF5TreeParameterData();
   hdf5_file.createDataSet(PGROUP+TREE_PARAMETER_DATASET_NAME,hdf5_tree_param_data.rows(),hdf5_tree_param_data.cols(),
 			  hdf5_tree_param_data);
   hdf5_file.createColumnNames(PGROUP+TREE_PARAMETER_DATASET_NAME,TREE_PARAMETER_ATTRIBUTE_NAME,TREE_PARAMETER_NAMES);
+  /// **Functions known in a tree**
   for (unsigned int i=0; i < FN_V.size();i++){ 
     TMatrix2D<double> hdf5_tree_fn_data = gloop.getHDF5TreeFunctionData(FN_V[i]);
     hdf5_file.createDataSet(TFGROUP+FNA_STR[i],hdf5_tree_fn_data.rows(),hdf5_tree_fn_data.cols(),hdf5_tree_fn_data);
     hdf5_file.createColumnNames(TFGROUP+FNA_STR[i],TREE_FN_ATTRIBUTE_NAME,TREE_FN_COLUMN_NAMES);
   }
+  /// **All functions used**
   hdf5_file.createFnDataSetsFromDir("*.fun",AFGROUP,TREE_FN_ATTRIBUTE_NAME,TREE_FN_COLUMN_NAMES); 
   /// **Command line**
   vector<string> c_vec;
@@ -249,6 +254,7 @@ int main(int argc, char** argv)
   copy(c_vec.begin(),c_vec.end(),ostream_iterator<string>(cline, " "));
   hdf5_file.createDataSet(COMMAND_LINE_DATASET_NAME,cline.str());
   hdf5_file.close();
+  gloop.writeTreeToXMLFile(gloop.getTargetTree(),GetValue(gloop.getTargetTree(),LGAage),1);
   // [AGrowth]
   /// \endinternal
   
