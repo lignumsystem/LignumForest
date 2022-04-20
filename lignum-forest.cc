@@ -256,7 +256,8 @@ int main(int argc, char** argv)
   hdf5_file.createDataSet(COMMAND_LINE_DATASET_NAME,cline.str());
   hdf5_file.close();
   hdf5_trees.close();
-  gloop.writeTreeToXMLFile(gloop.getTargetTree(),GetValue(gloop.getTargetTree(),LGAage),1);
+  cout << "SIMULATION DONE" <<endl;
+  //gloop.writeTreeToXMLFile(gloop.getTargetTree(),GetValue(gloop.getTargetTree(),LGAage),1);
   // [AGrowth]
   /// \endinternal
   
