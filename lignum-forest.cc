@@ -172,10 +172,11 @@ int main(int argc, char** argv)
   string hdf5fname;
   ParseCommandLine(argc,argv,"-hdf5", hdf5fname);
   LGMHDF5File hdf5_file(hdf5fname);
+  LGMHDF5File hdf5_trees("Trees_"+hdf5fname);
   hdf5_file.createGroup(PGROUP);
   hdf5_file.createGroup(TFGROUP);
   hdf5_file.createGroup(AFGROUP);
-  hdf5_file.createGroup(TXMLGROUP);
+  hdf5_trees.createGroup(TXMLGROUP);
   /// **Growth loop**
   /// \snippet{lineno} lignum-forest.cc GLoop
   /// \internal
@@ -209,7 +210,7 @@ int main(int argc, char** argv)
     // contains initial data
     gloop.collectDataAfterGrowth(year+1);
     ///Save as xml
-    CreateTreeXMLDataSet(gloop,hdf5_file,TXMLGROUP,gloop.getWriteInterval());
+    CreateTreeXMLDataSet(gloop,hdf5_trees,TXMLGROUP,gloop.getWriteInterval());
   } // End of  for(year = 0; ...)
   // [GLoop]
   /// \endinternal
@@ -254,6 +255,7 @@ int main(int argc, char** argv)
   copy(c_vec.begin(),c_vec.end(),ostream_iterator<string>(cline, " "));
   hdf5_file.createDataSet(COMMAND_LINE_DATASET_NAME,cline.str());
   hdf5_file.close();
+  hdf5_trees.close();
   gloop.writeTreeToXMLFile(gloop.getTargetTree(),GetValue(gloop.getTargetTree(),LGAage),1);
   // [AGrowth]
   /// \endinternal
