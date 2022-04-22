@@ -51,7 +51,6 @@ int  CreateTreeXMLDataSet(const GrowthLoop<TREE,TS,BUD,LSYSTEM>& gl, LGMHDF5File
       int tree_id = static_cast<int>(GetValue(*ti,TreeId));
       string id = to_string(tree_id);
       string dset_name = "Tree_"+id;
-      cout << "DSET " << new_group+dset_name <<endl;
       tree_xml = writer.xmlToString(*ti);
       hdf5_file.createDataSet(new_group+dset_name,tree_xml);
       tree_xml.clear();
