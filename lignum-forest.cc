@@ -172,7 +172,7 @@ int main(int argc, char** argv)
   string hdf5fname;
   ParseCommandLine(argc,argv,"-hdf5", hdf5fname);
   LGMHDF5File hdf5_file(hdf5fname);
-  LGMHDF5File hdf5_trees("Trees_"+hdf5fname);
+  LGMHDF5File hdf5_trees("TreesXML_"+hdf5fname);
   hdf5_file.createGroup(PGROUP);
   hdf5_file.createGroup(TFGROUP);
   hdf5_file.createGroup(AFGROUP);
@@ -219,6 +219,10 @@ int main(int argc, char** argv)
   /// \internal
   // [AGrowth]
   gloop.cleanUp();
+  if (gloop.getNumberOfTrees() == 0){
+    cout << "NO TREES AFTER GROWTH LOOP" <<endl;
+  }
+  cout << "GROWTH DONE " << "NUMBER OF TREES " << gloop.getNumberOfTrees() << endl;
   /// **Collect HDF5 data**
   ///
   /// **Year by year, tree by tree data**
@@ -234,7 +238,6 @@ int main(int argc, char** argv)
   hdf5_file.createDataSet(CENTER_STAND_DATA_DATASET_NAME,hdf5_center_stand_data.rows(),hdf5_center_stand_data.cols(),
 			  hdf5_center_stand_data);
   hdf5_file.createColumnNames(CENTER_STAND_DATA_DATASET_NAME,STAND_DATA_COLUMN_ATTRIBUTE_NAME,STAND_DATA_COLUMN_NAMES);
-  
   /// **Parameters used**  
   TMatrix2D<double> hdf5_tree_param_data = gloop.getHDF5TreeParameterData();
   hdf5_file.createDataSet(PGROUP+TREE_PARAMETER_DATASET_NAME,hdf5_tree_param_data.rows(),hdf5_tree_param_data.cols(),
@@ -247,7 +250,7 @@ int main(int argc, char** argv)
     hdf5_file.createColumnNames(TFGROUP+FNA_STR[i],TREE_FN_ATTRIBUTE_NAME,TREE_FN_COLUMN_NAMES);
   }
   /// **All functions used**
-  hdf5_file.createFnDataSetsFromDir("*.fun",AFGROUP,TREE_FN_ATTRIBUTE_NAME,TREE_FN_COLUMN_NAMES); 
+  hdf5_file.createFnDataSetsFromDir("*.fun",AFGROUP,TREE_FN_ATTRIBUTE_NAME,TREE_FN_COLUMN_NAMES);
   /// **Command line**
   vector<string> c_vec;
   std::copy( argv, argv+argc,back_inserter(c_vec));
@@ -255,12 +258,11 @@ int main(int argc, char** argv)
   copy(c_vec.begin(),c_vec.end(),ostream_iterator<string>(cline, " "));
   hdf5_file.createDataSet(COMMAND_LINE_DATASET_NAME,cline.str());
   hdf5_file.close();
-  hdf5_trees.close();
-  cout << "SIMULATION DONE" <<endl;
+  cout << "DATA SAVED AND SIMULATION DONE" <<endl;
   //gloop.writeTreeToXMLFile(gloop.getTargetTree(),GetValue(gloop.getTargetTree(),LGAage),1);
   // [AGrowth]
   /// \endinternal
-  
+
 #if defined (__APPLE__) || defined(__MACOSX__)
   if(CheckCommandLine(argc,argv,"-viz")) {
     LGMVisualization viz;
