@@ -172,7 +172,7 @@ int main(int argc, char** argv)
   string hdf5fname;
   ParseCommandLine(argc,argv,"-hdf5", hdf5fname);
   LGMHDF5File hdf5_file(hdf5fname);
-  LGMHDF5File hdf5_trees("TreesXML_"+hdf5fname);
+  LGMHDF5File hdf5_trees(TREEXML_PREFIX+hdf5fname);
   hdf5_file.createGroup(PGROUP);
   hdf5_file.createGroup(TFGROUP);
   hdf5_file.createGroup(AFGROUP);
