@@ -99,11 +99,11 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::usage()const
   cout << "[-space0] [-space1] [-space2] [-adHoc]" << endl;
   cout << "[-budViewFunction] [-EBH] -EBH1 <value>]" << endl;
   cout << "[-space2Distance <Value>]" << endl;
-  cout << endl;
+  cout << "------------------------------------------------------------------------------------------------" << endl;
   cout << "-iter Number of years to simulate" << endl;
   cout << "-metafile File (usually called Metafile,txt) containg file locations for Tree parameters, Firmament configuration and Tree functions" << endl;
-  cout << "-hdf5 HDF5 file for simulation results. Trees as XML strings are in the HDF5 file with `Trees_` prefix. See -writeInterval" << endl;
-  cout << "-writeInterval <number> Save trees in XML every number of years" << endl;   
+  cout << "-hdf5 HDF5 file for simulation results. Trees as XML strings are in the HDF5 file with TREEXML_PREFIX prefix. See -writeInterval" << endl;
+  cout << "-writeInterval <number> Save trees in XML format in every `number` of years" << endl;   
   cout << "-generateLocations <num>  In this case <num> trees will be generated to random locations. If this" << endl;
   cout << "          is not on, tree locations will be read from file Treelocations.txt. This file can be changed" << endl;
   cout << "          by -treeLocations <file>. If location file is not found program stops." << endl;

@@ -58,6 +58,14 @@ template <class TS, class BUD>
 template <class TREE, class TS, class BUD,class LSYSTEM>
 class GrowthLoop:public LGMHDF5{
   template <class TREE1,class TS1,class BUD1,class LSYSTEM1>
+  /// Create XML string reprentations for the trees in the forest stand.
+  /// Each tree will be its own dataset in its age group.
+  /// \param gl The GrowLoop
+  /// \param hdf5_file The HDF5 file where the XML strings will be stored
+  /// \param dataset_name The name of the root group (dataset) for the XML strings
+  /// \param interval Write interval: trees will be written when `age mod interval = 0`.  
+  /// \note The dataset naming for the trees will be `/dataset_name/<age>/Tree_<tree_id>`,
+  /// where <age> is the age of the tree and <tree_id> the ID of the tree.
   friend int CreateTreeXMLDataSet(const GrowthLoop<TREE,TS,BUD,LSYSTEM>& gl, LGMHDF5File& hdf5_file,const string& dataset_name,
 				  const int interval); 
 public:
