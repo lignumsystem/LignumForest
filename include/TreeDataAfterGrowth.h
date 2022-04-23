@@ -8,16 +8,18 @@
 ///\file TreeDataAfterGrowth.h
 ///\brief Define data structures to be able to write HDF5 data file after simulation.
 
-///Group name for parameters
+/// Group name for parameters
 const string PGROUP("/Parameters/");
-///Group name for functions in Lignum Tree class
+/// Group name for functions in Lignum Tree class
 const string TFGROUP("/TreeFunctions/");
-///Group name for all functions used, i.e. all `*.fun` files found
+/// Group name for all functions used, i.e. all `*.fun` files found
 const string AFGROUP("/AllFunctions/");
-///Group name for command line values
+/// Group name for command line values
 const string CLGROUP("/CommandLine/");
-///Group name for trees as xml std::string
+/// Group name for trees as xml std::string
 const string TXMLGROUP("/TreeXML/");
+/// File prefix for the HDF5 file containg XML representation for the trees
+const string TREEXML_PREFIX("TreesXML_");
 /// HDF5 Dataset name for command line
 const string COMMAND_LINE_DATASET_NAME("CommandLine");
 /// HDF5 Dataset name for stand level data
