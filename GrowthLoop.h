@@ -89,6 +89,8 @@ public:
   ///After Growth: clean up, write output
   void afterGrowth();
   ///Print usage information
+  ///\deprecated Options for output files 
+  ///\remark Simulation results as well as XML trees will be in HDF5 files. See option `-hdf5` 
   void usage()const;
   ///Command line check
   void checkCommandLine(int argc, char** argv)const;

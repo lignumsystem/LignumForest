@@ -4,7 +4,8 @@ To appear. This file contains general description of the program and (automatica
 links to required libraries and their documentations in The LIGNUM System.
 <br> <br>
 
-Run the program without command line options <CODE> ./lig-forest </CODE> to see this
+Run the program without command line options <CODE> ./lig-forest </CODE> to see usage below.
+See also GrowthLoop::usage().
 
     ./lig-forest -iter <value>  -metafile <file>  -voxelspace <file>
     [-numParts <parts>]  [-treeDist <dist>] [-hw <hw_start>] [-viz]

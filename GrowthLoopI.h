@@ -83,13 +83,16 @@ GrowthLoop<TREE,TS,BUD,LSYSTEM>::~GrowthLoop()
 template<class TREE, class TS, class BUD, class LSYSTEM>
 void GrowthLoop<TREE,TS,BUD,LSYSTEM>::usage()const
 {
-  cout << "Usage:  ./lig-forest -iter <value>  -metafile <file>  -voxelspace <file>" <<endl;
+  /// \internal
+  /// \snippet{lineno} GrowthLoopI.h Usage
+  // [Usage]
+  cout << "Usage:  ./lig-forest -iter <value>  -metafile <file>  -hdf5 <file> -voxelspace <file>" <<endl;
   cout << "[-numParts <parts>]  [-treeDist <dist>] [-hw <hw_start>] [-viz]" <<endl;
-  cout << "[-toFile <filename>] [-xml <filename>] [-writeVoxels] [-sensitivity <filename>] " <<endl;
+  cout << "[-toFile <filename> OBSOLETE] [-xml <filename> OBSOLETE] [-writeVoxels] [-sensitivity <filename>] " <<endl;
   cout << "[-fipdistrib <filename>] [-writeInterval interval]" << endl;
   cout << "[-seed <num>] [-increaseXi <value>] [-targetTree <num>] " <<endl;
-  cout << "[-treeFile <filename>] [-generateLocations  <num>] [-woodVoxel] [-treeLocations <file>]" << endl;
-  cout << "[-writeOutput] [-verbose] [-bracketVerbose] [-noBorderForest] [-seed <value>] [-kBorderConifer <value>]"  << endl;
+  cout << "[-treeFile <filename> OBSOLETE] [-generateLocations  <num>] [-woodVoxel] [-treeLocations <file>]" << endl;
+  cout << "[-writeOutput OBSOLETE] [-verbose] [-bracketVerbose] [-noBorderForest] [-seed <value>] [-kBorderConifer <value>]"  << endl;
   cout << "[-H_0_ini <value>] [-H_var_ini <value>] [-n_buds_ini_min <num>] [-n_buds_ini_max <vlaue>]" << endl;
   cout << "[-p0Var <value>] [-segLenVar <value>] [-pairwiseSelf] [-budVariation <value>] [-eero]" << endl;
   cout << "[-gFunVar <value>] [-branchAngleVar <value>]" << endl;
@@ -97,6 +100,10 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::usage()const
   cout << "[-budViewFunction] [-EBH] -EBH1 <value>]" << endl;
   cout << "[-space2Distance <Value>]" << endl;
   cout << endl;
+  cout << "-iter Number of years to simulate" << endl;
+  cout << "-metafile File (usually called Metafile,txt) containg file locations for Tree parameters, Firmament configuration and Tree functions" << endl;
+  cout << "-hdf5 HDF5 file for simulation results. Trees as XML strings are in the HDF5 file with `Trees_` prefix. See -writeInterval" << endl;
+  cout << "-writeInterval <number> Save trees in XML every number of years" << endl;   
   cout << "-generateLocations <num>  In this case <num> trees will be generated to random locations. If this" << endl;
   cout << "          is not on, tree locations will be read from file Treelocations.txt. This file can be changed" << endl;
   cout << "          by -treeLocations <file>. If location file is not found program stops." << endl;
@@ -110,7 +117,7 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::usage()const
   cout << "                          as increase = 0.004/year after year 15 up to value 0.85 (as in FPB 35: 964-975 2008 article)"
        << endl;
   cout << "-targetTree <num>         Any one of the trees can be identified as target tree (default = 0)" << endl;
-  cout << "-writeOutput                Most of the things are written to their respctive file at -writeInterval interval (default false)" << endl;
+  cout << "-writeOutput               Most of the things are written to their respctive file at -writeInterval interval (default false)" << endl;
     cout << "-verbose                  Output of progress of run if set (default = not set)." << endl;
   cout << "-bracketVerbose             If set, iteration information is printed out in allocation (default = not set)." << endl;
   cout << "-noBorderForest             No border forest around the stand (default = there is border forest)"
@@ -136,6 +143,8 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::usage()const
   cout << "                   A. Runions and B. Lane and R. Mech and P. Prusinkiewicz. 2009." << endl;
   cout << "                   Self-organizing tree models for image synthesis ACM Transactions on Graphics 28 58:1-10." << endl;
   cout << endl;
+  // [Usage]
+  /// \endinternal
 }
 
 ///Check mandatory arguments and that number of arguments are at least three.
