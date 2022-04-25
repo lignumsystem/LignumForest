@@ -623,11 +623,11 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::resizeTreeDataMatrix()
   int iter = getIterations();
   int ntrees = getNumberOfTrees();
   hdf5_tree_data.resize(iter+1,ntrees,TREE_DATA_COLUMN_NAMES.size());
-  hdf5_tree_data.init(0.0);
+  hdf5_tree_data.init(std::nan(""));
   hdf5_stand_data.resize(iter+1,STAND_DATA_COLUMN_NAMES.size());
-  hdf5_stand_data.init(0);
+  hdf5_stand_data.init(std::nan(""));
   hdf5_center_stand_data.resize(iter+1,STAND_DATA_COLUMN_NAMES.size());
-  hdf5_center_stand_data.init(0);
+  hdf5_center_stand_data.init(std::nan(""));
 }
 
 ///Using TMatrix2D as 2D array with one row.
