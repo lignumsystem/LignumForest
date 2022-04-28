@@ -611,12 +611,13 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
   }
 }
 
-///Resize the 3D TMatrix3D to right size for HDF5 3D data array. Initialize to zero.
-///Resize the 2D TMatrix2D to right size for HDF5 2D data array. Initialize to zero.
+///Resize the TMatrix3D data array to right size for HDF5 3D data array. Initialize to zero.
+///Resize the TMatrix2D data arrays to right size for HDF5 2D data array. Initialize to zero.
 ///\note The Year dimension size is iter+1 because collection of initial data before simulation.
-///For hdf5_tree_data the first 2D slice contains the intial data for all trees.
-///For hdf5_stand_data and hdf5_center_stand_data the first row contains the initial stand data.
-///\note Some columns are meaningless because no data cannot be collected before growth
+///For hdf5_tree_data the first 2D slice (year = 0) contains the intial data for all trees.
+///For hdf5_stand_data and hdf5_center_stand_data the first row (year = 0) contains the initial stand data.
+///\remark Regarding initial data some columns are meaningless because no data cannot be collected before growth
+///\sa hdf5_tree_data  hdf5_stand_data  hdf5_center_stand_data
 template<class TREE, class TS,class BUD, class LSYSTEM>
 void GrowthLoop<TREE,TS,BUD,LSYSTEM>::resizeTreeDataMatrix()
 {
@@ -1886,7 +1887,7 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
 }
 
 
-/// Create new segments and set some some variables
+/// Create new segments and set some variables
 /// \note The sizes of these new segments will be iterated later
 template<class TREE, class TS,class BUD, class LSYSTEM>
 void GrowthLoop<TREE, TS,BUD,LSYSTEM>::createNewSegments()
