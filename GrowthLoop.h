@@ -126,7 +126,7 @@ public:
   /// Resize 2D array for stand data to be collected during the simulation
   /// Data will be stored in an HDF5 file after simulation.
   /// \pre Number of simulation years and trees as well as number of data columns are known
-  /// \post 3D array and 2D array filled with 0:s and can be used to enter tree data
+  /// \post 3D array and 2D array filled with std:nan and can be used to enter tree data
   /// \sa createTrees  parseCommandLine
   /// \sa TREE_DATA_COLUMN_NAMES STAND_DATA_COLUMN_NAMES
   /// \sa hdf5_tree_data hdf5_stand_data hdf5_center_stand_data
