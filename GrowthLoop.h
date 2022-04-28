@@ -142,23 +142,23 @@ public:
   /// \brief Collect data before growth
   ///
   /// Collect tree data for sapwood mass, foliage mass and root mass
-  /// \param t tree
+  /// \tparam t tree
   /// \param i position of the tree in the tree vector
-  /// \tparam TREE Lignum tree
   /// \sa wsapwood wfoliage and wroot vectors
   /// \sa vtree Tree vector
   void collectDataBeforeGrowth(TREE& t,unsigned int i);
-  /// Collect tree data after growth and update data for HDF5 file
-  /// \note Intial data is collected before growth loop. Thus the method should be called year=iter+1.
+  /// Collect tree data after growth and update data for HDF5 file.
+  /// \note Intial data is collected before growth loop filling  the first (0th) year.Thus the method should be called year=iter+1.
   /// \param year Simulation year (i.e. iteration)
-  /// \pre collectDataBeforeGrowth StandDescriptor::evaluateStandVariables
+  /// \pre GrowthLoop::collectDataBeforeGrowth StandDescriptor::evaluateStandVariables GrowthLoop::resizeTreeDataMatrix
+  /// \post Each tree maintains its position (row) in 3D hdf5_tree_data denoted by TreeId number.
   /// \sa  vtree hdf5_tree_data  hdf5_stand_data hdf5_center_stand_data wsapwood wfoliage wroot ws_after_senescence
   void collectDataAfterGrowth(const int year);
   void treeAging(TREE& t);
   double collectSapwoodMass(TREE& t);
   void setSapwoodDemandAtJunction(TREE& t);
   /// \brief Allocation of photosynthates to growth.
-  /// \param t Lignum tree
+  /// \tparam t Lignum tree
   /// \param verbose Verbose output
   bool allocation(TREE& t,bool verbose);
   /// \brief Output of simulation to files.
@@ -172,21 +172,21 @@ public:
   /// \brief Tree level output.
   ///
   /// Write tree level output to its file. 
-  /// \param t The tree
+  /// \tparam t The tree
   /// \param tree_n Tree position in the tree vector
   /// \param iter Current iteration year in the similation
   /// \sa vdatafile Vector for output files for each tree
   void writeOutput(TREE& t,unsigned int tree_n,int iter);
   void writeSensitivityAnalysisData(TREE& t);
   /// \brief Write crown limit data to study crown rise.
-  /// \param t The tree
+  /// \tparam t The tree
   /// \param iteration Current iteration year in the similation
   void writeCrownLimitData(TREE& t,int iteration);
   /// \brief Write voxel space content (voxels)
-  /// \param t The tree 
+  /// \tparam t The tree 
   void writeVoxels(TREE& t);
   /// \brief Write tree to file.
-  /// \param t The tree
+  /// \tparam t The tree
   /// \param age Tree age
   /// \param interval The write interval
   /// \pre age mod interval = 0
@@ -194,7 +194,7 @@ public:
   void writeBranchInformation(TREE& t,const string& file)const;
   void writeProductionBalance(TREE& t,const string& file)const;
   /// \brief Vertical distribution of fip
-  /// \param t The tree
+  /// \tparam t The tree
   /// \param interval The write interval
   /// \pre Tree age mod interval = 0 and !fipfile.empty()
   /// \sa fipfile

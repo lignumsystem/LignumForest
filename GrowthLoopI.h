@@ -624,11 +624,11 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::resizeTreeDataMatrix()
   int iter = getIterations();
   int ntrees = getNumberOfTrees();
   hdf5_tree_data.resize(iter+1,ntrees,TREE_DATA_COLUMN_NAMES.size());
-  hdf5_tree_data.init(0.0);
+  hdf5_tree_data.init(std::nan(""));
   hdf5_stand_data.resize(iter+1,STAND_DATA_COLUMN_NAMES.size());
-  hdf5_stand_data.init(0);
+  hdf5_stand_data.init(std::nan(""));
   hdf5_center_stand_data.resize(iter+1,STAND_DATA_COLUMN_NAMES.size());
-  hdf5_center_stand_data.init(0);
+  hdf5_center_stand_data.init(std::nan(""));
 }
 
 ///Using TMatrix2D as 2D array with one row.
@@ -1080,7 +1080,8 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::collectDataAfterGrowth(const int year)
     dcl = AccumulateDown(t,dcl,AddBranchWf(),DiameterCrownBase<TS,BUD>());
     double crown_volume = cv(t);//Crown volume
     Point tpoint = GetPoint(t);
-    tdafter["TreeId"] = GetValue(t,TreeId);
+    double tree_id =  GetValue(t,TreeId);
+    tdafter["TreeId"] = tree_id;
     tdafter["X"] = tpoint.getX();
     tdafter["Y"] = tpoint.getY();
     tdafter["Z"] = tpoint.getZ();
@@ -1162,7 +1163,7 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::collectDataAfterGrowth(const int year)
     //Single row for for the tree, index the dictionary with the column names vector
     //The data will be in right order 
     for (unsigned int i=0; i < TREE_DATA_COLUMN_NAMES.size(); i++){
-      hdf5_tree_data[year][tree_num][i]=tdafter[TREE_DATA_COLUMN_NAMES[i]];
+      hdf5_tree_data[year][tree_id][i]=tdafter[TREE_DATA_COLUMN_NAMES[i]];
     }
   }//for loop
   /// Collect data for 2D arrays from forest stand
