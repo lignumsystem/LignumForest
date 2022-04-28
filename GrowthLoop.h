@@ -148,10 +148,11 @@ public:
   /// \sa wsapwood wfoliage and wroot vectors
   /// \sa vtree Tree vector
   void collectDataBeforeGrowth(TREE& t,unsigned int i);
-  /// Collect tree data after growth and update data for HDF5 file
-  /// \note Intial data is collected before growth loop. Thus the method should be called year=iter+1.
+  /// Collect tree data after growth and update data for HDF5 file.
+  /// \note Intial data is collected before growth loop filling  the first (0th) year.Thus the method should be called year=iter+1.
   /// \param year Simulation year (i.e. iteration)
-  /// \pre collectDataBeforeGrowth StandDescriptor::evaluateStandVariables
+  /// \pre GrowthLoop::collectDataBeforeGrowth StandDescriptor::evaluateStandVariables GrowthLoop::resizeTreeDataMatrix
+  /// \post Each tree maintains its position (row) in 3D hdf5_tree_data denoted by TreeId number.
   /// \sa  vtree hdf5_tree_data  hdf5_stand_data hdf5_center_stand_data wsapwood wfoliage wroot ws_after_senescence
   void collectDataAfterGrowth(const int year);
   void treeAging(TREE& t);
