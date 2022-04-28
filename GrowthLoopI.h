@@ -611,8 +611,8 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
   }
 }
 
-///Resize the TMatrix3D data array to right size for HDF5 3D data array. Initialize to zero.
-///Resize the TMatrix2D data arrays to right size for HDF5 2D data array. Initialize to zero.
+///Resize the TMatrix3D data array to right size for HDF5 3D data array. Initialize to std::nan.
+///Resize the TMatrix2D data arrays to right size for HDF5 2D data array. Initialize to std::nan.
 ///\note The Year dimension size is iter+1 because collection of initial data before simulation.
 ///For hdf5_tree_data the first 2D slice (year = 0) contains the intial data for all trees.
 ///For hdf5_stand_data and hdf5_center_stand_data the first row (year = 0) contains the initial stand data.
