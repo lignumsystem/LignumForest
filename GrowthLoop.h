@@ -142,9 +142,8 @@ public:
   /// \brief Collect data before growth
   ///
   /// Collect tree data for sapwood mass, foliage mass and root mass
-  /// \param t tree
+  /// \tparam t tree
   /// \param i position of the tree in the tree vector
-  /// \tparam TREE Lignum tree
   /// \sa wsapwood wfoliage and wroot vectors
   /// \sa vtree Tree vector
   void collectDataBeforeGrowth(TREE& t,unsigned int i);
@@ -159,7 +158,7 @@ public:
   double collectSapwoodMass(TREE& t);
   void setSapwoodDemandAtJunction(TREE& t);
   /// \brief Allocation of photosynthates to growth.
-  /// \param t Lignum tree
+  /// \tparam t Lignum tree
   /// \param verbose Verbose output
   bool allocation(TREE& t,bool verbose);
   /// \brief Output of simulation to files.
@@ -173,21 +172,21 @@ public:
   /// \brief Tree level output.
   ///
   /// Write tree level output to its file. 
-  /// \param t The tree
+  /// \tparam t The tree
   /// \param tree_n Tree position in the tree vector
   /// \param iter Current iteration year in the similation
   /// \sa vdatafile Vector for output files for each tree
   void writeOutput(TREE& t,unsigned int tree_n,int iter);
   void writeSensitivityAnalysisData(TREE& t);
   /// \brief Write crown limit data to study crown rise.
-  /// \param t The tree
+  /// \tparam t The tree
   /// \param iteration Current iteration year in the similation
   void writeCrownLimitData(TREE& t,int iteration);
   /// \brief Write voxel space content (voxels)
-  /// \param t The tree 
+  /// \tparam t The tree 
   void writeVoxels(TREE& t);
   /// \brief Write tree to file.
-  /// \param t The tree
+  /// \tparam t The tree
   /// \param age Tree age
   /// \param interval The write interval
   /// \pre age mod interval = 0
@@ -195,7 +194,7 @@ public:
   void writeBranchInformation(TREE& t,const string& file)const;
   void writeProductionBalance(TREE& t,const string& file)const;
   /// \brief Vertical distribution of fip
-  /// \param t The tree
+  /// \tparam t The tree
   /// \param interval The write interval
   /// \pre Tree age mod interval = 0 and !fipfile.empty()
   /// \sa fipfile
