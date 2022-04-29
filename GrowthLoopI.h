@@ -1242,21 +1242,11 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::setSapwoodDemandAtJunction(TREE& t)
    PropagateUp(t,alku,SetSapwoodDemandAtJunction());
 }
 
-
-/// The Allocation of photosynthates P after respiration costs M,  that is,
-/// finding value of lambda parameter that makes demand, P-M, to match available
-/// resources G with the aid of iteration:
-///    P - M = G 
-/// that can be use in growth.
-///
-/// \return In the case P - M < 0 or iteration cannot find solution, the tree
-/// can be considered to be dead, and  allocation returns false,
-/// otherwise it returns true.
 template<class TREE, class TS,class BUD, class LSYSTEM>
 bool GrowthLoop<TREE, TS,BUD,LSYSTEM>::allocation(TREE& t, bool verbose)
 
 {
-  ///\remark Allocate    net    photosynthesis:   
+  /// \remark Allocate    net    photosynthesis:   
   ///Testing the implementation where the sapwood area is passed down
   ///as such  between segments that are  in the same  axis.  Only the
   ///segments  of higher gravelius  order require  less sapwood  in a
@@ -1313,7 +1303,7 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
     cout << "Allocation loop with k: " << k << " No trees " << no_trees <<endl; 
     TREE* t = vtree[k];
     LSYSTEM* l = vlsystem[k];
-    /// {internal
+    /// \internal
     /// \remark This is for Pipe model calculations:
     /// Initialize calculation of thickness growth induced by adding new shoots.
     /// \sa SetSapwoodDemandAtJunction
@@ -1496,6 +1486,10 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::output()
 
 /// If you call this method after GrowthLoop::allocationAndGrowth() then the tree has newly created segments.
 /// The GrowthLoop::treeP  and GrowthLoop::treeM.
+/// \tparam TREE Lignum tree
+/// \tparam TS Tree segment
+/// \tparam BUD Bud
+/// \tparam LSYSTEM Lindenmayer system in use
 template<class TREE, class TS,class BUD, class LSYSTEM>
 void GrowthLoop<TREE, TS,BUD,LSYSTEM>::writeOutput(TREE& t, unsigned int tree_n,int iter)
 {

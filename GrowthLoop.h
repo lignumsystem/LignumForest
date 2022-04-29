@@ -64,8 +64,8 @@ class GrowthLoop:public LGMHDF5{
   /// \param hdf5_file The HDF5 file where the XML strings will be stored
   /// \param dataset_name The name of the root group (dataset) for the XML strings
   /// \param interval Write interval: trees will be written when `age mod interval = 0`.  
-  /// \note The dataset naming for the trees will be `/dataset_name/<age>/Tree_<tree_id>`,
-  /// where <age> is the age of the tree and <tree_id> the ID of the tree.
+  /// \note The dataset naming for the trees will be */dataset_name/`age`/Tree_`tree_id`*,
+  /// where the `age` is the age of the tree and `tree_id` the ID of the tree.
   friend int CreateTreeXMLDataSet(const GrowthLoop<TREE,TS,BUD,LSYSTEM>& gl, LGMHDF5File& hdf5_file,const string& dataset_name,
 				  const int interval); 
 public:
@@ -142,7 +142,8 @@ public:
   /// \brief Collect data before growth
   ///
   /// Collect tree data for sapwood mass, foliage mass and root mass
-  /// \tparam t tree
+  /// \tparam TREE Lignum tree
+  /// \param t the tree
   /// \param i position of the tree in the tree vector
   /// \sa wsapwood wfoliage and wroot vectors
   /// \sa vtree Tree vector
@@ -157,36 +158,49 @@ public:
   void treeAging(TREE& t);
   double collectSapwoodMass(TREE& t);
   void setSapwoodDemandAtJunction(TREE& t);
-  /// \brief Allocation of photosynthates to growth.
-  /// \tparam t Lignum tree
+  /// Allocation of photosynthates to growth.
+  /// The Allocation of photosynthates P after respiration costs M,  that is,
+  /// finding value of lambda parameter that makes demand, P-M, to match available
+  /// resources G with the aid of iteration:
+  ///    P - M = G(lambda)
+  /// that can be use in growth.
+  ///
+  /// \return true if lambda s.t. P-M-G(lambda)=0, false if  P - M < 0 or iteration cannot find solution
+  /// \remark If false the tree `t` is considered dead and will be removed from tree vector 
+  /// \tparam TREE Lignum tree
+  /// \param t Lignum tree 
   /// \param verbose Verbose output
+  /// \sa vtree
   bool allocation(TREE& t,bool verbose);
   /// \brief Output of simulation to files.
   ///
   /// Write stand level data, target tree data, crown limit data, Fip data and the target tree xml file.
   /// \sa writeOutput writeCrownLimitData writeTreeToXMLFile writeFip
-  /// \todo HDF5 implementation is advancing. Remove this method when enough data collected. Consult and
+  /// \deprecated HDF5 implementation is advancing. Remove this method when enough data collected. Consult and
   /// agree with Risto.
   /// \sa collectDataAfterGrowth
   void output();
   /// \brief Tree level output.
   ///
-  /// Write tree level output to its file. 
-  /// \tparam t The tree
+  /// \deprecated Write now tree level output to HDF5 file. 
+  /// \tparam TREE Lignum tree
+  /// \param t The tree
   /// \param tree_n Tree position in the tree vector
   /// \param iter Current iteration year in the similation
   /// \sa vdatafile Vector for output files for each tree
   void writeOutput(TREE& t,unsigned int tree_n,int iter);
   void writeSensitivityAnalysisData(TREE& t);
   /// \brief Write crown limit data to study crown rise.
-  /// \tparam t The tree
+  /// \tparam TREE Lignum tree
+  /// \param  t The tree 
   /// \param iteration Current iteration year in the similation
   void writeCrownLimitData(TREE& t,int iteration);
   /// \brief Write voxel space content (voxels)
   /// \tparam t The tree 
   void writeVoxels(TREE& t);
   /// \brief Write tree to file.
-  /// \tparam t The tree
+  /// \tparam TREE Lignum tree
+  /// \param t The tree
   /// \param age Tree age
   /// \param interval The write interval
   /// \pre age mod interval = 0
@@ -194,7 +208,8 @@ public:
   void writeBranchInformation(TREE& t,const string& file)const;
   void writeProductionBalance(TREE& t,const string& file)const;
   /// \brief Vertical distribution of fip
-  /// \tparam t The tree
+  /// \tparam TREE Lignum  tree
+  /// \param t The tree
   /// \param interval The write interval
   /// \pre Tree age mod interval = 0 and !fipfile.empty()
   /// \sa fipfile
