@@ -629,6 +629,7 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::resizeTreeDataMatrix()
   hdf5_stand_data.init(std::nan(""));
   hdf5_center_stand_data.resize(iter+1,STAND_DATA_COLUMN_NAMES.size());
   hdf5_center_stand_data.init(std::nan(""));
+  lambdav.resize(static_cast<unsigned int>(ntrees),std::nan(""));
 }
 
 ///Using TMatrix2D as 2D array with one row.
@@ -1159,7 +1160,7 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::collectDataAfterGrowth(const int year)
       tdafter["MeanBranch_SumL/Nbranch"] = bs.lsum/bs.n_br;
     else
       tdafter["MeanBranch_SumL/Nbranch"] = 0.0;
-    tdafter["lambda"] = lambda;
+    tdafter["lambda"] = lambdav[tree_id];
     //Single row for for the tree, index the dictionary with the column names vector
     //The data will be in right order 
     for (unsigned int i=0; i < TREE_DATA_COLUMN_NAMES.size(); i++){
@@ -1211,6 +1212,9 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::collectDataAfterGrowth(const int year)
     hdf5_stand_data[year][i] = sdafter[STAND_DATA_COLUMN_NAMES[i]];
     hdf5_center_stand_data[year][i] = csdafter[STAND_DATA_COLUMN_NAMES[i]];
   }
+  ///\remark Reinitialize the `lambdav` for the next growth cycle.
+  unsigned int size = lambdav.size();
+  lambdav.resize(size,std::nan(""));
 }
 
 template<class TREE, class TS,class BUD, class LSYSTEM>
@@ -1245,18 +1249,18 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::setSapwoodDemandAtJunction(TREE& t)
 ///    P - M = G 
 /// that can be use in growth.
 ///
-/// In the case P - M < 0 or iteration cannot find solution, the tree
+/// \return In the case P - M < 0 or iteration cannot find solution, the tree
 /// can be considered to be dead, and  allocation returns false,
 /// otherwise it returns true.
 template<class TREE, class TS,class BUD, class LSYSTEM>
 bool GrowthLoop<TREE, TS,BUD,LSYSTEM>::allocation(TREE& t, bool verbose)
 
 {
-  //Allocate    net    photosynthesis    
-  //Testing the implementation where the sapwood area is passed down
-  //as such  between segments that are  in the same  axis.  Only the
-  //segments  of higher gravelius  order require  less sapwood  in a
-  //branching point.
+  ///\remark Allocate    net    photosynthesis:   
+  ///Testing the implementation where the sapwood area is passed down
+  ///as such  between segments that are  in the same  axis.  Only the
+  ///segments  of higher gravelius  order require  less sapwood  in a
+  ///branching point. \sa PartialSapwoodAreaDown
 
   DiameterGrowthData data;
   LGMGrowthAllocator2<TS,BUD,SetScotsPineSegmentLength,
@@ -1270,8 +1274,9 @@ bool GrowthLoop<TREE, TS,BUD,LSYSTEM>::allocation(TREE& t, bool verbose)
     return false;
 
   try{
-    Bisection(0.0,10.0,G,0.01,verbose); //10 grams (C) accuracy 
-    lambda = G.getL();
+    Bisection(0.0,10.0,G,0.01,verbose); //10 grams (C) accuracy
+    double tree_id = GetValue(t,TreeId);
+    lambdav[tree_id] = G.getL();
   }
   //G will throw an exception if P < M
   catch(TreeGrowthAllocatorException e){
@@ -1288,14 +1293,13 @@ bool GrowthLoop<TREE, TS,BUD,LSYSTEM>::allocation(TREE& t, bool verbose)
 }
 
 
-//===================================================================
-// Allocation of photosynthetic production to growth of new segments and
-// expansion of existing ones. The tree structure is also updated and
-// new buds are created.
-// If iterative allocation does not succeed in allocation() (probably
-// P - M < 0.0) the tree is considered dead and removed from the tree
-// list (and no_trees is updated)
-//===================================================================
+///
+/// Allocation of photosynthetic production to growth of new segments and
+/// expansion of existing ones. The tree structure is also updated and
+/// new buds are created.
+/// If iterative allocation does not succeed in allocation() (probably
+/// P - M < 0.0) the tree is considered dead and removed from the tree
+/// list (and no_trees is updated)
 template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::allocationAndGrowth()
 {
@@ -1309,12 +1313,16 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
     cout << "Allocation loop with k: " << k << " No trees " << no_trees <<endl; 
     TREE* t = vtree[k];
     LSYSTEM* l = vlsystem[k];
-
-    ///This is for Pipe model calculations:
-    ///Initialize calculation of thickness growth induced by adding new shoots.
+    /// {internal
+    /// \remark This is for Pipe model calculations:
+    /// Initialize calculation of thickness growth induced by adding new shoots.
+    /// \sa SetSapwoodDemandAtJunction
+    /// \snippet{lineno} GrowthLoopI.h PipeModel
+    // [PipeModel]
     double alku = 1.0;    //= Gravelius order of main axis
     PropagateUp(*t,alku,SetSapwoodDemandAtJunction());
-
+    // [PipeModel]
+    /// \endinternal
     if(!allocation(*t,bracket_verbose)){
       cout << "Allocation failed, P - M < 0" <<endl;
       dead_trees.push_back(k);       //iteration failed, this tree is dead
@@ -1602,7 +1610,7 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::writeOutput(TREE& t, unsigned int tree_n,
       <</*37*/ setw(11) << GetValue(t,LGAAsbase) << " "//Sapwood at base
       <</*38*/ setw(11) << GetValue(t,LGAAsDbh) << " " //Sapwood at D 1.3
       <</*39*/ setw(11) << dcl.ASwCrownBase() << " "       //Sapwood at crown base 
-      <</*40*/ setw(11) << lambda << " " //Lambda s.t. G(L) = 0.
+      <</*40*/ setw(11) << lambdav[0] << " " //Lambda s.t. G(L) = 0.
       <</*41*/ setw(11) << w_af << " " //Foliage area of tree
       << endl; 
   }

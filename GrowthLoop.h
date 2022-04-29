@@ -77,7 +77,7 @@ public:
      wfaftergrowth(0.0),wsaftergrowth(0.0),qintop1(0.0),cvol(0.0),
      axisvol(0.0),qabs(0.0),treeAf(0.0),ASeg0(0.0),wood(0.0),
      wstem(0.0),wbranches(0.0),stem_sw(0.0),treeP(0.0),treeM(0.0),
-     lambda(0.0),cv(0.30),to_file(false),sensitivity_analysis(false),
+     cv(0.30),to_file(false),sensitivity_analysis(false),
      crown_limit_data(false),
      writevoxels(false),increase_xi(false),
      self_thinning(false), generate_locations(false), location_file("Treelocations.txt"),
@@ -264,6 +264,12 @@ private:
                             ///< dimensions will be known after trees are generated.
   TMatrix2D<double> hdf5_stand_data; ///< 2D array[years][ndata_cols] for stand level data \sa stand
   TMatrix2D<double> hdf5_center_stand_data; ///< 2D array[years][ndata_cols] for center stand level data \sa center_stand
+  ///
+  /// \brief lambda = Iteration parameter of new growth
+  /// Save lambda for each tree.
+  /// After allocation Photosynthesis - Respiration = Growth(lambda)
+  /// \sa allocationAndGrowth
+  vector<double>  lambdav;
   bool verbose;
   bool bracket_verbose;
   int iterations; ///< Number of years simulation goes on.
@@ -309,13 +315,6 @@ private:
   ///of the last tree in the vector \sa allocationAndGrowth
   double treeP;
   double treeM; ///< Respiration of tree. \warning The same warning as for treeP \sa TreeP
-
-  ///
-  /// \brief lambda = Iteration parameter of new growth
-  ///
-  /// After allocation Photosynthesis - Respiration - Growth(lambda) = 0
-  /// \sa allocationAndGrowth
-  double lambda;
   summing bs;///< Mean branch length
   DCLData dcl;///< Diameter and heigth at the crown base.
 
