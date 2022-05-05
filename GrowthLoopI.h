@@ -78,8 +78,12 @@ GrowthLoop<TREE,TS,BUD,LSYSTEM>::~GrowthLoop()
   
   stand_output->close();
   delete stand_output;
-  
 }
+
+  /// **Usage**
+  /// \snippet{lineno} GrowthLoopI.h Usagex
+  /// [Usagex]
+
 
 template<class TREE, class TS, class BUD, class LSYSTEM>
 void GrowthLoop<TREE,TS,BUD,LSYSTEM>::usage()const
@@ -138,6 +142,9 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::usage()const
   cout << "                   Self-organizing tree models for image synthesis ACM Transactions on Graphics 28 58:1-10." << endl;
   cout << endl;
 }
+ /// [Usagex]
+
+
 
 ///Check mandatory arguments and that number of arguments are at least three.
 template<class TREE, class TS, class BUD, class LSYSTEM>

@@ -25,9 +25,19 @@ To compile with optimization on (faster, no debug) type:
 
 To remove all compilation work type `make distclean`.
 
+## Running the program
+
+Command line options and their short documentation can be obtained by running the program
+without any parameters: <CODE> ./lig-forest </CODE>
+You will will see the output from usage(): \sa GrowthLoop::usage()
+
 The growth loop for LignumForest is implemented in *lignum-forest.cc* in *main()* function.
+
+
 ## Documentation
-The introductionary presentation and command line options for running the program are in [GENERAL_DESCRIPTION.md](GENERAL_DESCRIPTION.md).
+
+The introductionary presentation is in [GENERAL_DESCRIPTION.md](GENERAL_DESCRIPTION.md).
+
 
 The Reference Guide for the LignumForest will be based on comments and other information
 available in the software. Extraction of the comments, rendition of the software content and 
