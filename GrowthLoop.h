@@ -58,6 +58,14 @@ template <class TS, class BUD>
 template <class TREE, class TS, class BUD,class LSYSTEM>
 class GrowthLoop:public LGMHDF5{
   template <class TREE1,class TS1,class BUD1,class LSYSTEM1>
+  /// Create XML string reprentations for the trees in the forest stand.
+  /// Each tree will be its own dataset in its age group.
+  /// \param gl The GrowLoop
+  /// \param hdf5_file The HDF5 file where the XML strings will be stored
+  /// \param dataset_name The name of the root group (dataset) for the XML strings
+  /// \param interval Write interval: trees will be written when `age mod interval = 0`.  
+  /// \note The dataset naming for the trees will be */dataset_name/`age`/Tree_`tree_id`*,
+  /// where the `age` is the age of the tree and `tree_id` the ID of the tree.
   friend int CreateTreeXMLDataSet(const GrowthLoop<TREE,TS,BUD,LSYSTEM>& gl, LGMHDF5File& hdf5_file,const string& dataset_name,
 				  const int interval); 
 public:
@@ -69,7 +77,7 @@ public:
      wfaftergrowth(0.0),wsaftergrowth(0.0),qintop1(0.0),cvol(0.0),
      axisvol(0.0),qabs(0.0),treeAf(0.0),ASeg0(0.0),wood(0.0),
      wstem(0.0),wbranches(0.0),stem_sw(0.0),treeP(0.0),treeM(0.0),
-     lambda(0.0),cv(0.30),to_file(false),sensitivity_analysis(false),
+     cv(0.30),to_file(false),sensitivity_analysis(false),
      crown_limit_data(false),
      writevoxels(false),increase_xi(false),
      self_thinning(false), generate_locations(false), location_file("Treelocations.txt"),
@@ -89,6 +97,8 @@ public:
   ///After Growth: clean up, write output
   void afterGrowth();
   ///Print usage information
+  ///\deprecated Options for output files 
+  ///\remark Simulation results as well as XML trees will be in HDF5 files. See option `-hdf5` 
   void usage()const;
   ///Command line check
   void checkCommandLine(int argc, char** argv)const;
@@ -116,7 +126,7 @@ public:
   /// Resize 2D array for stand data to be collected during the simulation
   /// Data will be stored in an HDF5 file after simulation.
   /// \pre Number of simulation years and trees as well as number of data columns are known
-  /// \post 3D array and 2D array filled with 0:s and can be used to enter tree data
+  /// \post 3D array and 2D array filled with std:nan and can be used to enter tree data
   /// \sa createTrees  parseCommandLine
   /// \sa TREE_DATA_COLUMN_NAMES STAND_DATA_COLUMN_NAMES
   /// \sa hdf5_tree_data hdf5_stand_data hdf5_center_stand_data
@@ -132,36 +142,48 @@ public:
   /// \brief Collect data before growth
   ///
   /// Collect tree data for sapwood mass, foliage mass and root mass
-  /// \param t tree
-  /// \param i position of the tree in the tree vector
   /// \tparam TREE Lignum tree
+  /// \param t the tree
+  /// \param i position of the tree in the tree vector
   /// \sa wsapwood wfoliage and wroot vectors
   /// \sa vtree Tree vector
   void collectDataBeforeGrowth(TREE& t,unsigned int i);
-  /// Collect tree data after growth and update data for HDF5 file
-  /// \note Intial data is collected before growth loop. Thus the method should be called year=iter+1.
+  /// Collect tree data after growth and update data for HDF5 file.
+  /// \note Intial data is collected before growth loop filling  the first (0th) year.Thus the method should be called year=iter+1.
   /// \param year Simulation year (i.e. iteration)
-  /// \pre collectDataBeforeGrowth StandDescriptor::evaluateStandVariables
+  /// \pre GrowthLoop::collectDataBeforeGrowth StandDescriptor::evaluateStandVariables GrowthLoop::resizeTreeDataMatrix
+  /// \post Each tree maintains its position (row) in 3D hdf5_tree_data denoted by TreeId number.
   /// \sa  vtree hdf5_tree_data  hdf5_stand_data hdf5_center_stand_data wsapwood wfoliage wroot ws_after_senescence
   void collectDataAfterGrowth(const int year);
   void treeAging(TREE& t);
   double collectSapwoodMass(TREE& t);
   void setSapwoodDemandAtJunction(TREE& t);
-  /// \brief Allocation of photosynthates to growth.
-  /// \param t Lignum tree
+  /// Allocation of photosynthates to growth.
+  /// The Allocation of photosynthates P after respiration costs M,  that is,
+  /// finding value of lambda parameter that makes demand, P-M, to match available
+  /// resources G with the aid of iteration:
+  ///    P - M = G(lambda)
+  /// that can be use in growth.
+  ///
+  /// \return true if lambda s.t. P-M-G(lambda)=0, false if  P - M < 0 or iteration cannot find solution
+  /// \remark If false the tree `t` is considered dead and will be removed from tree vector 
+  /// \tparam TREE Lignum tree
+  /// \param t Lignum tree 
   /// \param verbose Verbose output
+  /// \sa vtree
   bool allocation(TREE& t,bool verbose);
   /// \brief Output of simulation to files.
   ///
   /// Write stand level data, target tree data, crown limit data, Fip data and the target tree xml file.
   /// \sa writeOutput writeCrownLimitData writeTreeToXMLFile writeFip
-  /// \todo HDF5 implementation is advancing. Remove this method when enough data collected. Consult and
+  /// \deprecated HDF5 implementation is advancing. Remove this method when enough data collected. Consult and
   /// agree with Risto.
   /// \sa collectDataAfterGrowth
   void output();
   /// \brief Tree level output.
   ///
-  /// Write tree level output to its file. 
+  /// \deprecated Write now tree level output to HDF5 file. 
+  /// \tparam TREE Lignum tree
   /// \param t The tree
   /// \param tree_n Tree position in the tree vector
   /// \param iter Current iteration year in the similation
@@ -169,13 +191,15 @@ public:
   void writeOutput(TREE& t,unsigned int tree_n,int iter);
   void writeSensitivityAnalysisData(TREE& t);
   /// \brief Write crown limit data to study crown rise.
-  /// \param t The tree
+  /// \tparam TREE Lignum tree
+  /// \param  t The tree 
   /// \param iteration Current iteration year in the similation
   void writeCrownLimitData(TREE& t,int iteration);
   /// \brief Write voxel space content (voxels)
-  /// \param t The tree 
+  /// \tparam t The tree 
   void writeVoxels(TREE& t);
   /// \brief Write tree to file.
+  /// \tparam TREE Lignum tree
   /// \param t The tree
   /// \param age Tree age
   /// \param interval The write interval
@@ -184,6 +208,7 @@ public:
   void writeBranchInformation(TREE& t,const string& file)const;
   void writeProductionBalance(TREE& t,const string& file)const;
   /// \brief Vertical distribution of fip
+  /// \tparam TREE Lignum  tree
   /// \param t The tree
   /// \param interval The write interval
   /// \pre Tree age mod interval = 0 and !fipfile.empty()
@@ -254,6 +279,12 @@ private:
                             ///< dimensions will be known after trees are generated.
   TMatrix2D<double> hdf5_stand_data; ///< 2D array[years][ndata_cols] for stand level data \sa stand
   TMatrix2D<double> hdf5_center_stand_data; ///< 2D array[years][ndata_cols] for center stand level data \sa center_stand
+  ///
+  /// \brief lambda = Iteration parameter of new growth
+  /// Save lambda for each tree.
+  /// After allocation Photosynthesis - Respiration = Growth(lambda)
+  /// \sa allocationAndGrowth
+  vector<double>  lambdav;
   bool verbose;
   bool bracket_verbose;
   int iterations; ///< Number of years simulation goes on.
@@ -299,13 +330,6 @@ private:
   ///of the last tree in the vector \sa allocationAndGrowth
   double treeP;
   double treeM; ///< Respiration of tree. \warning The same warning as for treeP \sa TreeP
-
-  ///
-  /// \brief lambda = Iteration parameter of new growth
-  ///
-  /// After allocation Photosynthesis - Respiration - Growth(lambda) = 0
-  /// \sa allocationAndGrowth
-  double lambda;
   summing bs;///< Mean branch length
   DCLData dcl;///< Diameter and heigth at the crown base.
 

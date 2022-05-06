@@ -51,7 +51,6 @@ int  CreateTreeXMLDataSet(const GrowthLoop<TREE,TS,BUD,LSYSTEM>& gl, LGMHDF5File
       int tree_id = static_cast<int>(GetValue(*ti,TreeId));
       string id = to_string(tree_id);
       string dset_name = "Tree_"+id;
-      cout << "DSET " << new_group+dset_name <<endl;
       tree_xml = writer.xmlToString(*ti);
       hdf5_file.createDataSet(new_group+dset_name,tree_xml);
       tree_xml.clear();
@@ -88,20 +87,27 @@ GrowthLoop<TREE,TS,BUD,LSYSTEM>::~GrowthLoop()
 template<class TREE, class TS, class BUD, class LSYSTEM>
 void GrowthLoop<TREE,TS,BUD,LSYSTEM>::usage()const
 {
-  cout << "Usage:  ./lig-forest -iter <value>  -metafile <file>  -voxelspace <file>" <<endl;
+  /// \internal
+  /// \snippet{lineno} GrowthLoopI.h Usage
+  // [Usage]
+  cout << "Usage:  ./lig-forest -iter <value>  -metafile <file>  -hdf5 <file> -voxelspace <file>" <<endl;
   cout << "[-numParts <parts>]  [-treeDist <dist>] [-hw <hw_start>] [-viz]" <<endl;
-  cout << "[-toFile <filename>] [-xml <filename>] [-writeVoxels] [-sensitivity <filename>] " <<endl;
+  cout << "[-toFile <filename> OBSOLETE] [-xml <filename> OBSOLETE] [-writeVoxels] [-sensitivity <filename>] " <<endl;
   cout << "[-fipdistrib <filename>] [-writeInterval interval]" << endl;
   cout << "[-seed <num>] [-increaseXi <value>] [-targetTree <num>] " <<endl;
-  cout << "[-treeFile <filename>] [-generateLocations  <num>] [-woodVoxel] [-treeLocations <file>]" << endl;
-  cout << "[-writeOutput] [-verbose] [-bracketVerbose] [-noBorderForest] [-seed <value>] [-kBorderConifer <value>]"  << endl;
+  cout << "[-treeFile <filename> OBSOLETE] [-generateLocations  <num>] [-woodVoxel] [-treeLocations <file>]" << endl;
+  cout << "[-writeOutput OBSOLETE] [-verbose] [-bracketVerbose] [-noBorderForest] [-seed <value>] [-kBorderConifer <value>]"  << endl;
   cout << "[-H_0_ini <value>] [-H_var_ini <value>] [-n_buds_ini_min <num>] [-n_buds_ini_max <vlaue>]" << endl;
   cout << "[-p0Var <value>] [-segLenVar <value>] [-pairwiseSelf] [-budVariation <value>] [-eero]" << endl;
   cout << "[-gFunVar <value>] [-branchAngleVar <value>]" << endl;
   cout << "[-space0] [-space1] [-space2] [-adHoc]" << endl;
   cout << "[-budViewFunction] [-EBH] -EBH1 <value>]" << endl;
   cout << "[-space2Distance <Value>]" << endl;
-  cout << endl;
+  cout << "------------------------------------------------------------------------------------------------" << endl;
+  cout << "-iter Number of years to simulate" << endl;
+  cout << "-metafile File (usually called Metafile,txt) containg file locations for Tree parameters, Firmament configuration and Tree functions" << endl;
+  cout << "-hdf5 HDF5 file for simulation results. Trees as XML strings are in the HDF5 file with TREEXML_PREFIX prefix. See -writeInterval" << endl;
+  cout << "-writeInterval <number> Save trees in XML format in every `number` of years" << endl;   
   cout << "-generateLocations <num>  In this case <num> trees will be generated to random locations. If this" << endl;
   cout << "          is not on, tree locations will be read from file Treelocations.txt. This file can be changed" << endl;
   cout << "          by -treeLocations <file>. If location file is not found program stops." << endl;
@@ -115,7 +121,7 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::usage()const
   cout << "                          as increase = 0.004/year after year 15 up to value 0.85 (as in FPB 35: 964-975 2008 article)"
        << endl;
   cout << "-targetTree <num>         Any one of the trees can be identified as target tree (default = 0)" << endl;
-  cout << "-writeOutput                Most of the things are written to their respctive file at -writeInterval interval (default false)" << endl;
+  cout << "-writeOutput               Most of the things are written to their respctive file at -writeInterval interval (default false)" << endl;
     cout << "-verbose                  Output of progress of run if set (default = not set)." << endl;
   cout << "-bracketVerbose             If set, iteration information is printed out in allocation (default = not set)." << endl;
   cout << "-noBorderForest             No border forest around the stand (default = there is border forest)"
@@ -141,6 +147,8 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::usage()const
   cout << "                   A. Runions and B. Lane and R. Mech and P. Prusinkiewicz. 2009." << endl;
   cout << "                   Self-organizing tree models for image synthesis ACM Transactions on Graphics 28 58:1-10." << endl;
   cout << endl;
+  // [Usage]
+  /// \endinternal
 }
  /// [Usagex]
 
@@ -610,23 +618,25 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
   }
 }
 
-///Resize the 3D TMatrix3D to right size for HDF5 3D data array. Initialize to zero.
-///Resize the 2D TMatrix2D to right size for HDF5 2D data array. Initialize to zero.
+///Resize the TMatrix3D data array to right size for HDF5 3D data array. Initialize to std::nan.
+///Resize the TMatrix2D data arrays to right size for HDF5 2D data array. Initialize to std::nan.
 ///\note The Year dimension size is iter+1 because collection of initial data before simulation.
-///For hdf5_tree_data the first 2D slice contains the intial data for all trees.
-///For hdf5_stand_data and hdf5_center_stand_data the first row contains the initial stand data.
-///\note Some columns are meaningless because no data cannot be collected before growth
+///For hdf5_tree_data the first 2D slice (year = 0) contains the intial data for all trees.
+///For hdf5_stand_data and hdf5_center_stand_data the first row (year = 0) contains the initial stand data.
+///\remark Regarding initial data some columns are meaningless because no data cannot be collected before growth
+///\sa hdf5_tree_data  hdf5_stand_data  hdf5_center_stand_data
 template<class TREE, class TS,class BUD, class LSYSTEM>
 void GrowthLoop<TREE,TS,BUD,LSYSTEM>::resizeTreeDataMatrix()
 {
   int iter = getIterations();
   int ntrees = getNumberOfTrees();
   hdf5_tree_data.resize(iter+1,ntrees,TREE_DATA_COLUMN_NAMES.size());
-  hdf5_tree_data.init(0.0);
+  hdf5_tree_data.init(std::nan(""));
   hdf5_stand_data.resize(iter+1,STAND_DATA_COLUMN_NAMES.size());
-  hdf5_stand_data.init(0);
+  hdf5_stand_data.init(std::nan(""));
   hdf5_center_stand_data.resize(iter+1,STAND_DATA_COLUMN_NAMES.size());
-  hdf5_center_stand_data.init(0);
+  hdf5_center_stand_data.init(std::nan(""));
+  lambdav.resize(static_cast<unsigned int>(ntrees),std::nan(""));
 }
 
 ///Using TMatrix2D as 2D array with one row.
@@ -1078,7 +1088,8 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::collectDataAfterGrowth(const int year)
     dcl = AccumulateDown(t,dcl,AddBranchWf(),DiameterCrownBase<TS,BUD>());
     double crown_volume = cv(t);//Crown volume
     Point tpoint = GetPoint(t);
-    tdafter["TreeId"] = GetValue(t,TreeId);
+    double tree_id =  GetValue(t,TreeId);
+    tdafter["TreeId"] = tree_id;
     tdafter["X"] = tpoint.getX();
     tdafter["Y"] = tpoint.getY();
     tdafter["Z"] = tpoint.getZ();
@@ -1156,11 +1167,11 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::collectDataAfterGrowth(const int year)
       tdafter["MeanBranch_SumL/Nbranch"] = bs.lsum/bs.n_br;
     else
       tdafter["MeanBranch_SumL/Nbranch"] = 0.0;
-    tdafter["lambda"] = lambda;
+    tdafter["lambda"] = lambdav[tree_id];
     //Single row for for the tree, index the dictionary with the column names vector
     //The data will be in right order 
     for (unsigned int i=0; i < TREE_DATA_COLUMN_NAMES.size(); i++){
-      hdf5_tree_data[year][tree_num][i]=tdafter[TREE_DATA_COLUMN_NAMES[i]];
+      hdf5_tree_data[year][tree_id][i]=tdafter[TREE_DATA_COLUMN_NAMES[i]];
     }
   }//for loop
   /// Collect data for 2D arrays from forest stand
@@ -1208,6 +1219,9 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::collectDataAfterGrowth(const int year)
     hdf5_stand_data[year][i] = sdafter[STAND_DATA_COLUMN_NAMES[i]];
     hdf5_center_stand_data[year][i] = csdafter[STAND_DATA_COLUMN_NAMES[i]];
   }
+  ///\remark Reinitialize the `lambdav` for the next growth cycle.
+  unsigned int size = lambdav.size();
+  lambdav.resize(size,std::nan(""));
 }
 
 template<class TREE, class TS,class BUD, class LSYSTEM>
@@ -1235,25 +1249,15 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::setSapwoodDemandAtJunction(TREE& t)
    PropagateUp(t,alku,SetSapwoodDemandAtJunction());
 }
 
-
-/// The Allocation of photosynthates P after respiration costs M,  that is,
-/// finding value of lambda parameter that makes demand, P-M, to match available
-/// resources G with the aid of iteration:
-///    P - M = G 
-/// that can be use in growth.
-///
-/// In the case P - M < 0 or iteration cannot find solution, the tree
-/// can be considered to be dead, and  allocation returns false,
-/// otherwise it returns true.
 template<class TREE, class TS,class BUD, class LSYSTEM>
 bool GrowthLoop<TREE, TS,BUD,LSYSTEM>::allocation(TREE& t, bool verbose)
 
 {
-  //Allocate    net    photosynthesis    
-  //Testing the implementation where the sapwood area is passed down
-  //as such  between segments that are  in the same  axis.  Only the
-  //segments  of higher gravelius  order require  less sapwood  in a
-  //branching point.
+  /// \remark Allocate    net    photosynthesis:   
+  ///Testing the implementation where the sapwood area is passed down
+  ///as such  between segments that are  in the same  axis.  Only the
+  ///segments  of higher gravelius  order require  less sapwood  in a
+  ///branching point. \sa PartialSapwoodAreaDown
 
   DiameterGrowthData data;
   LGMGrowthAllocator2<TS,BUD,SetScotsPineSegmentLength,
@@ -1267,8 +1271,9 @@ bool GrowthLoop<TREE, TS,BUD,LSYSTEM>::allocation(TREE& t, bool verbose)
     return false;
 
   try{
-    Bisection(0.0,10.0,G,0.01,verbose); //10 grams (C) accuracy 
-    lambda = G.getL();
+    Bisection(0.0,10.0,G,0.01,verbose); //10 grams (C) accuracy
+    double tree_id = GetValue(t,TreeId);
+    lambdav[tree_id] = G.getL();
   }
   //G will throw an exception if P < M
   catch(TreeGrowthAllocatorException e){
@@ -1285,14 +1290,13 @@ bool GrowthLoop<TREE, TS,BUD,LSYSTEM>::allocation(TREE& t, bool verbose)
 }
 
 
-//===================================================================
-// Allocation of photosynthetic production to growth of new segments and
-// expansion of existing ones. The tree structure is also updated and
-// new buds are created.
-// If iterative allocation does not succeed in allocation() (probably
-// P - M < 0.0) the tree is considered dead and removed from the tree
-// list (and no_trees is updated)
-//===================================================================
+///
+/// Allocation of photosynthetic production to growth of new segments and
+/// expansion of existing ones. The tree structure is also updated and
+/// new buds are created.
+/// If iterative allocation does not succeed in allocation() (probably
+/// P - M < 0.0) the tree is considered dead and removed from the tree
+/// list (and no_trees is updated)
 template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::allocationAndGrowth()
 {
@@ -1306,12 +1310,16 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
     cout << "Allocation loop with k: " << k << " No trees " << no_trees <<endl; 
     TREE* t = vtree[k];
     LSYSTEM* l = vlsystem[k];
-
-    ///This is for Pipe model calculations:
-    ///Initialize calculation of thickness growth induced by adding new shoots.
+    /// \internal
+    /// \remark This is for Pipe model calculations:
+    /// Initialize calculation of thickness growth induced by adding new shoots.
+    /// \sa SetSapwoodDemandAtJunction
+    /// \snippet{lineno} GrowthLoopI.h PipeModel
+    // [PipeModel]
     double alku = 1.0;    //= Gravelius order of main axis
     PropagateUp(*t,alku,SetSapwoodDemandAtJunction());
-
+    // [PipeModel]
+    /// \endinternal
     if(!allocation(*t,bracket_verbose)){
       cout << "Allocation failed, P - M < 0" <<endl;
       dead_trees.push_back(k);       //iteration failed, this tree is dead
@@ -1485,6 +1493,10 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::output()
 
 /// If you call this method after GrowthLoop::allocationAndGrowth() then the tree has newly created segments.
 /// The GrowthLoop::treeP  and GrowthLoop::treeM.
+/// \tparam TREE Lignum tree
+/// \tparam TS Tree segment
+/// \tparam BUD Bud
+/// \tparam LSYSTEM Lindenmayer system in use
 template<class TREE, class TS,class BUD, class LSYSTEM>
 void GrowthLoop<TREE, TS,BUD,LSYSTEM>::writeOutput(TREE& t, unsigned int tree_n,int iter)
 {
@@ -1599,7 +1611,7 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::writeOutput(TREE& t, unsigned int tree_n,
       <</*37*/ setw(11) << GetValue(t,LGAAsbase) << " "//Sapwood at base
       <</*38*/ setw(11) << GetValue(t,LGAAsDbh) << " " //Sapwood at D 1.3
       <</*39*/ setw(11) << dcl.ASwCrownBase() << " "       //Sapwood at crown base 
-      <</*40*/ setw(11) << lambda << " " //Lambda s.t. G(L) = 0.
+      <</*40*/ setw(11) << lambdav[0] << " " //Lambda s.t. G(L) = 0.
       <</*41*/ setw(11) << w_af << " " //Foliage area of tree
       << endl; 
   }
@@ -1885,7 +1897,7 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
 }
 
 
-/// Create new segments and set some some variables
+/// Create new segments and set some variables
 /// \note The sizes of these new segments will be iterated later
 template<class TREE, class TS,class BUD, class LSYSTEM>
 void GrowthLoop<TREE, TS,BUD,LSYSTEM>::createNewSegments()
