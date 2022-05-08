@@ -52,6 +52,7 @@ points(y,100*d$StandData[7,], type="l",lwd=2, lty=2)   #max
 
 # longest and shortest trees
 
+h <- d$ForestTreeData[7,,length(y)]
 mh <- max(d$ForestTreeData[7,,length(y)],na.rm=TRUE)
 largest <- which(h>0.999*mh)[1]
 
