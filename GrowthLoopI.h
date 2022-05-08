@@ -79,17 +79,12 @@ GrowthLoop<TREE,TS,BUD,LSYSTEM>::~GrowthLoop()
   delete stand_output;
 }
 
-  /// **Usage**
-  /// \snippet{lineno} GrowthLoopI.h Usagex
-  /// [Usagex]
-
-
+/// **Usage**
+/// \snippet{lineno} GrowthLoopI.h Usagex
+// [Usagex]
 template<class TREE, class TS, class BUD, class LSYSTEM>
 void GrowthLoop<TREE,TS,BUD,LSYSTEM>::usage()const
 {
-  /// \internal
-  /// \snippet{lineno} GrowthLoopI.h Usage
-  // [Usage]
   cout << "Usage:  ./lig-forest -iter <value>  -metafile <file>  -hdf5 <file> -voxelspace <file>" <<endl;
   cout << "[-numParts <parts>]  [-treeDist <dist>] [-hw <hw_start>] [-viz]" <<endl;
   cout << "[-toFile <filename> OBSOLETE] [-xml <filename> OBSOLETE] [-writeVoxels] [-sensitivity <filename>] " <<endl;
@@ -147,10 +142,8 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::usage()const
   cout << "                   A. Runions and B. Lane and R. Mech and P. Prusinkiewicz. 2009." << endl;
   cout << "                   Self-organizing tree models for image synthesis ACM Transactions on Graphics 28 58:1-10." << endl;
   cout << endl;
-  // [Usage]
-  /// \endinternal
 }
- /// [Usagex]
+ // [Usagex]
 
 
 
