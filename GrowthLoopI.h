@@ -176,6 +176,11 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::checkCommandLine(int argc, char** argv)con
     cout << "Mandatory -hdf5 <HDF5file.h5> option missing" <<endl;
     exit(0);
   }
+  ///+ Mandatory argument -writeInterval
+  else if (CheckCommandLine(argc,argv,"-writeInterval") == false){
+    cout << "Mandatory -writeInterval <number> option missing" <<endl;
+    exit(0);
+  }
   else if (verbose){
     cout << "Command line O.K." <<endl;
   } 
