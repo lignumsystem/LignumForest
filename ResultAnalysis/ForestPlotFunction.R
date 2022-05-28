@@ -22,7 +22,17 @@
 #Biomanager package (https://www.rdocumentation.org/packages/BiocManager/versions/1.30.17):
 #install.packages("BiocManager")
 #BiocManager::install("rhdf5")
-
+#For Lorenz curve (inequality) install the package "ineq"
+#install.packages("ineq")
+#
+#To run ForestPlot load libraries first
+#library("rhdf5")
+#library("ineq")
+#Then source "ForestPlotFunction.R"
+#source("ForestPlotFunction.R")
+#Finally run the ForestPlot function, e.g.:
+#ForestPlot("../HDF5ForestData770_ajo157_3100.h5",400,2)
+#The figures will appear in "../HDF5ForestData770_ajo157_3100.h5.pdf"
 #----------------------------------------------------------------------------
 gini <- function(v){
 v <- na.omit(v)
