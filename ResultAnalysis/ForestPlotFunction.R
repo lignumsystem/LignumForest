@@ -91,6 +91,11 @@ plot(y,d$StandData[3,]/aplot1, type="l", ylim=c(0,1.1*d$StandData[3,1]/aplot1),l
 #Self thinning plot
 aplot1 <- aplot/1e4          #area in ha
 plot(log(d$StandData[5,]),log(d$StandData[3,]/aplot1), xlim=c(log(0.001),log(0.5)),ylim=c(log(100),log(20000)),type="l", lty=1, lwd=2, xlab="log(mean base diameter)", ylab="log(No. trees / ha)", main="Self-thinning curve")
+p1 <- c(max(log(d$StandData[5,]))+1,min(log(d$StandData[3,]/aplot1))-0.5)
+p22 <- log(d$StandData[3,1]/aplot1)+0.5
+p21 <- (p22-p1[2])/(-3/2)+p1[1]
+points(c(p1[1],p21),c(p1[2],p22),type="l",lwd=2,col="red")
+legend(p1[1]-0.5,p1[2]+1,"-3/2",box.lty=0,text.col="red")
 
 
 #Basal area
