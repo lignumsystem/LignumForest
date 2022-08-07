@@ -438,15 +438,23 @@ public:
 	    }
 	  }
 	}
-	  
+
+
 	//The effect of relative light on segment length
 	const ParametricCurve& fip = GetFunction(GetTree(*ts),LGMIP);
 	double B = GetValue(GetTree(*ts),TreeQinMax);
 	double qin = GetValue(*ts,LGAQin);
 	double ip = qin/B;
 
-	Lnew = l*fip(ip)*Lnew * adhoc_factor;
-	//	  cout << Lnew << " ";
+	
+	if(GetValue(dynamic_cast<ScotsPineTree&>(GetTree(*ts)), SPis_EBH) < 1.0) {
+
+	  Lnew = l*fip(ip)*Lnew * adhoc_factor;
+	  //	  cout << Lnew << " ";
+	} else {
+
+	  Lnew = l * Lnew * adhoc_factor;
+	}
 
 	//Random variation in lengths of segments (not stem)
 	if(go > 1.0) {
