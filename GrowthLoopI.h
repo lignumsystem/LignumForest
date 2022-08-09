@@ -1976,6 +1976,22 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::createNewSegments()
   }
 }
 
+template<class TREE, class TS,class BUD, class LSYSTEM>
+void GrowthLoop<TREE, TS,BUD,LSYSTEM>::radiationUseEfficiency() {
+  //The maximum radiation = radiation at top of the forest =
+  //ball sensor reading from the Firmament that is the same for all
+  //trees is needed in calculation of radiation use efficiency of new segments.
+  //It is set on the basis of shadiness experienced by their mother.
+  SetRadiationUseEfficiency<TS,BUD>  set_rue(GetFirmament(*vtree[0]).diffuseBallSensor(),
+					     GetValue(*vtree[0],LGPq)); // use of LGPq is temporary
+  
+  for (unsigned int k = 0; k < (unsigned int)no_trees; k++){
+    TREE* t = vtree[k];
+    LGMdouble initial = 0.0;
+    PropagateUp(*t,initial,set_rue);
+  }
+}
+  
 /// Evaluate stand variables of stand and center_stand
 template<class TREE, class TS,class BUD, class LSYSTEM>
 void GrowthLoop<TREE, TS,BUD,LSYSTEM>::evaluateStandVariables() {

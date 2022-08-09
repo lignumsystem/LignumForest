@@ -204,6 +204,9 @@ int main(int argc, char** argv)
     //gloop.output();
     // Prune dead parts from the trees 
     gloop.prune();
+    //Set radiation use efficiency in new segments as a function of shadiness
+    //experienced by mother segment
+    gloop.radiationUseEfficiency();
     // Evaluate stand variables also after growth
     gloop.evaluateStandVariables();
     // collectDataAfterGrowth collects data for HDF5 file. The 0th Year dimension
