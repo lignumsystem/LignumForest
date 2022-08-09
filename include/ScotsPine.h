@@ -340,7 +340,7 @@ public:
   void setApical(const double& ap) {apical = ap;}
   double getApical() {return apical;}
   double view;                   ///Make this private?
-  void photosynthesis();        ///Is this necessary?
+  //  void photosynthesis();        ///Is this necessary?
   LGMdouble getQinStand() {return Qin_stand;}
   void setQinStand(LGMdouble qis) {Qin_stand = qis;}
 private:
