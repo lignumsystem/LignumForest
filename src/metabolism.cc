@@ -15,28 +15,28 @@
 //and sapwood mass
 
 
-void ScotsPineSegment::photosynthesis()
-{
-  Tree<ScotsPineSegment,ScotsPineBud>& t = GetTree(*this);
-  //  SetValue(*this,LGAP, GetValue(t, LGPpr) * GetValue(*this,LGAQabs));
+// void ScotsPineSegment::photosynthesis()
+// {
+//   Tree<ScotsPineSegment,ScotsPineBud>& t = GetTree(*this);
+//   //  SetValue(*this,LGAP, GetValue(t, LGPpr) * GetValue(*this,LGAQabs));
 
-  //const ParametricCurve& fip = GetFunction(GetTree(*this),LGMIP);
-  //  double f_ip = fip(GetValue(*this,LGAQin)/GetValue(t,TreeQinMax));
-  double ip = GetValue(*this,LGAQin)/GetValue(t,TreeQinMax);
-  double pr = GetValue(t, LGPpr);
-  double delta = pr - 0.0006;
-  //delta *= f_ip;
-  double f_ip = 0.0;
-  if(ip < 0.6)
-    f_ip = 0.0;
-  else
-    f_ip = (ip - 0.6)/0.4;
-  delta *= f_ip;
+//   //const ParametricCurve& fip = GetFunction(GetTree(*this),LGMIP);
+//   //  double f_ip = fip(GetValue(*this,LGAQin)/GetValue(t,TreeQinMax));
+//   double ip = GetValue(*this,LGAQin)/GetValue(t,TreeQinMax);
+//   double pr = GetValue(t, LGPpr);
+//   double delta = pr - 0.0006;
+//   //delta *= f_ip;
+//   double f_ip = 0.0;
+//   if(ip < 0.6)
+//     f_ip = 0.0;
+//   else
+//     f_ip = (ip - 0.6)/0.4;
+//   delta *= f_ip;
   
-  pr = 0.0006 +  delta;
+//   pr = 0.0006 +  delta;
 
-  SetValue(*this, LGAP, pr*GetValue(*this,LGAQabs));
-}
+//   SetValue(*this, LGAP, pr*GetValue(*this,LGAQabs));
+// }
 
 
 
