@@ -172,6 +172,11 @@ public:
   /// \param verbose Verbose output
   /// \sa vtree
   bool allocation(TREE& t,bool verbose);
+  /// \brief Set radiation use efficiency (rue) in new segments
+  /// Set the radiation use efficiency (rue) of new segments (age = 0) on the basis of shadiness
+  /// experienced by their mother. It is measured as Qin / QinMax, QinMax = maximum Qin
+  /// in the forest = diffuseBallSensor() reading of Firmament (it is the same for all trees in the forest).
+  void radiationUseEfficiency();
   /// \brief Output of simulation to files.
   ///
   /// Write stand level data, target tree data, crown limit data, Fip data and the target tree xml file.

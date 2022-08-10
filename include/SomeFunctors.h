@@ -732,6 +732,7 @@ inline void UnDumpScotsPineTree(VoxelSpace &s,
   ForEach(tree, f);
 }
 
+<<<<<<< HEAD
 ///Sort a vector containing pairs `p`, where p.first is the tree position in `vtree`
 ///and `p.second` the tree height, in ascending order based on tree height
 class SortByTreeHeight{
@@ -753,4 +754,34 @@ public:
     return p.first;
   }
 };
+
+///Set the radiation use efficiency (rue) of new segments (age = 0) on the basis of shadiness of their
+///mother. It is measured as Qin / QinMax, QinMax = maximum Qin in the forest =
+///diffuseBallSensor() reading of Firmament (it is the same for all trees in the forest).
+template<class TS,class BUD>
+class SetRadiationUseEfficiency{
+public:
+  SetRadiationUseEfficiency(LGMdouble max_rad, LGMdouble fac) : ball_sensor_reading(max_rad),
+								factor(fac) {}
+  
+  double& operator()(double& qin, TreeCompartment<TS,BUD>* tc)const
+  {
+    if (TS* ts = dynamic_cast<TS*>(tc)){
+ 
+      if (GetValue(*ts,LGAage) == 0.0){// set rue
+	LGMdouble shade = qin / ball_sensor_reading;   //shade <= 1.0
+	SetValue(*ts,LGArue,1.0 + (1.0 - shade) * factor);
+      }
+      else{ //forward Qin
+	qin = GetValue(*ts,LGAQin);
+      }
+    }
+    return qin;
+  }
+private:
+  LGMdouble ball_sensor_reading;
+  LGMdouble factor;
+};
+
+
 #endif
