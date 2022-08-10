@@ -732,7 +732,7 @@ inline void UnDumpScotsPineTree(VoxelSpace &s,
   ForEach(tree, f);
 }
 
-<<<<<<< HEAD
+
 ///Sort a vector containing pairs `p`, where p.first is the tree position in `vtree`
 ///and `p.second` the tree height, in ascending order based on tree height
 class SortByTreeHeight{
