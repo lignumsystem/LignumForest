@@ -267,6 +267,20 @@ public:
     for (unsigned int i = 0; i < (unsigned int)no_trees; i++)
       h_prev[(int)i] = GetValue(*vtree[i],LGAH);
   }
+  /// \brief Harvest: remove percentage of trees from the forest stand 
+  /// \param percentage Percentage of shortest trees (number of trees) to be removed
+  /// \post The tree vector `vtree` and associated data vectors updated
+  /// \note Other criteria like several harvest times and harvesting based on basal area may follow
+  /// \sa removeTreesAllOver
+  void harvestForest(double percentage);
+  /// \brief Remove trees from the forest stand.
+  /// \param vremove Positions of trees in `vtree` to be removed.
+  /// \pre Tree positions in `vremove` must be in ascending order
+  /// \post The tree vector `vtree` and associated data vectors updated
+  /// \sa harvestForest
+  /// \sa vtree vlsystem locations
+  /// \sa wsapwood wfoliage wroot ws_after_senescence vdatafile
+  void removeTreesAllOver(const vector<unsigned int>& vremove);
 private:
   vector<TREE*> vtree; ///< Vector of trees
   vector<LSYSTEM*> vlsystem; ///< Vector of L-systems, one for each tree
