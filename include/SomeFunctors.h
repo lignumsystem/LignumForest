@@ -6,8 +6,8 @@
 #include <VoxelSpace.h>
 
 
-//Propagate up the Qin to newly created segments and buds
-//Also set the relative light LGAip for the bud
+///Propagate up the Qin to newly created segments and buds.
+///Also set the relative light LGAip for the bud
 class ForwardScotsPineQin{
 public:
   double operator()(double& qin, TreeCompartment<ScotsPineSegment,ScotsPineBud>* tc)const
@@ -33,9 +33,9 @@ public:
   }
 };
 
-//Sets the variable apical, that creates the length difference between new segment
-//on the basis of whether its apical (apical = 1) or lateral (apical = function of
-//Qin of mother, that has been propagated to Qin of the new segment (by ForwardScotsPineQin())
+///Sets the variable apical, that creates the length difference between new segment
+///on the basis of whether its apical (apical = 1) or lateral (apical = function of
+///Qin of mother, that has been propagated to Qin of the new segment (by ForwardScotsPineQin())
 class SetScotsPineSegmentApical{
  public:
   LGMdouble& 
@@ -71,9 +71,9 @@ class SetScotsPineSegmentApical{
 
 
 
-//Specific leaf  area for Scots pine  is a function  of relative light
-//and set once for the newly created segments after the calculation of
-//the light climate and the use of ForwardScotsPineQin. 
+///Specific leaf  area for Scots pine  is a function  of relative light
+///and set once for the newly created segments after the calculation of
+///the light climate and the use of ForwardScotsPineQin. 
 class SetScotsPineSegmentSf{
 public:
   void operator()(TreeCompartment<ScotsPineSegment,ScotsPineBud>* tc)const
@@ -85,8 +85,8 @@ public:
   }
 };
 
-//Set the needle angle once when  the segment is created as a function
-//of light
+///Set the needle angle once when  the segment is created as a function
+///of light
 class SetScotsPineSegmentNeedleAngle{
 public:
   void operator()(TreeCompartment<ScotsPineSegment,ScotsPineBud>* tc)const
@@ -154,13 +154,15 @@ const ParametricCurve fstar_mean;
 
 
 
-//A quick hack to try to  compute starSum and then star mean for Scots
-//pine This  is esseantially copy-paste from VoxelSpaceI.h  but I just
-//take the  LGAstarm precomputed for  the segment to be  assigned into
-//the voxel.   Quite a bit work for  small change.  What I  want to do
-//(quickly) is to  compute the star mean for  the segment in different
-//ways and add it to starSum. Then in the VoxelSpace::updateValues one
-//can define starmean = starSum/Nsegments for each box.
+///A quick hack to try to  compute starSum and then star mean for Scots
+///pine.
+///
+///This  is esseantially copy-paste from VoxelSpaceI.h  but I just
+///take the  LGAstarm precomputed for  the segment to be  assigned into
+///the voxel.   Quite a bit work for  small change.  What I  want to do
+///(quickly) is to  compute the star mean for  the segment in different
+///ways and add it to starSum. Then in the VoxelSpace::updateValues one
+///can define starmean = starSum/Nsegments for each box.
 inline
 void DumpScotsPineSegment(VoxelBox &b, ScotsPineSegment& ts,double num_parts){	
 
@@ -180,8 +182,9 @@ void DumpScotsPineSegment(VoxelBox &b, ScotsPineSegment& ts,double num_parts){
   }
 }
 
-inline //Insert segment to  voxel. This is to compare  light methods 2
-       //and 4 with method 3.
+///Insert segment to  voxel. This is to compare  light methods 2
+///and 4 with method 3.
+inline 
 void InsertSegmentToVoxel(VoxelBox &b, ScotsPineSegment& ts,double num_parts)
 {
   LGMdouble fmass = GetValue(ts, LGAWf) / num_parts;
@@ -204,9 +207,9 @@ void InsertSegmentToVoxel(VoxelBox &b, ScotsPineSegment& ts,double num_parts)
   }
 }
 
-//This functor inserts  segments to voxels to compare  light methods 2
-//and 4 with 3. Recall to  calculate mean qabs and mean qin by calling
-//VoxelSpace::calculateMeanQabsQin().
+///This functor inserts  segments to voxels to compare  light methods 2
+///and 4 with 3. Recall to  calculate mean qabs and mean qin by calling
+///VoxelSpace::calculateMeanQabsQin().
 template <class TS, class BUD>
 class InsertSegmentsToVoxels{
 public:
@@ -309,9 +312,9 @@ private:
   //1 but one may want to experiment)
 };
 
-//Call this in the growth loop instead of DumpCfTree, num_parts is the
-//number of parts  the segment is divided into (usually  1 but one may
-//want to experiment)
+///Call this in the growth loop instead of DumpCfTree, num_parts is the
+///number of parts  the segment is divided into (usually  1 but one may
+///want to experiment)
 inline void DumpScotsPineTree(VoxelSpace &s, 
 			      Tree<ScotsPineSegment,ScotsPineBud> &tree,int num_parts){
   DumpScotsPineTreeFunctor<ScotsPineSegment,ScotsPineBud> f(s,num_parts);
@@ -459,9 +462,8 @@ public:
 
 
 
-//Evaluate the surface area of the woody part (excluding end discs) of
-//new segments (that have foliage)
-
+///Evaluate the surface area of the woody part (excluding end discs) of
+///new segments (that have foliage)
 class SurfaceAreaOfNewSegments{
 public:
   double operator()(double& A, TreeCompartment<ScotsPineSegment,ScotsPineBud>* tc)const
@@ -478,16 +480,16 @@ public:
 
 };
 
-//Vertical distribution of  fip(ip) in segments The vector  v has Tree
-//age  positions  representing  the  vertical  division  of  the  tree
-//into intervals  of mean annual growth).
-//Usage is simply:
-//   pair<vector<pair<double,int> >,double> p;
-//   Accumulate(tree,v,CollectVerticalDistributionOfFip());
-//where the  p.first is the vector  for cumulative fips  and number of
-//their observations and p.second the height interval When printing to
-//the  file  remember  to  divide  cumulative "fips"  with  number  of
-//observations.
+///Vertical distribution of  fip(ip) in segments The vector  v has Tree
+///age  positions  representing  the  vertical  division  of  the  tree
+///into intervals  of mean annual growth).
+///Usage is simply:<br>
+///   pair<vector<pair<double,int> >,double> p;<br>
+///   Accumulate(tree,v,CollectVerticalDistributionOfFip());<br>
+///where the  p.first is the vector  for cumulative fips  and number of
+///their observations and p.second the height interval When printing to
+///the  file  remember  to  divide  cumulative "fips"  with  number  of
+///observations.
 class CollectVerticalDistributionOfFip{
 public:
   pair<vector<pair<double,int> >,double>& 
@@ -585,9 +587,8 @@ class SegmentProductionBalance {
 };
 
 
-//Evaluate the surface area of the woody part (excluding end discs) of
-//new segments (that have foliage)
-
+///Evaluate the surface area of the woody part (excluding end discs) of
+///new segments (that have foliage)
 class SetRh{
  public:
  SetRh(const LGMdouble pc) : per_cent(pc) {}
@@ -643,9 +644,8 @@ class Sum2ndOrderBranchesSegments {
 };
 
 
-//UnDumpScotsPineSegment  is   the  inverse  to  DumpScotsPineSegment,
-//instead of adding foliage remove it
-
+///UnDumpScotsPineSegment  is   the  inverse  to  DumpScotsPineSegment,
+///instead of adding foliage remove it
 inline void UnDumpScotsPineSegment(VoxelBox &b, ScotsPineSegment& ts,double num_parts,
 				   bool wood_voxel){	
 
@@ -723,8 +723,8 @@ template <class TS, class BUD>
 };
 
 
-//UnDumpScotsPineTree is the "inverse" to DumpCfTree in VoxelSpaceI.h and VoxelVoxI.h,
-//it removes the values of this tree from the voxels
+///UnDumpScotsPineTree is the "inverse" to DumpCfTree in VoxelSpaceI.h and VoxelVoxI.h,
+///it removes the values of this tree from the voxels
 inline void UnDumpScotsPineTree(VoxelSpace &s, 
 				Tree<ScotsPineSegment,ScotsPineBud> &tree,int num_parts,
 				bool wood_voxel){
@@ -732,4 +732,25 @@ inline void UnDumpScotsPineTree(VoxelSpace &s,
   ForEach(tree, f);
 }
 
+///Sort a vector containing pairs `p`, where p.first is the tree position in `vtree`
+///and `p.second` the tree height, in ascending order based on tree height
+class SortByTreeHeight{
+public:
+  bool operator()(pair<unsigned int,double>& p1, pair<unsigned int,double>& p2)
+  {
+    if (p1.second < p2.second){
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
+};
+
+class CollectTreePositions{
+public:
+  unsigned int operator()(const pair<unsigned int,double>& p){
+    return p.first;
+  }
+};
 #endif
