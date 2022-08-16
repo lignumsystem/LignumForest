@@ -749,7 +749,7 @@ public:
  
       if (GetValue(*ts,LGAage) == 0.0){// set rue
 	LGMdouble shade = qin / ball_sensor_reading;   //shade <= 1.0
-	SetValue(*ts,LGArue,1.0 + (1.0 - shade) * factor);
+	SetValue(*ts,SPrue,1.0 + (1.0 - shade) * factor);
       }
       else{ //forward Qin
 	qin = GetValue(*ts,LGAQin);

@@ -14,29 +14,34 @@
 //RESPIRATION rate of the segment as the function of needle mass
 //and sapwood mass
 
+ ///Radiation use efficiency: photosynthetic production of a CfTreeSegment =
+ ///rue*LGPpr*Qabs, where parameter LGPpr = Photosynthetic efficiency
+ ///(see LGMSymbols.h). rue depends on the radiation conditions of the CfTreeSegment
+ ///at its birth. At full light (at top of the stand) rue = 1, in shaded
+ ///conditions possibly rue > 1.
 
-// void ScotsPineSegment::photosynthesis()
-// {
-//   Tree<ScotsPineSegment,ScotsPineBud>& t = GetTree(*this);
-//   //  SetValue(*this,LGAP, GetValue(t, LGPpr) * GetValue(*this,LGAQabs));
+void ScotsPineSegment::photosynthesis()
+{
+  Tree<ScotsPineSegment,ScotsPineBud>& t = GetTree(*this);
+  SetValue(*this,LGAP, GetValue(*this, SPrue) * GetValue(t, LGPpr) * GetValue(*this,LGAQabs));
 
-//   //const ParametricCurve& fip = GetFunction(GetTree(*this),LGMIP);
-//   //  double f_ip = fip(GetValue(*this,LGAQin)/GetValue(t,TreeQinMax));
-//   double ip = GetValue(*this,LGAQin)/GetValue(t,TreeQinMax);
-//   double pr = GetValue(t, LGPpr);
-//   double delta = pr - 0.0006;
-//   //delta *= f_ip;
-//   double f_ip = 0.0;
-//   if(ip < 0.6)
-//     f_ip = 0.0;
-//   else
-//     f_ip = (ip - 0.6)/0.4;
-//   delta *= f_ip;
+  // //const ParametricCurve& fip = GetFunction(GetTree(*this),LGMIP);
+  // //  double f_ip = fip(GetValue(*this,LGAQin)/GetValue(t,TreeQinMax));
+  // double ip = GetValue(*this,LGAQin)/GetValue(t,TreeQinMax);
+  // double pr = GetValue(t, LGPpr);
+  // double delta = pr - 0.0006;
+  // //delta *= f_ip;
+  // double f_ip = 0.0;
+  // if(ip < 0.6)
+  //   f_ip = 0.0;
+  // else
+  //   f_ip = (ip - 0.6)/0.4;
+  // delta *= f_ip;
   
-//   pr = 0.0006 +  delta;
+  // pr = 0.0006 +  delta;
 
-//   SetValue(*this, LGAP, pr*GetValue(*this,LGAQabs));
-// }
+  // SetValue(*this, LGAP, pr*GetValue(*this,LGAQabs));
+}
 
 
 

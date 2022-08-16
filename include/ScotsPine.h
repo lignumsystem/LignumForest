@@ -18,7 +18,7 @@ enum SPFN {SPFAF,SPFAD, SPFGO,SPFLR,SPFNA,SPFSF, SPSD, SPWD, SPEBHF, SPBVF};
 //Enumeration for SetValue, GetValue in ScotsPine
 //Scots Pine Attribute Double SPAD,
 //Sapwood down, Height at crown limit, start of heartwood build up 
-enum SPAD {SPAAsDown,SPCrownRatio,SPHc,SPHwStart};
+enum SPAD {SPAAsDown,SPCrownRatio,SPHc,SPHwStart, SPrue};
 
 //Scots Pine Parameter Double SPPD
 //Extended Borchert-Honda (1 = true,  < 1 = false)
@@ -228,7 +228,7 @@ class ScotsPineSegment: public PineSegment<ScotsPineSegment,ScotsPineBud>{
   //function instead of being  single tree level parameter. That's why
   //no  value argument. Also  this is  meant to  be used  with functor
   //SetScotsPineSegmentSf() only.
-  friend LGMdouble SetValue(ScotsPineSegment& ts,LGMAD  name){
+  friend LGMdouble SetValue(ScotsPineSegment& ts, LGMAD  name){    //a bit unconventional SetValue
     //The data from P Kaitaniemi suggesta following model for sf (m2/kgC)
     //    sf = 200.0/(5.8307 + 5.3460*relative_height + omega + 27.0*length)
     //Specific  leaf  area depends  oon  the  relative  height of  the
@@ -263,6 +263,7 @@ class ScotsPineSegment: public PineSegment<ScotsPineSegment,ScotsPineBud>{
     return sf_old;
   }
 
+
   friend LGMdouble GetValue(const ScotsPineSegment& ts, const LGMAD name){
     if (name == LGAWh){
       //For TreeSegment the sapwood, hertwood and total wood masses are simply rho*LGAV[s,h,wood],
@@ -285,7 +286,7 @@ class ScotsPineSegment: public PineSegment<ScotsPineSegment,ScotsPineBud>{
     }
     else if (name == LGAWs){
       return GetValue(ts,LGAWood)-GetValue(ts,LGAWh);
-    } 
+    }
     else{
       return GetValue(dynamic_cast<const CfTreeSegment<ScotsPineSegment,ScotsPineBud>&>(ts),name);
     }
@@ -296,6 +297,10 @@ class ScotsPineSegment: public PineSegment<ScotsPineSegment,ScotsPineBud>{
     if (name == SPAAsDown){    
       return ts.AsDown;
     }
+    else if (name == SPrue) {
+      return ts.rue;
+    }
+
     else{
       cerr << "GetValue(ScotsPineSegment,name ) unknown name " << name <<endl; 
       return  0.0;
@@ -307,19 +312,23 @@ class ScotsPineSegment: public PineSegment<ScotsPineSegment,ScotsPineBud>{
     LGMdouble old_value = GetValue(ts,name);
     if (name == SPAAsDown)
       ts.AsDown = value;
-    else
+    else if(name == SPrue) {
+      ts.rue = value;
+    }
+    else{
+      cerr << "SetValue(ScotsPineSegment&, SPAD, value) unknown name " << name << endl;
       old_value = 0.0;
+    }
     return old_value;
   }
-
-
+  
 public:
   ScotsPineSegment(const Point& p,const PositionVector& d,
 		   const LGMdouble go,const METER l,
 		   const METER r,const METER rh,
 		   Tree<ScotsPineSegment,ScotsPineBud>* tree)
     :PineSegment<ScotsPineSegment,ScotsPineBud>(p,d,go,l,r,rh,tree),
-     EBH_resource(0.0), apical(1.0)  {}
+     EBH_resource(0.0), apical(1.0),rue(1.0)  {}
 
   //DiameterGrowth  in   functors  [Try|Do]ScotsPineDiameterGrowth  in
   //DiameterGrowth.h
@@ -340,7 +349,7 @@ public:
   void setApical(const double& ap) {apical = ap;}
   double getApical() {return apical;}
   double view;                   ///Make this private?
-  //  void photosynthesis();        ///Is this necessary?
+  void photosynthesis();
   LGMdouble getQinStand() {return Qin_stand;}
   void setQinStand(LGMdouble qis) {Qin_stand = qis;}
 private:
@@ -350,6 +359,11 @@ private:
   LGMdouble Qv;      ///Cumulative radiation in basipetal direction in EBH calculation
   LGMdouble apical;  ///Measure of apical dominance on lateral Segments = f(qin/TreeQinMax),
                      ///see functor SetScotsPineSegmentApical
+  LGMdouble rue;  ///Radiation use efficiency: photosynthetic production of a CfTreeSegment =
+                  ///rue*LGPpr*Qabs, where parameter LGPpr = Photosynthetic efficiency
+                  ///(see LGMSymbols.h). rue depends on the radiation conditions of the CfTreeSegment
+                  ///at its birth. At full light (at top of the stand) rue = 1, in shaded
+                  ///conditions possibly rue > 1.
 };   //ScotsPineSegment
 
 

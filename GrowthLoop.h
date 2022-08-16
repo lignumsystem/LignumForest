@@ -443,6 +443,10 @@ private:
   bool growthloop_is_EBH;
   bool growthloop_is_EBH1; ///< As growthloop_is_EBH but with one parameter. \sa  growthloop_is_EBH
   double growthloop_EBH1_value; ///< Parameter value for growthloop_is_EBH1 \sa  growthloop_is_EBH1
+  bool growthloop_is_EBH_reduction;
+  LGMdouble EBH_reduction_parameter;
+  bool growthloop_is_radiation_use_efficiency;
+  LGMdouble radiation_use_efficiency_parameter;
 };
 #endif
 #include <GrowthLoopI.h>

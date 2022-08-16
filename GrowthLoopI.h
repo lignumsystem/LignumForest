@@ -86,7 +86,7 @@ template<class TREE, class TS, class BUD, class LSYSTEM>
 void GrowthLoop<TREE,TS,BUD,LSYSTEM>::usage()const
 {
   cout << "Usage:  ./lig-forest -iter <value>  -metafile <file>  -hdf5 <file> -voxelspace <file>" <<endl;
-  cout << "[-numParts <parts>]  [-treeDist <dist>] [-hw <hw_start>] [-viz]" <<endl;
+  cout << "[-numParts <parts>]  [-treeDist <dist>] [-hw <hw_start>]" <<endl;
   cout << "[-toFile <filename> OBSOLETE] [-xml <filename> OBSOLETE] [-writeVoxels] [-sensitivity <filename>] " <<endl;
   cout << "[-fipdistrib <filename>] [-writeInterval interval]" << endl;
   cout << "[-seed <num>] [-increaseXi <value>] [-targetTree <num>] " <<endl;
@@ -97,7 +97,7 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::usage()const
   cout << "[-gFunVar <value>] [-branchAngleVar <value>]" << endl;
   cout << "[-space0] [-space1] [-space2] [-adHoc]" << endl;
   cout << "[-budViewFunction] [-EBH] -EBH1 <value>]" << endl;
-  cout << "[-space2Distance <Value>]" << endl;
+  cout << "[-space2Distance <Value>] [-EBHREDUCTION <value>] [-RUE <value>]" << endl;
   cout << "------------------------------------------------------------------------------------------------" << endl;
   cout << "-iter Number of years to simulate" << endl;
   cout << "-metafile File (usually called Metafile,txt) containg file locations for Tree parameters, Firmament configuration and Tree functions" << endl;
@@ -141,6 +141,11 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::usage()const
   cout << "                   EBH is according to W. Palubicki and K. Horel and S. Longay and" << endl;
   cout << "                   A. Runions and B. Lane and R. Mech and P. Prusinkiewicz. 2009." << endl;
   cout << "                   Self-organizing tree models for image synthesis ACM Transactions on Graphics 28 58:1-10." << endl;
+  cout << "-EBHREDUCTION <value> If values of EBH parameters for all orders are reduced as new_value = <value> * prev_value" << endl;
+  cout << "                   in each year after year 20 (if <value> > 1, the values increase). Min value of EBH param = 0.51." << endl;
+  cout << "-RUE <value>       The radiation use effeciency (rue) varies as a function of TreeSegments initial radiation" << endl;
+  cout << "                   conditions. Photosynthetic production of TreeSegment = rue * LGApr * Qabs. <value> = degree of" << endl;
+  cout << "                   increase of rue as a function of shadiness (0 < <value> < 2)." << endl;
   cout << endl;
 }
  // [Usagex]
@@ -503,8 +508,27 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::parseCommandLine(int argc, char** argv)
     fout << "6.0 " <<  growthloop_EBH1_value << endl;
     fout.close();
   }
-  //[ebhfun]
+
+    //[ebhfun]
   ///\endinternal
+
+
+  growthloop_is_EBH_reduction = false;
+  EBH_reduction_parameter = 0.0;
+  clarg.clear();
+  if(ParseCommandLine(argc,argv,"-EBHREDUCTION", clarg)) {
+    growthloop_is_EBH_reduction = true;
+    EBH_reduction_parameter = atof(clarg.c_str());
+  }
+
+  growthloop_is_radiation_use_efficiency = false;
+  radiation_use_efficiency_parameter = 0.0;
+  clarg.clear();
+  if(ParseCommandLine(argc,argv,"-RUE", clarg)) {
+    growthloop_is_radiation_use_efficiency = true;
+    radiation_use_efficiency_parameter = atof(clarg.c_str());
+  }
+
 
   if (verbose){
     cout << "parseCommandLine end" <<endl;
@@ -1959,6 +1983,36 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::createNewSegments()
     if(GetValue(*t, SPis_EBH) > 0.0) {
 
       ParametricCurve lambda_fun = GetFunction(*t,SPEBHF);
+      if(growthloop_is_EBH_reduction) {
+	//After age 20 EBH values for all orders decrease gradually from the  value > 0.51 to 0.51
+	if(L_age > 20) {
+	  double v1 = lambda_fun(1.0);
+	  double v2 = lambda_fun(2.0);
+	  double v3 = lambda_fun(3.0);
+	  double v6 = lambda_fun(6.0);
+	  LGMdouble p = GetValue(*t, LGPapical);
+	  v1 *= EBH_reduction_parameter;
+	  v2 *= EBH_reduction_parameter;
+	  v3 *= EBH_reduction_parameter;
+	  v6 *= EBH_reduction_parameter;
+	
+	  if(v1 < 0.51) v1 = 0.51;
+	  if(v2 < 0.51) v2 = 0.51;
+	  if(v3 < 0.51) v3 = 0.51;
+	  if(v6 < 0.51) v6 = 0.51;
+
+	  vector<double> lfo = lambda_fun.getVector();
+
+	  lfo[1] = v1;
+	  lfo[3] = v2;
+	  lfo[5] = v3;
+	  lfo[7] = v6;
+
+	  lambda_fun = ParametricCurve(lfo);
+	}
+      }
+
+      
       EBH_basipetal_info EBHbI0, EBHbI1;
       EBHbI1 = AccumulateDown(*t, EBHbI0, EBH_basipetal(lambda_fun) );
 
@@ -1982,13 +2036,15 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::radiationUseEfficiency() {
   //ball sensor reading from the Firmament that is the same for all
   //trees is needed in calculation of radiation use efficiency of new segments.
   //It is set on the basis of shadiness experienced by their mother.
-  SetRadiationUseEfficiency<TS,BUD>  set_rue(GetFirmament(*vtree[0]).diffuseBallSensor(),
-					     GetValue(*vtree[0],LGPq)); // use of LGPq is temporary
+  if(growthloop_is_radiation_use_efficiency) {   //rue = 1 == no effect by default
+    SetRadiationUseEfficiency<TS,BUD>  set_rue(GetFirmament(*vtree[0]).diffuseBallSensor(),
+					       radiation_use_efficiency_parameter);
   
-  for (unsigned int k = 0; k < (unsigned int)no_trees; k++){
-    TREE* t = vtree[k];
-    LGMdouble initial = 0.0;
-    PropagateUp(*t,initial,set_rue);
+    for (unsigned int k = 0; k < (unsigned int)no_trees; k++){
+      TREE* t = vtree[k];
+      LGMdouble initial = 0.0;
+      PropagateUp(*t,initial,set_rue);
+    }
   }
 }
   

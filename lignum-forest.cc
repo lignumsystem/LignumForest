@@ -266,19 +266,19 @@ int main(int argc, char** argv)
   // [AGrowth]
   /// \endinternal
 
-#if defined (__APPLE__) || defined(__MACOSX__)
-  if(CheckCommandLine(argc,argv,"-viz")) {
-    LGMVisualization viz;
-    viz.InitVisualization(argc,argv);
-    // textures 512x512
-    viz.AddCfTree(gloop.getTargetTree(), "Manty.bmp", "neulaset5.tga");
-    float th = (float)GetValue(gloop.getTargetTree(),LGAH);
-    cout << th << endl;
-    //viz.ResetCameraPosition(th);
-    viz.SetMode(SOLID);
-    //viz.ResetCameraPosition(GetValue(gloop.getTargetTree(),LGAH));
-    viz.StartVisualization();
-  }
-#endif
+// #if defined (__APPLE__) || defined(__MACOSX__)
+//   if(CheckCommandLine(argc,argv,"-viz")) {
+//     LGMVisualization viz;
+//     viz.InitVisualization(argc,argv);
+//     // textures 512x512
+//     viz.AddCfTree(gloop.getTargetTree(), "Manty.bmp", "neulaset5.tga");
+//     float th = (float)GetValue(gloop.getTargetTree(),LGAH);
+//     cout << th << endl;
+//     //viz.ResetCameraPosition(th);
+//     viz.SetMode(SOLID);
+//     //viz.ResetCameraPosition(GetValue(gloop.getTargetTree(),LGAH));
+//     viz.StartVisualization();
+//   }
+// #endif
   return 0;
 }
