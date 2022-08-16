@@ -2189,4 +2189,100 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::writeProductionBalance(TREE& t,const stri
   ForEach(t, SegmentProductionBalance(file));
 }
 
+template<class TREE, class TS,class BUD, class LSYSTEM>
+void GrowthLoop<TREE, TS,BUD,LSYSTEM>::harvestForest(double percentage)
+{
+  //Calculate number of trees to be removed
+  int nremove = static_cast<int>(std::floor((percentage/100.0)*vtree.size()));
+  //Collect tree positions and tree heights
+  vector<pair<unsigned int,double> > vposheight;
+  for (unsigned int i=0; i<vtree.size();i++){
+    Tree<TS,BUD>* t = vtree[i];
+    double tree_h = GetValue(*t,LGAH);
+    pair<unsigned int,double> p(i,tree_h);
+    vposheight.push_back(p);
+  }
+  //Sort the vector by tree height in ascending order
+  sort(vposheight.begin(),vposheight.end(),SortByTreeHeight());
+  //Collect positions to be removed
+  vector<unsigned int> vremove;
+  vector<pair<unsigned int,double> >::iterator vposheight_it = vposheight.begin();
+  //Advance to the last position to be removed
+  std::advance(vposheight_it,nremove);
+  transform(vposheight.begin(),vposheight_it,std::back_inserter(vremove),CollectTreePositions());
+  //Sort the positions in ascending order (default operator <)
+  std::sort(vremove.begin(),vremove.end());
+  //Remove trees and update data vectors
+  removeTreesAllOver(vremove);
+}
+
+template<class TREE, class TS,class BUD, class LSYSTEM>
+void GrowthLoop<TREE, TS,BUD,LSYSTEM>::removeTreesAllOver(const vector<unsigned int>& vremove)
+{
+  cout << "Trees to be removed" << endl;
+  std::copy(vremove.begin(),vremove.end(),ostream_iterator<int>(cout, " "));
+  cout << endl;
+  //Dead trees are removed from everywhere
+  typename vector<TREE*>::iterator It = vtree.begin();
+  typename vector<LSYSTEM*>::iterator Is = vlsystem.begin();
+  typename vector<pair<double,double> >::iterator Il = locations.begin();
+  //Vectors for data collected before new growth must be updated 
+		       vector<double>::iterator Iws = wsapwood.begin();
+  typename vector<double>::iterator Iwf = wfoliage.begin();
+  typename vector<double>::iterator Iwr = wroot.begin();
+  typename vector<double>::iterator Iws_after = ws_after_senescence.begin();
+  typename vector<ofstream*>::iterator If =  vdatafile.begin();
+  bool also_vdatafile = false;          //vdatafile vector may be empty
+  if(vdatafile.size() > 0)
+    also_vdatafile = true;
+  typename vector<int>::iterator In = no_h.begin();
+  typename vector<double>::iterator Ih = h_prev.begin();
+
+  typename vector<unsigned int>::const_iterator I = vremove.begin();
+  unsigned int previous = 0;
+  while(I != vremove.end()){
+    unsigned int this_advance = *I - previous;
+    advance(It, this_advance);
+    advance(Is, this_advance);
+    advance(Il, this_advance);
+    if(also_vdatafile)
+      advance(If, this_advance);
+    advance(In, this_advance);
+    advance(Ih, this_advance);
+    //Vectors for data before new growth
+    advance(Iws,this_advance);
+    advance(Iwf,this_advance);
+    advance(Iwr,this_advance);
+    advance(Iws_after,this_advance);
+	
+    delete *It;   //locations were not created by new
+    delete *Is;
+    if(also_vdatafile)
+      delete *If;
+
+
+    cout << "Dead tree at location " << Il->first << " " << Il->second << " was deleted in year "
+	 << year << endl;
+
+    vtree.erase(It);
+    vlsystem.erase(Is);
+    locations.erase(Il);
+    //Vectors  for data  before new  growth must  also be  udated to
+    //maintain the integrity of  the positions (indices) of trees to
+    //these vectors
+    wsapwood.erase(Iws);
+    wfoliage.erase(Iwf);
+    wroot.erase(Iwr);
+    ws_after_senescence.erase(Iws_after);
+    if(also_vdatafile)
+      vdatafile.erase(If);
+    no_h.erase(In);
+    h_prev.erase(Ih);
+
+    previous = *I + 1;
+
+    I++;
+    no_trees--;
+  }
+}
 #endif

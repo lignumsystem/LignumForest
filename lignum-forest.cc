@@ -183,6 +183,7 @@ int main(int argc, char** argv)
   // [GLoop]
   int year;
   for(year = 0; year < gloop.getIterations(); year++) {
+    cout << "GROWTH LOOP YEAR " << year <<endl;
     if(gloop.getNumberOfTrees() < 5) {
       cout << "Number of trees left " << gloop.getNumberOfTrees() << " Stop." << endl;
       //Do not stop abruptly, continue to the end of loop and then write data
