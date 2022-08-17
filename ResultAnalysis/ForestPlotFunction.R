@@ -35,6 +35,14 @@
 #ForestPlot("../HDF5ForestData770_ajo157_3100.h5",400,2)
 #The figures will appear in "../HDF5ForestData770_ajo157_3100.h5.pdf"
 
+#NOTE! Two data files are are used: Va27.txt and VVV-40.txt (in LignumForest/Resultanalysis).
+#Va27.txt = Varmola M (1987) Männyn viljelytaimikoiden kasvumalli. Lic. For & Agric.
+#Thesis, Department of Forest Mensuration, University of Helsinki, 89 p.
+#VVV-40.txt = Vuokila Y, Väliaho H (1980) Viljeltyjen havumetsiköiden kasvatusmallit.
+#Communicationes Instituti Forestalis Fenniae 99, 271.
+
+# -- You will need to adjust the path to these files below if you are not running this function
+# in LignumForest/Resultanalysis (getwd() == LignumForest/Resultanalysis)
 #----------------------------------------------------------------------------
 gini <- function(v){
 v <- na.omit(v)
@@ -46,6 +54,12 @@ ForestPlot <- function(infile,aplot,pick) {
 
 
 d <- H5Fopen(infile)
+
+va27 <- read.table("Va27.txt",header=FALSE)
+colnames(va27) <- c("a", "Hd",   "HgM",    "DgM",   "V",  "Hc", "G")
+
+vv <- read.table("/VVV-40.txt",header=FALSE)
+colnames(vv) <- c("age",    "DBH",		"H",		"Hcb",		"Wf", "V")
 
 pdf_file <- paste(infile,".pdf",sep="")
 
@@ -61,17 +75,9 @@ plot(y,d$StandData[11,], type="l", ylim=c(0,1.2*d$StandData[11,ymax]), lwd=2, xl
 
 points(y,d$StandData[12,], type="l", lwd=2, lty=2)   #min
 points(y,d$StandData[13,], type="l",lwd=2, lty=2)   #max
-va27 <- read.table("/Users/risto/home/LIGNUM/lignum-core/LignumForest/ResultAnalysis/Va27.txt",header=FALSE)
-colnames(va27) <- c("a", "Hd",   "HgM",    "DgM",   "V",  "Hc", "G")
 points(va27$a,va27$HgM,type="l",lwd=3,col="darkgreen")
-vv <- read.table("/Users/risto/home/LIGNUM/lignum-core/LignumForest/ResultAnalysis/VVV-40.txt",header=FALSE)
-colnames(vv) <- c("age",    "DBH",		"H",		"Hcb",		"Wf", "V")
 points(vv$age,vv$H,type="l",lwd=3,col="darkgreen")
 
-#va27 = Varmola M (1987) Männyn viljelytaimikoiden kasvumalli. Lic. For & Agric.
-#Thesis, Department of Forest Mensuration, University of Helsinki, 89 p.
-#vv = Vuokila Y, Väliaho H (1980) Viljeltyjen havumetsiköiden kasvatusmallit.
-#Communicationes Instituti Forestalis Fenniae 99, 271.
 
 
 
