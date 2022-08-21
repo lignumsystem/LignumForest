@@ -33,6 +33,16 @@
 #Finally run the ForestPlot function, e.g.:
 #ForestPlot("../HDF5ForestData770_ajo157_3100.h5",400,2)
 #The figures will appear in "../HDF5ForestData770_ajo157_3100.h5.pdf"
+
+#NOTE! Two data files are are used: Va27.txt and VVV-40.txt (in LignumForest/Resultanalysis).
+#Va27.txt = Varmola M (1987) Männyn viljelytaimikoiden kasvumalli. Lic. For & Agric.
+#Thesis, Department of Forest Mensuration, University of Helsinki, 89 p.
+#VVV-40.txt = Vuokila Y, Väliaho H (1980) Viljeltyjen havumetsiköiden kasvatusmallit.
+#Communicationes Instituti Forestalis Fenniae 99, 271.
+
+# -- You will need to adjust the path to these files below if you are not running this function
+# in LignumForest/Resultanalysis (getwd() == LignumForest/Resultanalysis)
+
 #----------------------------------------------------------------------------
 gini <- function(v){
 v <- na.omit(v)
@@ -45,14 +55,22 @@ ForestPlot <- function(infile,aplot,pick) {
 
 d <- H5Fopen(infile)
 
+va27 <- read.table("Va27.txt",header=FALSE)
+colnames(va27) <- c("a", "Hd",   "HgM",    "DgM",   "V",  "Hc", "G")
+
+vv <- read.table("/VVV-40.txt",header=FALSE)
+colnames(vv) <- c("age",    "DBH",		"H",		"Hcb",		"Wf", "V")
+
 pdf_file <- paste(infile,".pdf",sep="")
 
 
 pdf(pdf_file)
 
 y <- d$StandData[1,]
+ymax = max(y, na.rm=TRUE)
 
 #Height
+<<<<<<< HEAD
 plot(y,d$StandData[11,], type="l", ylim=c(0,1.2*d$StandData[11,length(y)]), lwd=2, xlab="time (y)", ylab="Tree height, nin, mean, max (m)", main="Mean, min and max stand height") #mean
 points(y,d$StandData[12,], type="l", lwd=2, lty=2)   #min
 points(y,d$StandData[13,], type="l",lwd=2, lty=2)   #max
@@ -61,26 +79,49 @@ points(y,d$StandData[13,], type="l",lwd=2, lty=2)   #max
 plot(y,100*d$StandData[5,], type="l", lwd=2, ylim=c(0,1.2*100*d$StandData[7,length(y)]),xlab="time (y)", ylab="Base diam, nin, mean, max (cm)", main="Mean, min and max diameter at base in the stand") #mean
 points(y,100*d$StandData[6,], type="l",lwd=2, lty=2)   #min
 points(y,100*d$StandData[7,], type="l",lwd=2, lty=2)   #max
+=======
+plot(y,d$StandData[11,], type="l", ylim=c(0,1.2*d$StandData[11,ymax]), lwd=2, xlab="time (y)", ylab="Tree height, nin, mean, max (m)", main="Mean, min and max stand height") #mean
+
+
+points(y,d$StandData[12,], type="l", lwd=2, lty=2)   #min
+points(y,d$StandData[13,], type="l",lwd=2, lty=2)   #max
+points(va27$a,va27$HgM,type="l",lwd=3,col="darkgreen")
+points(vv$age,vv$H,type="l",lwd=3,col="darkgreen")
+
+
+
+
+
+>>>>>>> d71a25de654d852d1ed44f45a8df15d44a2ca857
 
 # longest and shortest trees
-h <- d$ForestTreeData[7,,length(y)]
+h <- d$ForestTreeData[7,,ymax]
 
-mh <- max(d$ForestTreeData[7,,length(y)],na.rm=TRUE)
+mh <- max(d$ForestTreeData[7,,ymax],na.rm=TRUE)
 largest <- which(h>0.999*mh)[1]
 
-mh <- min(d$ForestTreeData[7,,length(y)],na.rm=TRUE)
+mh <- min(d$ForestTreeData[7,,ymax],na.rm=TRUE)
 smallest <- which(h<1.001*mh)[1]
 
-mh <- median(d$ForestTreeData[7,,length(y)],na.rm=TRUE)
+mh <- median(d$ForestTreeData[7,,ymax],na.rm=TRUE)
 med <- which(h<1.002*mh&h>0.98*mh)[1]
 
+#Base diameter
+plot(y,100*d$StandData[5,], type="l", lwd=2, ylim=c(0,1.5*100*d$ForestTreeData[8,largest,ymax]),xlab="time (y)", ylab="Base diam, nin, mean, max (cm)", main="Mean, min and max diameter at base in the stand",) #mean
+points(y,100*d$StandData[6,], type="l",lwd=2, lty=2)   #min
+points(y,100*d$StandData[7,], type="l",lwd=2, lty=2)   #max
+#dkanto = 2 + 1,25d (Laasasenaho 1975, Folia Forestalia 233)
+points(va27$a,0.02+1.25*va27$DgM,type="l",lwd=3,col="darkgreen")
+points(vv$age,0.02+1.25*vv$DBH,type="l",lwd=3,col="darkgreen")
+
+
 #Height
-plot(y,d$ForestTreeData[7,largest,], type="l", ylim=c(0,1.2*d$ForestTreeData[7,largest,length(y)]), lty=1,xlab="time (y)", ylab="Tree height (m)",lwd=2, main=paste("Height growth of (at age ", as.character(length(y)-1),") shortest (red), median (green),\n tallest (blue) tree",sep=""), col="blue") #largest
+plot(y,d$ForestTreeData[7,largest,], type="l", ylim=c(0,1.2*d$ForestTreeData[7,largest,ymax]), lty=1,xlab="time (y)", ylab="Tree height (m)",lwd=2, main=paste("Height growth of (at age ", as.character(ymax-1),") shortest (red), median (green),\n tallest (blue) tree",sep=""), col="blue") #largest
 points(y,d$ForestTreeData[7,med,], type="l",lwd=2, col="darkgreen")    #median
 points(y,d$ForestTreeData[7,smallest,], type="l",lwd=2,col="red")    #smallest
 
 #Base diameter
-plot(y,100*d$ForestTreeData[8,largest,], type="l", ylim=c(0,1.5*100*d$ForestTreeData[8,largest,length(y)]), lty=1,xlab="time (y)", ylab="Diameter at base (cm)",lwd=2, main=paste("Diameter growth of (at age ", as.character(length(y)-1),") shortest (red), median (green),\n tallest (blue) tree",sep=""),col="blue") #largest
+plot(y,100*d$ForestTreeData[8,largest,], type="l", ylim=c(0,30), lty=1,xlab="time (y)", ylab="Diameter at base (cm)",lwd=2, main=paste("Diameter growth of (at age ", as.character(ymax-1),") shortest (red), median (green),\n tallest (blue) tree",sep=""),col="blue") #largest
 points(y,100*d$ForestTreeData[8,med,], type="l",lwd=2, col="darkgreen")    #median
 points(y,100*d$ForestTreeData[8,smallest,], type="l",lwd=2,col="red")    #median
 
@@ -91,7 +132,7 @@ plot(y,d$StandData[3,]/aplot1, type="l", ylim=c(0,1.1*d$StandData[3,1]/aplot1),l
 #Self thinning plot
 aplot1 <- aplot/1e4          #area in ha
 plot(log(d$StandData[5,]),log(d$StandData[3,]/aplot1), xlim=c(log(0.001),log(0.5)),ylim=c(log(100),log(20000)),type="l", lty=1, lwd=2, xlab="log(mean base diameter)", ylab="log(No. trees / ha)", main="Self-thinning curve")
-p1 <- c(max(log(d$StandData[5,]))+1,min(log(d$StandData[3,]/aplot1))-0.5)
+p1 <- c(max(log(d$StandData[5,ymax]))+1,min(log(d$StandData[3,ymax]/aplot1))-0.5)
 p22 <- log(d$StandData[3,1]/aplot1)+0.5
 p21 <- (p22-p1[2])/(-3/2)+p1[1]
 points(c(p1[1],p21),c(p1[2],p22),type="l",lwd=2,col="red")
@@ -128,7 +169,7 @@ points(y,apply(d$ForestTreeData[51,,],2,min,na.rm=TRUE), type="l", lty=1, lwd=2)
 points(y,apply(d$ForestTreeData[51,,],2,max,na.rm=TRUE), type="l", lty=1, lwd=2)   #max
 
 #Lambda largest, median shortest
-plot(y,d$ForestTreeData[51,largest,], type="l", ylim=c(0,2), lty=1,xlab="time (y)", ylab="lambda",lwd=2, main=paste("Progression of lambda in shortest, median, tallest (at age ", as.character(length(y)-1),") tree"),col="blue") #largest
+plot(y,d$ForestTreeData[51,largest,], type="l", ylim=c(0,2), lty=1,xlab="time (y)", ylab="lambda",lwd=2, main=paste("Progression of lambda in shortest, median, tallest (at age ", as.character(ymax-1),") tree"),col="blue") #largest
 points(y,d$ForestTreeData[51,med,], type="l",lwd=2,col="green")    #median
 points(y,d$ForestTreeData[51,smallest,], type="l",lwd=2,col="red")    #median
 
@@ -157,21 +198,20 @@ for(i in 2:min(Ntrees/pick)) {
 	points(y,1-d$ForestTreeData[11,1,]/d$ForestTreeData[7,i*pick,], type="l")
 }
 
-
 #Height and diameter distributions
-h <- d$ForestTreeData[7,,length(y)]
-hist(h[h>0.9*d$StandData[12,length(y)]], main=paste("Height distribution at age ", as.character(max(y)),sep=""), xlab="Tree height (m)")
+h <- d$ForestTreeData[7,,ymax]
+hist(h[h>0.9*d$StandData[12,ymax]], main=paste("Height distribution at age ", as.character(ymax),sep=""), xlab="Tree height (m)")
 #
-db <- d$ForestTreeData[13,,length(y)]
-hist(db[h>0.9*d$StandData[12,length(y)]], main=paste("Distribution of diameter at base at age ", as.character(max(y)),sep=""), xlab="Diameter (cm)")
+db <- d$ForestTreeData[13,,ymax]
+hist(db[h>0.9*d$StandData[12,ymax]], main=paste("Distribution of diameter at base at age ", as.character(max(y)),sep=""), xlab="Diameter (cm)")
 ##
 
 plot(y,apply(d$ForestTreeData[7,,],2,gini),ylim=c(0,1),type="l", lwd=2,xlab="time (y)", ylab= "Gini coefficient", main="Gini coeff., solid = height, dashed = base diameter") 
 points(y,apply(d$ForestTreeData[8,,],2,gini),type="l", lwd=2, lty=2)
 
-lc <- Lc(na.omit(d$ForestTreeData[7,,length(y)]))
+lc <- Lc(na.omit(d$ForestTreeData[7,,ymax]))
 plot(lc$p,lc$L, type="l", lwd=2, main="Lorenz curve of tree heights(solid) and\ndiameters (dashed), red = all equal", xlab="Cumulative % of trees from smallest to largest", ylab="Cumulative % total height or diameter")
-lc <- Lc(na.omit(d$ForestTreeData[8,,length(y)]))
+lc <- Lc(na.omit(d$ForestTreeData[8,,ymax]))
 points(lc$p,lc$L, type="l",lwd=2,lty=2)
 abline(0,1,col="red")
 
