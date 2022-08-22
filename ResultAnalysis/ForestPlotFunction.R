@@ -70,29 +70,20 @@ y <- d$StandData[1,]
 ymax = max(y, na.rm=TRUE)
 
 #Height
-<<<<<<< HEAD
 plot(y,d$StandData[11,], type="l", ylim=c(0,1.2*d$StandData[11,length(y)]), lwd=2, xlab="time (y)", ylab="Tree height, nin, mean, max (m)", main="Mean, min and max stand height") #mean
 points(y,d$StandData[12,], type="l", lwd=2, lty=2)   #min
 points(y,d$StandData[13,], type="l",lwd=2, lty=2)   #max
 
+##This section was in conflict. Commented  lines would appear twice 
 #Base diameter
 plot(y,100*d$StandData[5,], type="l", lwd=2, ylim=c(0,1.2*100*d$StandData[7,length(y)]),xlab="time (y)", ylab="Base diam, nin, mean, max (cm)", main="Mean, min and max diameter at base in the stand") #mean
 points(y,100*d$StandData[6,], type="l",lwd=2, lty=2)   #min
 points(y,100*d$StandData[7,], type="l",lwd=2, lty=2)   #max
-=======
-plot(y,d$StandData[11,], type="l", ylim=c(0,1.2*d$StandData[11,ymax]), lwd=2, xlab="time (y)", ylab="Tree height, nin, mean, max (m)", main="Mean, min and max stand height") #mean
-
-
-points(y,d$StandData[12,], type="l", lwd=2, lty=2)   #min
-points(y,d$StandData[13,], type="l",lwd=2, lty=2)   #max
+#plot(y,d$StandData[11,], type="l", ylim=c(0,1.2*d$StandData[11,ymax]), lwd=2, xlab="time (y)", ylab="Tree height, nin, mean, max (m)", main="Mean, min and max stand height") #mean
+#points(y,d$StandData[12,], type="l", lwd=2, lty=2)   #min
+#points(y,d$StandData[13,], type="l",lwd=2, lty=2)   #max
 points(va27$a,va27$HgM,type="l",lwd=3,col="darkgreen")
 points(vv$age,vv$H,type="l",lwd=3,col="darkgreen")
-
-
-
-
-
->>>>>>> d71a25de654d852d1ed44f45a8df15d44a2ca857
 
 # longest and shortest trees
 h <- d$ForestTreeData[7,,ymax]
