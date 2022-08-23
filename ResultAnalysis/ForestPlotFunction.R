@@ -1,5 +1,5 @@
 
-#########        ForestPlot function prints out graphs from Lignum simulation of a forest stand
+#########        ForestPlot funtion prints out graphs from Lignum simulation of a forest stand
 #########        Call: ForestPlot(infile, aplot, pick)
 #########        infile: name of input HDF5 file (if not in the current directory include path). The file
 #########                must be in the HDF5 File Format (see below)
@@ -22,7 +22,6 @@
 #Biomanager package (https://www.rdocumentation.org/packages/BiocManager/versions/1.30.17):
 #install.packages("BiocManager")
 #BiocManager::install("rhdf5")
-
 #For Lorenz curve (inequality) install the package "ineq"
 #install.packages("ineq")
 #
@@ -43,6 +42,7 @@
 
 # -- You will need to adjust the path to these files below if you are not running this function
 # in LignumForest/Resultanalysis (getwd() == LignumForest/Resultanalysis)
+
 #----------------------------------------------------------------------------
 gini <- function(v){
 v <- na.omit(v)
@@ -70,18 +70,20 @@ y <- d$StandData[1,]
 ymax = max(y, na.rm=TRUE)
 
 #Height
-plot(y,d$StandData[11,], type="l", ylim=c(0,1.2*d$StandData[11,ymax]), lwd=2, xlab="time (y)", ylab="Tree height, nin, mean, max (m)", main="Mean, min and max stand height") #mean
-
-
+plot(y,d$StandData[11,], type="l", ylim=c(0,1.2*d$StandData[11,length(y)]), lwd=2, xlab="time (y)", ylab="Tree height, nin, mean, max (m)", main="Mean, min and max stand height") #mean
 points(y,d$StandData[12,], type="l", lwd=2, lty=2)   #min
 points(y,d$StandData[13,], type="l",lwd=2, lty=2)   #max
+
+##This section was in conflict. Commented  lines would appear twice 
+#Base diameter
+plot(y,100*d$StandData[5,], type="l", lwd=2, ylim=c(0,1.2*100*d$StandData[7,length(y)]),xlab="time (y)", ylab="Base diam, nin, mean, max (cm)", main="Mean, min and max diameter at base in the stand") #mean
+points(y,100*d$StandData[6,], type="l",lwd=2, lty=2)   #min
+points(y,100*d$StandData[7,], type="l",lwd=2, lty=2)   #max
+#plot(y,d$StandData[11,], type="l", ylim=c(0,1.2*d$StandData[11,ymax]), lwd=2, xlab="time (y)", ylab="Tree height, nin, mean, max (m)", main="Mean, min and max stand height") #mean
+#points(y,d$StandData[12,], type="l", lwd=2, lty=2)   #min
+#points(y,d$StandData[13,], type="l",lwd=2, lty=2)   #max
 points(va27$a,va27$HgM,type="l",lwd=3,col="darkgreen")
 points(vv$age,vv$H,type="l",lwd=3,col="darkgreen")
-
-
-
-
-
 
 # longest and shortest trees
 h <- d$ForestTreeData[7,,ymax]
@@ -129,21 +131,18 @@ legend(p1[1]-0.5,p1[2]+1,"-3/2",box.lty=0,text.col="red")
 
 
 #Basal area
-plot(y,d$StandData[14,]*1e4, ylim=c(0,80),type="l", lwd=2,xlab="time (y)", ylab= "m2/ha", main="Basal area")
-points(va27$a,va27$G,type="l",lwd=3,col="darkgreen")
+plot(y,d$StandData[14,]*1e4, ylim=c(0,50),type="l", lwd=2,xlab="time (y)", ylab= "m2/ha", main="Basal area")
 
 #Basal area at crown base
-plot(y,d$StandData[15,]*1e4, ylim=c(0,60),type="l", lwd=2,xlab="time (y)", ylab= "m2/ha", main="Basal area at crown base")
+plot(y,d$StandData[15,]*1e4, ylim=c(0,30),type="l", lwd=2,xlab="time (y)", ylab= "m2/ha", main="Basal area ar crown base")
 
 #Stem volume
-plot(y,d$StandData[16,]*1e4, ylim=c(0,1000),type="l", lwd=2,xlab="time (y)", ylab= "m3/ha", main="Stem volume")
-points(va27$a,va27$V,type="l",lwd=3,col="darkgreen")
-points(vv$age,vv$V,type="l",lwd=3,col="darkgreen")
+plot(y,d$StandData[16,]*1e4, ylim=c(0,500),type="l", lwd=2,xlab="time (y)", ylab= "m3/ha", main="Stem volume")
 
 
 #LAI and specific leaf area
 par(mar = c(5, 4, 4, 4) + 0.3)              # Additional space for second y-axis
-plot(y,d$StandData[17,], ylim=c(0,20),type="l", lty=1, lwd=2,xlab="time (y)", ylab="All-sided LAI (m2/m2)",main="LAI = continuous,  specific LA = dashed") #LAI
+plot(y,d$StandData[17,], ylim=c(0,15),type="l", lty=1, lwd=2,xlab="time (y)", ylab="All-sided LAI (m2/m2)",main="LAI = continuous,  specific LA = dashed") #LAI
 par(new = TRUE)
 plot(y,d$StandData[17,]/d$StandData[18,],type="l", lty=2,lwd=2, axes=FALSE,xlab = "", ylab = "", ylim=c(0,32))
 axis(side = 4, at = pretty(c(0,32)))
@@ -155,11 +154,6 @@ plot(y,apply(d$ForestTreeData[17,,]/d$ForestTreeData[15,,],2,mean,na.rm=TRUE), y
 points(y,apply(d$ForestTreeData[17,,]/d$ForestTreeData[15,,],2,min,na.rm=TRUE), type="l", lty=2, lwd=2)   #min
 points(y,apply(d$ForestTreeData[17,,]/d$ForestTreeData[15,,],2,max,na.rm=TRUE), type="l", lty=2, lwd=2)   #max
 
-Ntrees <- d$StandData[3,1]
-
-plot(y,d$ForestTreeData[35,1,]/(d$ForestTreeData[32,1,]*d$ForestTreeData[15,1,]), type="l",main=paste("Radiation capture efficiency, related to STAR of tree\nevery ",as.character(pick),"th tree",sep=""), xlab="time (y)", ylab="Qabs/(Af*QinTop)",ylim=c(0,0.2))
-for(i in 2:min(Ntrees/pick)) {points(y,d$ForestTreeData[35,pick*i,]/(d$ForestTreeData[32,pick*i,]*d$ForestTreeData[15,pick*i,]), type="l")}
-
 #Lambda
 plot(y,apply(d$ForestTreeData[51,,],2,mean,na.rm=TRUE), type="l", lty=2, lwd=2,xlab="time (y)", ylab= expression(paste(lambda," min, mean, max")),ylim=c(0,7), main = expression(paste(lambda," in Eq: New growth(",lambda,") = P - M")))
 points(y,apply(d$ForestTreeData[51,,],2,min,na.rm=TRUE), type="l", lty=1, lwd=2)   #min
@@ -170,6 +164,9 @@ plot(y,d$ForestTreeData[51,largest,], type="l", ylim=c(0,2), lty=1,xlab="time (y
 points(y,d$ForestTreeData[51,med,], type="l",lwd=2,col="green")    #median
 points(y,d$ForestTreeData[51,smallest,], type="l",lwd=2,col="red")    #median
 
+
+
+Ntrees <- d$StandData[3,1]
 
 #Tree heights
 plot(y,d$ForestTreeData[7,1,], ylim=c(0,30), type="l", main=paste("Individual tree heights\nevery ",as.character(pick),"th tree",sep=""), ylab="Tree height (m)",xlab="time (y)")
@@ -214,3 +211,5 @@ abline(0,1,col="red")
 dev.off()
 
 }
+
+

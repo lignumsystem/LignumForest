@@ -908,11 +908,7 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::initializeFunctions()
 	 << " fdensity() O.K: " << fdensity_ha.ok() << endl;
   }
 }
-//================================================================================
-//Generate tree locations, or read them from a file
-//Establish also stand corners with this information
-//They are set in StandDescriptor and BorderForest
-//================================================================================
+
 template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::setTreeLocations()
 {  

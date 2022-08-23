@@ -116,11 +116,12 @@ public:
   /// Create trees in predefined locations. Create also L-systems, data vectors and vector of file streams.
   /// Position of a tree in a tree vector defines its position in all othe vectors
   /// \pre Tree locations have been generated
-  /// \sa CreateLocations
-  /// \sa locations Tree locations
+  /// \sa setTreeLocations
+  /// \sa locations Tree positions
   /// \sa vtree vlsystem Vector of trees and their respective L-systems
   /// \sa no_h h_prev wsapwood wfoliage wroot ws_after_senescence Data vectors
   /// \sa vdatafile Tree output file streams
+  /// \note The command line option `-generateLocations <num>` will override all other forest generation options 
   void createTrees();
   /// Resize 3D array for tree data to be collected during the simulation
   /// Resize 2D array for stand data to be collected during the simulation
@@ -136,6 +137,10 @@ public:
   void initializeFunctions();
   void initializeGrowthLoop();
   void increaseXi(int& year);
+  ///Generate random tree locations, or read them from a file
+  ///Establish also stand corners with this information
+  ///They are set in StandDescriptor and BorderForest
+  ///\sa GenerateLocations
   void setTreeLocations();
   void photosynthesis(TREE& t);
   void respiration(TREE& t);
