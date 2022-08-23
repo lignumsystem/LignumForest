@@ -461,6 +461,9 @@ private:
   LGMdouble EBH_reduction_parameter;
   bool growthloop_is_radiation_use_efficiency;
   LGMdouble radiation_use_efficiency_parameter;
+  LGMdouble ebh_final_value;   ///< If -EBHREDUCTION is set, ebh parameters reach this value
+  int growthloop_ebh_mode;     ///< Which variable (Qin, Qabs, or rue*Qabs) runs EBH growth distribution
+
 };
 #endif
 #include <GrowthLoopI.h>

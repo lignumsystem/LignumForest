@@ -97,7 +97,7 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::usage()const
   cout << "[-gFunVar <value>] [-branchAngleVar <value>]" << endl;
   cout << "[-space0] [-space1] [-space2] [-adHoc]" << endl;
   cout << "[-budViewFunction] [-EBH] -EBH1 <value>]" << endl;
-  cout << "[-space2Distance <Value>] [-EBHREDUCTION <value>] [-RUE <value>]" << endl;
+  cout << "[-space2Distance <Value>] [-EBHREDUCTION <value>] [-EBHFINAL <value>] [-EBHInput <int>] [-RUE <value>]" << endl;
   cout << "------------------------------------------------------------------------------------------------" << endl;
   cout << "-iter Number of years to simulate" << endl;
   cout << "-metafile File (usually called Metafile,txt) containg file locations for Tree parameters, Firmament configuration and Tree functions" << endl;
@@ -141,8 +141,12 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::usage()const
   cout << "                   EBH is according to W. Palubicki and K. Horel and S. Longay and" << endl;
   cout << "                   A. Runions and B. Lane and R. Mech and P. Prusinkiewicz. 2009." << endl;
   cout << "                   Self-organizing tree models for image synthesis ACM Transactions on Graphics 28 58:1-10." << endl;
-  cout << "-EBHREDUCTION <value> If values of EBH parameters for all orders are reduced as new_value = <value> * prev_value" << endl;
-  cout << "                   in each year after year 20 (if <value> > 1, the values increase). Min value of EBH param = 0.51." << endl;
+  cout << "-EBHREDUCTION <value> If values of EBH parameters for all orders are reduced or increased  as" << endl;
+  cout << "                      new_value = <value> * prev_value in each year after year 20. The goal of change" << endl;
+  cout << "                   can be set by -EBHFINAL. The default value is 0.5"<< endl;
+  cout << "-EBHFINAL <value>  Sets the goal value of -EBHREDUCTION" << endl;
+  cout << "-EBHInput <int>    Changes the variable that runs EBH. If int == 1, it is Qabs, if int == 2, it is rue*Qabs," << endl;
+  cout << "                   any other value or missing -EBHInput means Qin runs EBH." << endl;
   cout << "-RUE <value>       The radiation use effeciency (rue) varies as a function of TreeSegments initial radiation" << endl;
   cout << "                   conditions. Photosynthetic production of TreeSegment = rue * LGApr * Qabs. <value> = degree of" << endl;
   cout << "                   increase of rue as a function of shadiness (0 < <value> < 2)." << endl;
@@ -514,11 +518,23 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::parseCommandLine(int argc, char** argv)
 
 
   growthloop_is_EBH_reduction = false;
-  EBH_reduction_parameter = 0.0;
+  EBH_reduction_parameter = 1.0;
   clarg.clear();
   if(ParseCommandLine(argc,argv,"-EBHREDUCTION", clarg)) {
     growthloop_is_EBH_reduction = true;
     EBH_reduction_parameter = atof(clarg.c_str());
+  }
+
+  ebh_final_value = 0.5;
+  clarg.clear();
+  if(ParseCommandLine(argc,argv,"-EBHFINAL", clarg)) {
+    ebh_final_value = atof(clarg.c_str());
+  }
+
+  growthloop_ebh_mode = 0;
+  clarg.clear();
+  if(ParseCommandLine(argc,argv,"-EBHInput", clarg)) {
+    growthloop_ebh_mode  = atoi(clarg.c_str());
   }
 
   growthloop_is_radiation_use_efficiency = false;
@@ -1996,10 +2012,17 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::createNewSegments()
 	  v3 *= EBH_reduction_parameter;
 	  v6 *= EBH_reduction_parameter;
 	
-	  if(v1 < 0.51) v1 = 0.51;
-	  if(v2 < 0.51) v2 = 0.51;
-	  if(v3 < 0.51) v3 = 0.51;
-	  if(v6 < 0.51) v6 = 0.51;
+	 if(EBH_reduction_parameter < 1.0) {
+ 	    if(v1 < ebh_final_value) v1 = ebh_final_value;
+ 	    if(v2 < ebh_final_value) v2 = ebh_final_value;
+ 	    if(v3 < ebh_final_value) v3 = ebh_final_value;
+ 	    if(v6 < ebh_final_value) v6 = ebh_final_value;
+ 	  } else {
+ 	    if(v1 > ebh_final_value) v1 = ebh_final_value;
+ 	    if(v2 > ebh_final_value) v2 = ebh_final_value;
+ 	    if(v3 > ebh_final_value) v3 = ebh_final_value;
+ 	    if(v6 > ebh_final_value) v6 = ebh_final_value;
+ 	  }
 
 	  vector<double> lfo = lambda_fun.getVector();
 
@@ -2014,7 +2037,7 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::createNewSegments()
 
       
       EBH_basipetal_info EBHbI0, EBHbI1;
-      EBHbI1 = AccumulateDown(*t, EBHbI0, EBH_basipetal(lambda_fun) );
+      EBHbI1 = AccumulateDown(*t, EBHbI0, EBH_basipetal(lambda_fun, growthloop_ebh_mode) );
 
       EBH_acropetal_info EBHaI0(1.0, 1.0/lambda_fun(1.0), 1.0);
       PropagateUp(*t, EBHaI0, EBH_acropetal(lambda_fun) );
