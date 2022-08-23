@@ -37,8 +37,8 @@ ExtractXML <- function(datafile, xmlfile, years) {
 d <- H5Fopen(datafile)
 
 datayrs <- d$StandData[1,]         #Tree information is storad at datayrs years
-maxdyrs <- datayrs[length(datayrs)]
-
+#maxdyrs <- datayrs[length(datayrs)]
+maxdyrs <- max(datayrs, na.rm=TRUE)
 ym <- max(years)
 
 if(ym > maxdyrs) { print("years contains a too large year"); return(-1)}
@@ -54,7 +54,7 @@ mh <- min(d$ForestTreeData[7,,k],na.rm=TRUE)
 smallest <- which(h<1.001*mh)[1]
 
 mh <- median(d$ForestTreeData[7,,k],na.rm=TRUE)
-med <- which(h<1.001*mh&h>0.999*mh)[1]
+med <- which(h<1.001*mh&h>0.99*mh)[1]
 
 lid <- d$ForestTreeData[1,largest,1]        #Tree id
 sid <- d$ForestTreeData[1,smallest,1]

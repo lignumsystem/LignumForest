@@ -58,7 +58,7 @@ d <- H5Fopen(infile)
 va27 <- read.table("Va27.txt",header=FALSE)
 colnames(va27) <- c("a", "Hd",   "HgM",    "DgM",   "V",  "Hc", "G")
 
-vv <- read.table("/VVV-40.txt",header=FALSE)
+vv <- read.table("VVV-40.txt",header=FALSE)
 colnames(vv) <- c("age",    "DBH",		"H",		"Hcb",		"Wf", "V")
 
 pdf_file <- paste(infile,".pdf",sep="")
