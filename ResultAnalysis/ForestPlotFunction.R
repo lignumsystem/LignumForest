@@ -187,9 +187,9 @@ for(i in 2:min(Ntrees/pick)) {
 }
 
 #Crown ratio
-plot(y,1-d$ForestTreeData[11,1,]/d$ForestTreeData[7,1,], ylim=c(0,1), type="l", main=paste("Crown ratios\nevery ",as.character(pick),"th tree",sep=""), ylab="Crown ratio",xlab="time (y)")
-for(i in 2:min(Ntrees/pick)) {
-	points(y,1-d$ForestTreeData[11,1,]/d$ForestTreeData[7,i*pick,], type="l")
+plot(y,1-d$ForestTreeData[11,1,]/d$ForestTreeData[7,1,], ylim=c(0,1), type="l", main=paste("Crown ratios\nevery ",as.character(pick),"th tree",sep=""), ylab="Crown ratio",xlab="time (y)",xlim=c(0,ymax))
+for(i in 1:min(Ntrees/pick)) {
+	points(y,1-d$ForestTreeData[11,i*pick,]/d$ForestTreeData[7,i*pick,], type="l")
 }
 
 #Height and diameter distributions
