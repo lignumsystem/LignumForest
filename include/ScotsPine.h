@@ -224,10 +224,10 @@ private:
 /////ScotsPineSegment    ///////////////////////
 
 class ScotsPineSegment: public PineSegment<ScotsPineSegment,ScotsPineBud>{
-  //This SetValue  for LGPsf  changes the specific  leaf area to  be a
-  //function instead of being  single tree level parameter. That's why
-  //no  value argument. Also  this is  meant to  be used  with functor
-  //SetScotsPineSegmentSf() only.
+  ///The SetValue  for LGPsf  changes the specific  leaf area to  be a
+  ///function instead of being  single tree level parameter. That's why
+  ///no  value argument. Also  this is  meant to  be used  with functor
+  ///SetScotsPineSegmentSf() only.
   friend LGMdouble SetValue(ScotsPineSegment& ts, LGMAD  name){    //a bit unconventional SetValue
     //The data from P Kaitaniemi suggesta following model for sf (m2/kgC)
     //    sf = 200.0/(5.8307 + 5.3460*relative_height + omega + 27.0*length)
@@ -266,10 +266,10 @@ class ScotsPineSegment: public PineSegment<ScotsPineSegment,ScotsPineBud>{
 
   friend LGMdouble GetValue(const ScotsPineSegment& ts, const LGMAD name){
     if (name == LGAWh){
-      //For TreeSegment the sapwood, hertwood and total wood masses are simply rho*LGAV[s,h,wood],
-      //i.e. one density value for all segments. ScotsPineSegment (Lig-Crobas) uses measurement data
-      //for more detailed values. This is a shorthand fix: Hakkila 1969 CIFF 67.6
-      //shows that wood density for branches is > 200 kgC/m3. To achieve this add 10 years to age,
+      ///LGAWh: For TreeSegment the sapwood, hertwood and total wood masses are simply rho*LGAV[s,h,wood],
+      ///i.e. one density value for all segments. ScotsPineSegment (Lig-Crobas) uses measurement data
+      ///for more detailed values. This is a shorthand fix: Hakkila 1969 CIFF 67.6
+      ///shows that wood density for branches is > 200 kgC/m3. To achieve this add 10 years to age,
       //if branch
       const ParametricCurve& wd = GetFunction(dynamic_cast<ScotsPineTree&>(GetTree(ts)), SPWD);
       double age = GetValue(ts, LGAage);
@@ -323,12 +323,13 @@ class ScotsPineSegment: public PineSegment<ScotsPineSegment,ScotsPineBud>{
   }
   
 public:
+  ///\attention LGAQabs initialized to 1.0 due to usage (anything != 0.0 would do)
   ScotsPineSegment(const Point& p,const PositionVector& d,
 		   const LGMdouble go,const METER l,
 		   const METER r,const METER rh,
 		   Tree<ScotsPineSegment,ScotsPineBud>* tree)
     :PineSegment<ScotsPineSegment,ScotsPineBud>(p,d,go,l,r,rh,tree),
-     EBH_resource(0.0), apical(1.0),rue(1.0)  {}
+     EBH_resource(0.0), apical(1.0),rue(1.0)  {SetValue(*this,LGAQabs,1.0);}
 
   //DiameterGrowth  in   functors  [Try|Do]ScotsPineDiameterGrowth  in
   //DiameterGrowth.h
