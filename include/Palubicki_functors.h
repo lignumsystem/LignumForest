@@ -31,13 +31,24 @@ class EBH_basipetal_info {
 
 class EBH_basipetal {
  public:
- EBH_basipetal(const ParametricCurve la_in) : lambda_fun(la_in) {;}
+  EBH_basipetal(const ParametricCurve la_in, const int mode) : lambda_fun(la_in), ebh_mode(mode) {;}
   EBH_basipetal_info& operator () (EBH_basipetal_info& val, 
 				  TreeCompartment<ScotsPineSegment,ScotsPineBud>* tc) const {
 
     if(ScotsPineSegment* ts = dynamic_cast<ScotsPineSegment*>(tc)) {
       (val.orders)[0] = GetValue(*ts, LGAomega); //vectors orders, Qvs are of length 1 here
-      (val.Qvs)[0] += GetValue(*ts, LGAQin);
+      //      (val.Qvs)[0] += GetValue(*ts, LGAQin);
+       switch(ebh_mode) {
+       case 1:
+	(val.Qvs)[0] += GetValue(*ts, LGAQabs);
+	break;
+       case 2:
+         (val.Qvs)[0] += GetValue(*ts, SPrue) * GetValue(*ts, LGAQabs);
+	break;
+       default:
+	(val.Qvs)[0] += GetValue(*ts, LGAQin);
+       }
+      
       ts->setQv((val.Qvs)[0]);
     }
 
@@ -67,6 +78,7 @@ class EBH_basipetal {
 
  private:
   ParametricCurve lambda_fun;
+  int ebh_mode;
 };
 
 
