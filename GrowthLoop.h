@@ -29,6 +29,7 @@
 #include <Space.h>
 #include <Palubicki_functors.h>
 #include <TreeDataAfterGrowth.h>
+
 ///\class CollectP
 ///\brief Collect photosynthates from the tree
 ///Use with Accumulate algorithm in stl-lignum
@@ -134,6 +135,12 @@ public:
   void resizeTreeDataMatrix();
   void initializeTrees();
   void initializeVoxelSpace();
+  /// Initialize, i.e read ParametricCurve files
+  /// \pre ParametricCurve files must exists
+  /// \todo Divide files to mandatory (stop excecution) and optional (warning to standard error)
+  /// \todo Maybe it is possible to remove hard-coded files to parameterised
+  /// \remark The existence of a file is tested with `ìfstream`. In the C++ 17 STL
+  /// one can clean up implementation with std::filesystem::exists
   void initializeFunctions();
   void initializeGrowthLoop();
   void increaseXi(int& year);

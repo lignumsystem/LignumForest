@@ -899,10 +899,19 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::initializeVoxelSpace()
 
 template<class TREE, class TS,class BUD, class LSYSTEM>
 void GrowthLoop<TREE, TS,BUD,LSYSTEM>::initializeFunctions()
-{  
-  K.install("K.fun");
-  stems_ha.install("stemsha.fun");
-  fdensity_ha.install("fdensity.fun");
+{
+  ifstream fk("K.fun");
+  if (fk.good()){
+      K.install("K.fun");
+  }
+  ifstream fstem("stemsha.fun");
+  if (fstem.good()){
+      stems_ha.install("stemsha.fun");
+  }
+  ifstream fdensity("fdensity.fun");
+  if (fdensity.good()){
+    fdensity_ha.install("fdensity.fun");
+  }
   if (verbose){
     cout << "K() O.K: " << K.ok() << " stems_ha() O.K: " << stems_ha.ok() 
 	 << " fdensity() O.K: " << fdensity_ha.ok() << endl;
