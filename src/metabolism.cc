@@ -1,25 +1,26 @@
 #include <ScotsPine.h>
+///\file metabolism.cc
+///Redefine respiration, that is defined in CfTreeSeegmentMetabolismI.h
+///to take into account wood density that varies between annual rings
+///according to function SPWD.
 
-//Redefine respiration, that is defined in CfTreeSeegmentMetabolismI.h
-//to take into account wood density that varies between annual rings
-//according to function SPWD.
-
-//The variation of wood density among tree rings is taken into
-//consideration in an average manner: mean density of sapwood is
-//calculated with the aif of function SPWD that defines density of
-//annual ring as a function of age of segment (at creation of annual
-//ring). The average is taken of function SPWD over range (hardwood
+///The variation of wood density among tree rings is taken into
+///consideration in an average manner: mean density of sapwood is
+///calculated with the aif of function SPWD that defines density of
+///annual ring as a function of age of segment (at creation of annual
+///ring). The average is taken of function SPWD over range (hardwood
 //radius/radius) x segment age ... segment age.
 
-//RESPIRATION rate of the segment as the function of needle mass
-//and sapwood mass
+///RESPIRATION rate of the segment as the function of needle mass
+///and sapwood mass
 
- ///Radiation use efficiency: photosynthetic production of a CfTreeSegment =
- ///rue*LGPpr*Qabs, where parameter LGPpr = Photosynthetic efficiency
- ///(see LGMSymbols.h). rue depends on the radiation conditions of the CfTreeSegment
- ///at its birth. At full light (at top of the stand) rue = 1, in shaded
- ///conditions possibly rue > 1.
-
+///Radiation use efficiency: photosynthetic production of a CfTreeSegment =
+///rue*LGPpr*Qabs, where parameter LGPpr = Photosynthetic efficiency
+///(see LGMSymbols.h). rue depends on the radiation conditions of the CfTreeSegment
+///at its birth. At full light (at top of the stand) rue = 1, in shaded
+///conditions possibly rue > 1.
+///\todo photsynthesis, respiration and aging could be implemented as functors
+/// to ease the testing of experimental models. 
 void ScotsPineSegment::photosynthesis()
 {
   Tree<ScotsPineSegment,ScotsPineBud>& t = GetTree(*this);
