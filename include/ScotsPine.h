@@ -324,6 +324,7 @@ class ScotsPineSegment: public PineSegment<ScotsPineSegment,ScotsPineBud>{
   
 public:
   ///\attention LGAQabs initialized to 1.0 due to usage (anything != 0.0 would do)
+  ///\sa ScotsPineSegment::photosynthesis
   ScotsPineSegment(const Point& p,const PositionVector& d,
 		   const LGMdouble go,const METER l,
 		   const METER r,const METER rh,
