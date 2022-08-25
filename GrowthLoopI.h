@@ -2011,7 +2011,7 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::createNewSegments()
 	  double v2 = lambda_fun(2.0);
 	  double v3 = lambda_fun(3.0);
 	  double v6 = lambda_fun(6.0);
-	  LGMdouble p = GetValue(*t, LGPapical);
+
 	  v1 *= EBH_reduction_parameter;
 	  v2 *= EBH_reduction_parameter;
 	  v3 *= EBH_reduction_parameter;
