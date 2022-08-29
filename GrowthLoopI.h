@@ -32,6 +32,8 @@ extern bool bud_variation;///<Initialized in GrowthLoopI.h
 extern double branch_angle;///<Initialized in GrowthLoopI.h
 extern ParametricCurve bud_view_f;///<Initialized in GrowthLoopI.h
 extern bool is_bud_view_function;///<Reinitialized in GrowthLoopI.h.
+extern double global_hcb;///<Initialized in GrowthLoopI.h
+extern double L_H;///<Initialized in GrowthLoopI.h
                                  
 template <class TREE,class TS, class BUD, class LSYSTEM>
 int  CreateTreeXMLDataSet(const GrowthLoop<TREE,TS,BUD,LSYSTEM>& gl, LGMHDF5File& hdf5_file,const string& group_name, const int interval)
@@ -1122,10 +1124,12 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::collectDataAfterGrowth(const int year)
 {
   ///Collect data for each tree for a single year to tdafter dictionary (map in STL)
   ///Add a row for each tree in 3D matrix hdf5_tree_data
+  ///NOTE that global variables L_H (tree height) and global_hcb (height of
+  ///crown base) are set her for next iteration.
   for (unsigned int tree_num = 0; tree_num < vtree.size(); tree_num++){
     map<string,double> tdafter;//collect decriptive data first into this dictionary 
     summing bs; // Branch summaries for mean branch.
-    DCLData dcl; //Crown base: Diameter and height
+    DCLData dcl; //Crown base: Diameter and height.
     TREE& t = *vtree[tree_num];
     bs = Accumulate(t,bs,Branchmeans());
     dcl = AccumulateDown(t,dcl,AddBranchWf(),DiameterCrownBase<TS,BUD>());
@@ -1140,10 +1144,12 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::collectDataAfterGrowth(const int year)
     tdafter["TreeNseg"]=static_cast<double>(AccumulateDown(t,nsegment,CountTreeSegments<TS,BUD>()));
     tdafter["TreeCrownVol"] = cv(t);
     tdafter["TreeH"] = GetValue(t,LGAH);
+    L_H = tdafter["TreeH"];
     tdafter["TreeDBase"] = GetValue(t,LGADbase);
     tdafter["TreeDbh"] = GetValue(t,LGADbh);
     tdafter["TreeDCrownBase"] = dcl.DCrownBase();
     tdafter["TreeHCrownBase"] = dcl.HCrownBase();
+    global_hcb = dcl.HCrownBase();
     tdafter["TreeAsBase"] = GetValue(t,LGAAsbase);
     tdafter["TreeAsDbh"] = GetValue(t,LGAAsDbh);
     tdafter["TreeAsCrownBase"] = dcl.ASwCrownBase();
@@ -1345,7 +1351,7 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
 {
   list<unsigned int> dead_trees;
   dead_trees.clear();
-
+  
   //Create new buds by making derive with mode == 1 (global variable)
   mode = 1;
 
@@ -1353,6 +1359,7 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
     cout << "Allocation loop with k: " << k << " No trees " << no_trees <<endl; 
     TREE* t = vtree[k];
     LSYSTEM* l = vlsystem[k];
+
     /// \internal
     /// \remark This is for Pipe model calculations:
     /// Initialize calculation of thickness growth induced by adding new shoots.
@@ -2011,7 +2018,7 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::createNewSegments()
 	  double v2 = lambda_fun(2.0);
 	  double v3 = lambda_fun(3.0);
 	  double v6 = lambda_fun(6.0);
-
+	  LGMdouble p = GetValue(*t, LGPapical);
 	  v1 *= EBH_reduction_parameter;
 	  v2 *= EBH_reduction_parameter;
 	  v3 *= EBH_reduction_parameter;
