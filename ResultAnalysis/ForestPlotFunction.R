@@ -35,12 +35,12 @@
 #ForestPlot("../HDF5ForestData770_ajo157_3100.h5",400,2)
 #The figures will appear in "../HDF5ForestData770_ajo157_3100.h5.pdf"
 
-#NOTE! Two data files are are used: Va27.txt and VVV-40.txt (in LignumForest/Resultanalysis).
+#NOTE! Three data files are are used: Va27.txt, VVV-40.txt, and ksto-mt.dat (in LignumForest/Resultanalysis).
 #Va27.txt = Varmola M (1987) Männyn viljelytaimikoiden kasvumalli. Lic. For & Agric.
 #Thesis, Department of Forest Mensuration, University of Helsinki, 89 p.
 #VVV-40.txt = Vuokila Y, Väliaho H (1980) Viljeltyjen havumetsiköiden kasvatusmallit.
 #Communicationes Instituti Forestalis Fenniae 99, 271.
-
+#ksto-mt.dat.  Finnish yiels tables compiled by Koivisto
 # -- You will need to adjust the path to these files below if you are not running this function
 # in LignumForest/Resultanalysis (getwd() == LignumForest/Resultanalysis)
 #----------------------------------------------------------------------------
@@ -61,6 +61,8 @@ colnames(va27) <- c("a", "Hd",   "HgM",    "DgM",   "V",  "Hc", "G")
 vv <- read.table("VVV-40.txt",header=FALSE)
 colnames(vv) <- c("age",    "DBH",		"H",		"Hcb",		"Wf", "V")
 
+ksto <- read.table("ksto-mt.dat", header=TRUE)
+
 pdf_file <- paste(infile,".pdf",sep="")
 
 
@@ -77,6 +79,8 @@ points(y,d$StandData[12,], type="l", lwd=2, lty=2)   #min
 points(y,d$StandData[13,], type="l",lwd=2, lty=2)   #max
 points(va27$a,va27$HgM,type="l",lwd=3,col="darkgreen")
 points(vv$age,vv$H,type="l",lwd=3,col="darkgreen")
+points(ksto$year,ksto$Hav,type="l",lwd=3,col="darkgreen")
+
 
 # longest and shortest trees
 h <- d$ForestTreeData[7,,ymax]
@@ -97,6 +101,7 @@ points(y,100*d$StandData[7,], type="l",lwd=2, lty=2)   #max
 #dkanto = 2 + 1,25d (Laasasenaho 1975, Folia Forestalia 233)
 points(va27$a,0.02+1.25*va27$DgM,type="l",lwd=3,col="darkgreen")
 points(vv$age,0.02+1.25*vv$DBH,type="l",lwd=3,col="darkgreen")
+points(ksto$year,0.02+1.25*ksto$Dbhav,type="l",lwd=3,col="darkgreen")
 
 
 #Height
@@ -112,6 +117,8 @@ points(y,100*d$ForestTreeData[8,smallest,], type="l",lwd=2,col="red")    #median
 #Density
 aplot1 <- aplot/1e4          #area in ha
 plot(y,d$StandData[3,]/aplot1, type="l", ylim=c(0,1.1*d$StandData[3,1]/aplot1),lty=1, lwd=2, xlab="time (y)", ylab="No. trees / ha", main="Stand density")
+points(ksto$year,ksto$N,type="l",lwd=3,col="darkgreen")
+
 
 #Self thinning plot
 aplot1 <- aplot/1e4          #area in ha
@@ -121,11 +128,15 @@ p22 <- log(d$StandData[3,1]/aplot1)+0.5
 p21 <- (p22-p1[2])/(-3/2)+p1[1]
 points(c(p1[1],p21),c(p1[2],p22),type="l",lwd=2,col="red")
 legend(p1[1]-0.5,p1[2]+1,"-3/2",box.lty=0,text.col="red")
+points(log((0.02+1.25*ksto$Dbhav)/100),log(ksto$N),type="l",lwd=3,col="darkgreen")
+
 
 
 #Basal area
 plot(y,d$StandData[14,]*1e4, ylim=c(0,80),type="l", lwd=2,xlab="time (y)", ylab= "m2/ha", main="Basal area")
 points(va27$a,va27$G,type="l",lwd=3,col="darkgreen")
+points(ksto$year,ksto$G,type="l",lwd=3,col="darkgreen")
+
 
 #Basal area at crown base
 plot(y,d$StandData[15,]*1e4, ylim=c(0,60),type="l", lwd=2,xlab="time (y)", ylab= "m2/ha", main="Basal area at crown base")
@@ -134,6 +145,7 @@ plot(y,d$StandData[15,]*1e4, ylim=c(0,60),type="l", lwd=2,xlab="time (y)", ylab=
 plot(y,d$StandData[16,]*1e4, ylim=c(0,1000),type="l", lwd=2,xlab="time (y)", ylab= "m3/ha", main="Stem volume")
 points(va27$a,va27$V,type="l",lwd=3,col="darkgreen")
 points(vv$age,vv$V,type="l",lwd=3,col="darkgreen")
+points(ksto$year,ksto$V,type="l",lwd=3,col="darkgreen")
 
 
 #LAI and specific leaf area
@@ -227,9 +239,6 @@ points(y,apply(d$ForestTreeData[51,,],2,max,na.rm=TRUE), type="l", lty=1, lwd=2)
 plot(y,d$ForestTreeData[51,largest,], type="l", ylim=c(0,2), lty=1,xlab="time (y)", ylab="lambda",lwd=2, main=paste("Progression of lambda in shortest, median, tallest (at age ", as.character(ymax-1),") tree"),col="blue") #largest
 points(y,d$ForestTreeData[51,med,], type="l",lwd=2,col="green")    #median
 points(y,d$ForestTreeData[51,smallest,], type="l",lwd=2,col="red")    #median
-
-
-
 
 dev.off()
 
