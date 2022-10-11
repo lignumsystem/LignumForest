@@ -21,3 +21,5 @@ LGPaf 2
 LGPq 1.5
 LGPsr 1.33
 LGPlen_random 0.0
+LGPe1 50
+LGPe2 130

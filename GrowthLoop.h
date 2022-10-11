@@ -84,7 +84,7 @@ public:
      self_thinning(false), generate_locations(false), location_file("Treelocations.txt"),
      no_trees(0), wood_voxel(true), evaluate_border_forest(true),seg_len_var(0.0),
      pairwise_self(false), eero(false),  g_fun_varies(false), g_fun_var(0.0),
-     random_branch_angle(false), ba_variation(0.0) {}
+     random_branch_angle(false), ba_variation(0.0), dDb(0.003) {}
   ~GrowthLoop();
   ///Initialize:  parse command line, initialize  trees, voxel space
   ///and growth loop.
@@ -475,7 +475,8 @@ private:
   LGMdouble radiation_use_efficiency_parameter;
   LGMdouble ebh_final_value;   ///< If -EBHREDUCTION is set, ebh parameters reach this value
   int growthloop_ebh_mode;     ///< Which variable (Qin, Qabs, or rue*Qabs) runs EBH growth distribution
-
+  bool growthloop_is_heightFun; ///< If length of stem apical shoot is derived from relative crown length
+  LGMdouble Db_current, Db_previous, dDb;  ///< For change in base diameter, for -heightFun
 };
 #endif
 #include <GrowthLoopI.h>

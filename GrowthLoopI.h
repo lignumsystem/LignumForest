@@ -100,6 +100,7 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::usage()const
   cout << "[-space0] [-space1] [-space2] [-adHoc]" << endl;
   cout << "[-budViewFunction] [-EBH] -EBH1 <value>]" << endl;
   cout << "[-space2Distance <Value>] [-EBHREDUCTION <value>] [-EBHFINAL <value>] [-EBHInput <int>] [-RUE <value>]" << endl;
+  cout << "[-heightFun]" << endl;
   cout << "------------------------------------------------------------------------------------------------" << endl;
   cout << "-iter Number of years to simulate" << endl;
   cout << "-metafile File (usually called Metafile,txt) containg file locations for Tree parameters, Firmament configuration and Tree functions" << endl;
@@ -152,6 +153,7 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::usage()const
   cout << "-RUE <value>       The radiation use effeciency (rue) varies as a function of TreeSegments initial radiation" << endl;
   cout << "                   conditions. Photosynthetic production of TreeSegment = rue * LGApr * Qabs. <value> = degree of" << endl;
   cout << "                   increase of rue as a function of shadiness (0 < <value> < 2)." << endl;
+  cout << "-heightFun         If length of stem apical shoot is derived from relative crown length (params. LGPe1, LGPe2)." << endl;
   cout << endl;
 }
  // [Usagex]
@@ -545,6 +547,11 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::parseCommandLine(int argc, char** argv)
   if(ParseCommandLine(argc,argv,"-RUE", clarg)) {
     growthloop_is_radiation_use_efficiency = true;
     radiation_use_efficiency_parameter = atof(clarg.c_str());
+  }
+
+  growthloop_is_heightFun = false;
+  if(CheckCommandLine(argc,argv,"-heightFun")) {
+    growthloop_is_heightFun = true;
   }
 
 
@@ -1360,6 +1367,19 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
     TREE* t = vtree[k];
     LSYSTEM* l = vlsystem[k];
 
+
+    // if(growthloop_is_heightFun) {
+    //   if(L_age == 0) {
+    // 	dDb = 0.003;    // 3 mm --> length growth about 50*0.003 = 0.15
+    // 	Db_previous = GetValue(*t, LGADbase);
+    //   } else {
+    // 	Db_current = GetValue(*t, LGADbase);
+    // 	dDb = Db_current - Db_previous;
+    // 	Db_previous = Db_current;
+    //   }
+    // }
+
+
     /// \internal
     /// \remark This is for Pipe model calculations:
     /// Initialize calculation of thickness growth induced by adding new shoots.
@@ -1385,6 +1405,25 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
       continue;
     }
 
+    //============================================================================
+    // If -heightFun
+    //
+    //=============================================================================
+      if(growthloop_is_heightFun && L_age > 10) {
+	//Here length of leader at tree level, if height function
+	Axis<TS,BUD>& stem =  GetAxis(*t);
+	TreeSegment<TS,BUD>* last =
+	  GetLastTreeSegment(stem);
+	double e1 = GetValue(*t,LGPe1);
+	double e2 = GetValue(*t,LGPe2);
+	// cout << " e1 e2 " << e1 << " " << e2 << endl;
+	// cout << " Hc H dDb " << L_H << " " << global_hcb << " " << dDb << endl;
+	double Lnew = (e1 + e2*global_hcb/L_H) * dDb;
+        if(Lnew < 0.1)           //safeguarding against losing top
+            Lnew = 0.1;
+	SetValue(*last, LGAL, Lnew);
+      }
+
     //Calculate  the  LGAsf  for   newly  created  segments,  sf  in  P
     //Kaitaniemi data depens on segment length
     ForEach(*t,SetScotsPineSegmentSf());
@@ -1395,9 +1434,16 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
     //Now the lengths of the segments are such that G = P - M. Adjust the diameters
     // of old segments on the basis sapwood demand from above and those of new
     // segments on the basis of their length.
+    if(growthloop_is_heightFun) {
+      Db_previous = GetValue(*t,LGADbase);
+    }
     DiameterGrowthData dgdata;
     AccumulateDown(*t,dgdata,PartialSapwoodAreaDown(GetFunction(*t,SPSD)),
 		   ScotsPineDiameterGrowth2(LGMGROWTH));
+    if(growthloop_is_heightFun) {
+      Db_current = GetValue(*t,LGADbase);
+      dDb = Db_current - Db_previous;
+    }
 
     //Root growth
     double wfnew = 0.0;
@@ -1416,6 +1462,7 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
     double lentobuds = 0.0;
     PropagateUp(*t,lentobuds,ForwardSegLen<TS,BUD>());
     l->lignumToLstring(*t,1,PBDATA);
+
 
     //============================================================================
     // Here is calculation of estimation of local needle area density for
@@ -2012,7 +2059,7 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::createNewSegments()
 
       ParametricCurve lambda_fun = GetFunction(*t,SPEBHF);
       if(growthloop_is_EBH_reduction) {
-	//After age 20 EBH values for all orders decrease gradually from the  value > 0.51 to 0.51
+	//After age 20 EBH values for all orders change gradually from the nominal value to ebh_final_value 
 	if(L_age > 20) {
 	  double v1 = lambda_fun(1.0);
 	  double v2 = lambda_fun(2.0);
