@@ -72,7 +72,7 @@ y <- d$StandData[1,]
 ymax = max(y, na.rm=TRUE)
 
 #Height
-plot(y,d$StandData[11,], type="l", ylim=c(0,1.2*d$StandData[11,ymax]), lwd=2, xlab="time (y)", ylab="Tree height, nin, mean, max (m)", main="Mean, min and max stand height") #mean
+plot(y,d$StandData[11,], type="l", ylim=c(0,30), lwd=2, xlab="time (y)", ylab="Tree height, nin, mean, max (m)", main="Mean, min and max stand height") #mean
 
 
 points(y,d$StandData[12,], type="l", lwd=2, lty=2)   #min
@@ -95,7 +95,7 @@ mh <- median(d$ForestTreeData[7,,ymax],na.rm=TRUE)
 med <- which(h<1.002*mh&h>0.98*mh)[1]
 
 #Base diameter
-plot(y,100*d$StandData[5,], type="l", lwd=2, ylim=c(0,1.5*100*d$ForestTreeData[8,largest,ymax]),xlab="time (y)", ylab="Base diam, nin, mean, max (cm)", main="Mean, min and max diameter at base in the stand",) #mean
+plot(y,100*d$StandData[5,], type="l", lwd=2, ylim=c(0,30),xlab="time (y)", ylab="Base diam, nin, mean, max (cm)", main="Mean, min and max diameter at base in the stand",) #mean
 points(y,100*d$StandData[6,], type="l",lwd=2, lty=2)   #min
 points(y,100*d$StandData[7,], type="l",lwd=2, lty=2)   #max
 #dkanto = 2 + 1,25d (Laasasenaho 1975, Folia Forestalia 233)
@@ -191,6 +191,7 @@ plot(100*d$ForestTreeData[8,1,],d$ForestTreeData[7,1,], ylim=c(0,30), xlim=c(0,3
 for(i in 2:min(Ntrees/pick)) {
 	points(100*d$ForestTreeData[8,i*pick,],d$ForestTreeData[7,i*pick,], type="l")
 }
+abline(0,1,lwd=2)
 
 #Foliage mass vs cross-sectional area at crown base
 plot((pi/4)*100^2*d$ForestTreeData[10,1,]^2,2*d$ForestTreeData[23,1,], ylim=c(0,10), xlim=c(0,150), type="l",main=paste("Fol.mass vs stem cross sec. area at crown b.\nevery ",as.character(pick),"th tree",sep=""),xlab="Stem cross section area at crown b.  (cm2)", ylab="Foliage mass (kg DM)")
