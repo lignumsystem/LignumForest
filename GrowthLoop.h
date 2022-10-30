@@ -59,17 +59,35 @@ template <class TS, class BUD>
 template <class TREE, class TS, class BUD,class LSYSTEM>
 class GrowthLoop:public LGMHDF5{
   template <class TREE1,class TS1,class BUD1,class LSYSTEM1>
-  /// Create XML string reprentations for the trees in the forest stand.
+  /// \brief Create XML string reprentations for the trees in the forest stand.
+  ///
   /// Each tree will be its own dataset in its age group.
   /// \param gl The GrowLoop
   /// \param hdf5_file The HDF5 file where the XML strings will be stored
   /// \param dataset_name The name of the root group (dataset) for the XML strings
-  /// \param interval Write interval: trees will be written when `age mod interval = 0`.  
+  /// \param interval Write interval: trees will be written when `age mod interval = 0`.
+  /// \return 0 Always returns zero. 
   /// \note The dataset naming for the trees will be */dataset_name/`age`/Tree_`tree_id`*,
   /// where the `age` is the age of the tree and `tree_id` the ID of the tree.
+  /// \todo Improve the use of the return value to use return values from HDF5 functions
   friend int CreateTreeXMLDataSet(const GrowthLoop<TREE,TS,BUD,LSYSTEM>& gl, LGMHDF5File& hdf5_file,const string& dataset_name,
-				  const int interval); 
+				  const int interval);
+  /// \brief Update `ws_after_senescence` vector
+  /// \param gl GrowthLoop
+  /// \param ws Sapwood mass
+  /// \param pos position in the `ws_after_senescence` vector
+  /// \sa ws_after_senescence vector
+  friend void UpdateSapwoodAfterSenescence(GrowthLoop<TREE,TS,BUD,LSYSTEM>& gl,double ws,unsigned int pos)
+  {
+    gl.ws_after_senescence[pos]=ws;
+  }
 public:
+  ///\brief Initialize variables.
+  ///
+  ///Set `location_file` to "TreeLocations.txt" for predefined tree locations.   
+  ///`hw_start` is set to 15.   
+  ///`cv` is set to 0.30.      
+  ///\sa hw_start cv
   GrowthLoop()
     :vs(NULL),verbose(false),iterations(0),start_voxel_calculation(0),
      num_parts(1.0), interval(0),init_density(0),nsegment(0.0),
@@ -86,11 +104,17 @@ public:
      pairwise_self(false), eero(false),  g_fun_varies(false), g_fun_var(0.0),
      random_branch_angle(false), ba_variation(0.0), dDb(0.003) {}
   ~GrowthLoop();
-  ///Initialize:  parse command line, initialize  trees, voxel space
-  ///and growth loop.
+  ///\brief Initialize based on command line
+  ///
+  /// Parse command line, initialize trees and functions, voxel space and growth loop.
+  /// \attention Not implemented
   ///\param argc Numebr of command line arguments 
   ///\param argv Command line arguments
-  ///\sa timeStep afterGrowth
+  /// \todo Collect parsing command line, initializing functions, creating and initializing trees and voxel space
+  /// as well as initialising growth loop to this method.
+  ///\sa The sequence of parseCommandLine resolveCommandLineAttributes initializeFunctions
+  ///\sa setTreeLocations createTrees initializeTrees initalizeVoxelSpace resizeTreeDataMatrix
+  ///\sa initializeGrowthLoop in main loop      
   void initialize(int argc, char** argv);
   ///One time step
   ///\param year Number of growth steps
@@ -101,11 +125,16 @@ public:
   ///\deprecated Options for output files 
   ///\remark Simulation results as well as XML trees will be in HDF5 files. See option `-hdf5` 
   void usage()const;
-  ///Command line check
+  ///\brief Command line check
   void checkCommandLine(int argc, char** argv)const;
-  ///Command line parser.
+  ///\brief Command line parser.
   void parseCommandLine(int argc, char** argv);
+  ///\brief Currently checks `eero` from command line
+  ///\post If `eero` = *true* then `bud_variation` = *false*
+  ///\sa eero
   void resolveCommandLineAttributes();
+  ///\brief verbose output
+  ///\param wordy If *true* then verbose output
   void setVerbose(bool wordy){verbose=wordy;}
   bool isVerbose()const{return verbose;}
   void initRan3(int init)const{
@@ -124,10 +153,14 @@ public:
   /// \sa vdatafile Tree output file streams
   /// \note The command line option `-generateLocations <num>` will override all other forest generation options 
   void createTrees();
-  /// Resize 3D array for tree data to be collected during the simulation
-  /// Resize 2D array for stand data to be collected during the simulation
+  /// \brief Resize data structures for HDF5 file.
+  ///
+  ///  Resize data structures for HDF5 file to their right sizes before simulation.
+  /// -# Resize TMatrix 3D array for tree data to be collected during the simulation.
+  /// -# Resize TMatrix 2D arrays for stand and center stand data to be collected during the simulation.    
+  ///
   /// Data will be stored in an HDF5 file after simulation.
-  /// \pre Number of simulation years and trees as well as number of data columns are known
+  /// \pre Simulation years and number of trees at the beginning as well as number of data columns are known
   /// \post 3D array and 2D array filled with std:nan and can be used to enter tree data
   /// \sa createTrees  parseCommandLine
   /// \sa TREE_DATA_COLUMN_NAMES STAND_DATA_COLUMN_NAMES
@@ -135,13 +168,15 @@ public:
   void resizeTreeDataMatrix();
   void initializeTrees();
   void initializeVoxelSpace();
-  /// Initialize, i.e read ParametricCurve files
+  /// \brief Read ParametricCurve files
   /// \pre ParametricCurve files must exists
-  /// \todo Divide files to mandatory (stop excecution) and optional (warning to standard error)
-  /// \todo Maybe it is possible to remove hard-coded files to parameterised
+  /// \todo Divide ParametricCurve files to mandatory (throw exception) and optional (warning to standard error)
+  /// \todo Replace hard-coded file names with parameterised
+  /// \remark If `verbose` output the health of parametric curves is echoed with ParametricCurve::ok
   /// \remark The existence of a file is tested with `ìfstream`. In the C++ 17 STL
   /// one can clean up implementation with std::filesystem::exists
   void initializeFunctions();
+  /// \brief Initialize L-systems and Tree root masses
   void initializeGrowthLoop();
   void increaseXi(int& year);
   ///Generate random tree locations, or read them from a file
@@ -151,7 +186,7 @@ public:
   void setTreeLocations();
   void photosynthesis(TREE& t);
   void respiration(TREE& t);
-  /// \brief Collect data before growth
+  /// \brief Collect data before growth.
   ///
   /// Collect tree data for sapwood mass, foliage mass and root mass
   /// \tparam TREE Lignum tree
@@ -160,13 +195,31 @@ public:
   /// \sa wsapwood wfoliage and wroot vectors
   /// \sa vtree Tree vector
   void collectDataBeforeGrowth(TREE& t,unsigned int i);
-  /// Collect tree data after growth and update data for HDF5 file.
-  /// \note Intial data is collected before growth loop filling  the first (0th) year.Thus the method should be called year=iter+1.
+  /// \brief Collect tree data after growth and update data for HDF5 file.
+  ///
+  /// Collect data for each tree for a single year to `tdafter` dictionary (STL data type *map*).
+  /// Add a row for each tree in 3D matrix `hdf5_tree_data`.  
+  /// Collect forest stand and center stand level aggregate data into 2D arrays `sdafter` and `csdafter` respectively from the forest stand.  
+  /// Intial data is collected before growth loop filling the first (0th) year.
+  /// In this case the method should be called parameter `year`=iter+1.
   /// \param year Simulation year (i.e. iteration)
-  /// \pre GrowthLoop::collectDataBeforeGrowth StandDescriptor::evaluateStandVariables GrowthLoop::resizeTreeDataMatrix
+  /// \param collect_stand If *true* collect forest stand and center stand level aggregate data
   /// \post Each tree maintains its position (row) in 3D hdf5_tree_data denoted by TreeId number.
-  /// \sa  vtree hdf5_tree_data  hdf5_stand_data hdf5_center_stand_data wsapwood wfoliage wroot ws_after_senescence
-  void collectDataAfterGrowth(const int year);
+  /// \sa GrowthLoop::collectDataBeforeGrowth StandDescriptor::evaluateStandVariables GrowthLoop::resizeTreeDataMatrix
+  /// \sa hdf5_tree_data  hdf5_stand_data hdf5_center_stand_data Data for HDF5 file
+  /// \sa wsapwood wfoliage wroot ws_after_senescence Collect biomasses  
+  /// \sa vtree Tree vector 
+  void collectDataAfterGrowth(const int year, bool collect_stand=true);
+  /// \brief Collect sapwood after senescence.
+  ///
+  /// Collect sapwood mass to `ws_after_senescence` vector.
+  /// \pre treeAging must have been called 
+  /// \param t The Lignum tree
+  /// \param i position of the tree in `vtree` vector
+  /// \sa collectSapwoodMass
+  void collectSapwoodAfterSenescence(TREE& t, unsigned int i);
+  /// TreeAging takes care of senescence in segments (above ground part) and root mortality.
+  /// \param t Lignum tree
   void treeAging(TREE& t);
   double collectSapwoodMass(TREE& t);
   void setSapwoodDemandAtJunction(TREE& t);
@@ -233,6 +286,9 @@ public:
   void writeFip(TREE& t,int interval)const;
   void prune();
   void printVariables()const;
+  /// \brief Collect data if èero` = *true* to *eero.dat*
+  ///
+  /// Collect data to *eero.dat*. Call L-system End function. Close stand and center stand output files.
   void cleanUp();
   void printSegmentQin();
   void printBranchMeans()const;
@@ -264,9 +320,21 @@ public:
   void setVoxelSpaceAndBorderForest();
   void calculateRadiation();
   StandDescriptor<TREE>& getStand() {return stand;}
+  ///\brief Access the vector of trees.
+  ///
+  ///\return `vtree` the vector of trees
+  ///\sa vtree
   const vector<TREE*>& getTrees() const  {return  vtree;}
   void increaseXi();
   ///\brief Photosynthesis, respiration, tree aging and data collection.
+  ///
+  /// Photosynthesis, respiration, tree aging and data collection for all trees in `vtree`.
+  /// \attention The following steps are taken:
+  /// -# photosynthesis
+  /// -# respiration
+  /// -# collectDataBeforeGrowth
+  /// -# treeAging
+  /// -# collectSapwoodMass
   void photosynthesisAndRespiration();
   void evaluateStandVariables();
   void createNewSegments();
@@ -299,7 +367,7 @@ public:
   /// \sa wsapwood wfoliage wroot ws_after_senescence vdatafile
   void removeTreesAllOver(const vector<unsigned int>& vremove);
 private:
-  vector<TREE*> vtree; ///< Vector of trees
+  vector<TREE*> vtree; ///< Vector of trees. \sa getTrees
   vector<LSYSTEM*> vlsystem; ///< Vector of L-systems, one for each tree
   vector<pair<double,double> > locations; ///< Positions of trees
   vector<ofstream*> vdatafile;///< Vector of output files (as file streams) for each tree. 

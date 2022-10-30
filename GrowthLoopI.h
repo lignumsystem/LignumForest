@@ -665,13 +665,10 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
   }
 }
 
-///Resize the TMatrix3D data array to right size for HDF5 3D data array. Initialize to std::nan.
-///Resize the TMatrix2D data arrays to right size for HDF5 2D data array. Initialize to std::nan.
 ///\note The Year dimension size is iter+1 because collection of initial data before simulation.
-///For hdf5_tree_data the first 2D slice (year = 0) contains the intial data for all trees.
-///For hdf5_stand_data and hdf5_center_stand_data the first row (year = 0) contains the initial stand data.
+///For `hdf5_tree_data` the first 2D slice (year = 0) should contain the intial data for all trees.
+///For `hdf5_stand_data` and `hdf5_center_stand_data` the first row (year = 0) should contain the initial stand data.
 ///\remark Regarding initial data some columns are meaningless because no data cannot be collected before growth
-///\sa hdf5_tree_data  hdf5_stand_data  hdf5_center_stand_data
 template<class TREE, class TS,class BUD, class LSYSTEM>
 void GrowthLoop<TREE,TS,BUD,LSYSTEM>::resizeTreeDataMatrix()
 {
@@ -1127,12 +1124,10 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::collectDataBeforeGrowth(TREE& t,unsigned 
 }
 
 template<class TREE, class TS, class BUD, class LSYSTEM>
-void GrowthLoop<TREE,TS,BUD,LSYSTEM>::collectDataAfterGrowth(const int year)
+void GrowthLoop<TREE,TS,BUD,LSYSTEM>::collectDataAfterGrowth(const int year,bool collect_stand)
 {
-  ///Collect data for each tree for a single year to tdafter dictionary (map in STL)
-  ///Add a row for each tree in 3D matrix hdf5_tree_data
-  ///NOTE that global variables L_H (tree height) and global_hcb (height of
-  ///crown base) are set her for next iteration.
+  ///\note Global variables `L_H` (tree height) and `global_hcb` (height of crown base) are set here for next iteration.
+  ///\sa L_H global_hcb
   for (unsigned int tree_num = 0; tree_num < vtree.size(); tree_num++){
     map<string,double> tdafter;//collect decriptive data first into this dictionary 
     summing bs; // Branch summaries for mean branch.
@@ -1165,12 +1160,17 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::collectDataAfterGrowth(const int year)
     tdafter["AxisVol"] = mav(t);
     tdafter["TreeP"] = GetValue(t,TreeP);
     tdafter["TreeM"] = GetValue(t,TreeM);
-    ///\note wroot collected *before* new growth
+    ///`wroot` collected *before* new growth.   
+    ///`wsapwood` and `wfoliage` collected *before* new growth.
+    ///\snippet{lineno} GrowthLoopI.h Prev 
+    ///\internal
+    // [Prev]
     tdafter["Mr_prev"] = GetValue(t,LGPmr)*wroot[tree_num];
     tdafter["M_above"] = GetValue(t,TreeP)- GetValue(t,LGPmr)*wroot[tree_num];
-    ///\note wsapwood and wfoliage collected *before* new growth
     tdafter["Ms"] = GetValue(t,LGPms)*wsapwood[tree_num];
     tdafter["Mf"] = GetValue(t,LGPmf)*wfoliage[tree_num];
+    // [Prev]
+    ///\endinternal
     double wf=0.0;
     tdafter["Wf"] = Accumulate(t,wf,CollectFoliageMass<TS,BUD>());
     double wf_new=0.0;
@@ -1179,8 +1179,13 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::collectDataAfterGrowth(const int year)
     double ws=0.0;
     tdafter["Ws"] = Accumulate(t,ws,CollectSapwoodMass<TS,BUD>());
     tdafter["Ws_old"] = Accumulate(t,ws_old,CollectOldSegmentSapwoodMass<TS,BUD>());
-    ///\note ws_after_senescence vector collected *before* new growth
+    ///`ws_after_senescence` vector collected *before* new growth
+    ///\snippet{lineno} GrowthLoopI.h Ws
+    ///\internal
+    // [Ws]
     tdafter["Ws_D_growth"] = tdafter["Ws_old"]-ws_after_senescence[tree_num];
+    // [Ws]
+    ///\endinternal
     double ws_new=0.0;
     tdafter["Ws_new"] = Accumulate(t,ws_new,CollectNewSegmentSapwoodMass<TS,BUD>());
     tdafter["Ws_D_growth+Ws_new"] = tdafter["Ws_D_growth"]+tdafter["Ws_new"];
@@ -1196,13 +1201,13 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::collectDataAfterGrowth(const int year)
     tdafter["Qabs"] = Accumulate(t,qabs,CollectQabs<TS,BUD>());
     tdafter["Qabs/DiffBallSensor"] = tdafter["Qabs"]/(GetFirmament(t).diffuseBallSensor()*tdafter["TreeAf"]);
     tdafter["Wf_P"] = wfoliage[tree_num];
-    ///\note No photosynthesis when collecting intial data
+    // No photosynthesis when collecting intial data
     if (!std::isnan(tdafter["TreeP"]/tdafter["Wf_P"]))
       tdafter["TreeP/Wf_P"] = tdafter["TreeP"]/tdafter["Wf_P"];
     else
       tdafter["TreeP/Wf_P"] = 0;
     double aseg0 = 0.0;
-    ///\note SurfaceAreaOfNewSegments already implemented as a concreate ScotsPineSegment type.
+    // SurfaceAreaOfNewSegments already implemented as a concrete ScotsPineSegment type.
     tdafter["ASeg0"] = Accumulate(t,aseg0,SurfaceAreaOfNewSegments());
     double wood = 0.0;
     tdafter["W"] = Accumulate(t,wood,CollectWoodMass<TS,BUD>());
@@ -1213,7 +1218,7 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::collectDataAfterGrowth(const int year)
     tdafter["MeanBranch_SumD^2"] = bs.d2;
     tdafter["MeanBranch_SumL"] = bs.lsum;
     tdafter["MeanBranch_SumD^2*L"] = bs.d2l;
-    ///\note Branches special cases when collecting initial data:no branches in initial trees
+    // Branches special cases when collecting initial data:no branches in initial trees
     if (!std::isnan(bs.d2l/bs.d2))
       tdafter["MeanBranch_SumD^2*L/SumD^2"] = bs.d2l/bs.d2;
     else
@@ -1229,51 +1234,53 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::collectDataAfterGrowth(const int year)
     for (unsigned int i=0; i < TREE_DATA_COLUMN_NAMES.size(); i++){
       hdf5_tree_data[year][tree_id][i]=tdafter[TREE_DATA_COLUMN_NAMES[i]];
     }
-  }//for loop
-  /// Collect data for 2D arrays from forest stand
-  map<string,double> sdafter;//stand data
-  map<string,double> csdafter;//center stand data
-  sdafter["Year"] = year;
-  csdafter["Year"] = year;
-  sdafter["StandArea"] = stand.getArea();
-  csdafter["StandArea"] = center_stand.getArea();
-  sdafter["N_trees"] = stand.getNoTrees();
-  csdafter["N_trees"] = center_stand.getNoTrees();
-  sdafter["10000*N_trees/StandArea"] = 10000.0*stand.getNoTrees()/stand.getArea();
-  csdafter["10000*N_trees/StandArea"] = 10000.0*center_stand.getNoTrees()/stand.getArea();
-  sdafter["Dbase_mean"] = stand.getMeanDbase();
-  csdafter["Dbase_mean"] = center_stand.getMeanDbase();
-  sdafter["Dbase_min"] = stand.getMinDbase();
-  csdafter["Dbase_min"] = center_stand.getMinDbase();
-  sdafter["Dbase_max"] = stand.getMaxDbase();
-  csdafter["Dbase_max"] = center_stand.getMaxDbase();
-  sdafter["Dbh_mean"] = stand.getMeanDbh();
-  csdafter["Dbh_mean"] = center_stand.getMeanDbh();
-  sdafter["Dbh_min"] = stand.getMinDBH();
-  csdafter["Dbh_min"] = center_stand.getMinDBH();
-  sdafter["Dbh_max"] = stand.getMaxDBH();
-  csdafter["Dbh_max"] = center_stand.getMaxDBH();
-  sdafter["H_mean"] = stand.getMeanHeight();
-  csdafter["H_mean"] = center_stand.getMeanHeight();
-  sdafter["H_min"] = stand.getMinH();
-  csdafter["H_min"] = center_stand.getMinH();
-  sdafter["H_max"] = stand.getMaxH();
-  csdafter["H_max"] = center_stand.getMaxH();
-  sdafter["StandBasalArea"] = stand.getStandBasalArea();
-  csdafter["StandBasalArea"] = center_stand.getStandBasalArea();
-  sdafter["StandBasalAreaCrownBase"] = stand.getBasalAreaAtCrownBase();
-  csdafter["StandBasalAreaCrownBase"] = center_stand.getBasalAreaAtCrownBase();
-  sdafter["StandStemVol"] = stand.getStemVolume();
-  csdafter["StandStemVol"] = center_stand.getStemVolume();
-  sdafter["LAI"] = stand.getLAI();
-  csdafter["LAI"] = center_stand.getLAI();
-  sdafter["Stand_Wf"] = stand.getWfMass(); 
-  csdafter["Stand_Wf"] = center_stand.getWfMass();
-  sdafter["CrownLimit_mean"] = stand.getMeanCrownLimit();
-  csdafter["CrownLimit_mean"] = center_stand.getMeanCrownLimit();
-  for (unsigned int i = 0; i < STAND_DATA_COLUMN_NAMES.size(); i++){
-    hdf5_stand_data[year][i] = sdafter[STAND_DATA_COLUMN_NAMES[i]];
-    hdf5_center_stand_data[year][i] = csdafter[STAND_DATA_COLUMN_NAMES[i]];
+  }//End for loop
+  // Collect data for 2D arrays from forest stand
+  if (collect_stand){
+    map<string,double> sdafter;//stand data
+    map<string,double> csdafter;//center stand data
+    sdafter["Year"] = year;
+    csdafter["Year"] = year;
+    sdafter["StandArea"] = stand.getArea();
+    csdafter["StandArea"] = center_stand.getArea();
+    sdafter["N_trees"] = stand.getNoTrees();
+    csdafter["N_trees"] = center_stand.getNoTrees();
+    sdafter["10000*N_trees/StandArea"] = 10000.0*stand.getNoTrees()/stand.getArea();
+    csdafter["10000*N_trees/StandArea"] = 10000.0*center_stand.getNoTrees()/stand.getArea();
+    sdafter["Dbase_mean"] = stand.getMeanDbase();
+    csdafter["Dbase_mean"] = center_stand.getMeanDbase();
+    sdafter["Dbase_min"] = stand.getMinDbase();
+    csdafter["Dbase_min"] = center_stand.getMinDbase();
+    sdafter["Dbase_max"] = stand.getMaxDbase();
+    csdafter["Dbase_max"] = center_stand.getMaxDbase();
+    sdafter["Dbh_mean"] = stand.getMeanDbh();
+    csdafter["Dbh_mean"] = center_stand.getMeanDbh();
+    sdafter["Dbh_min"] = stand.getMinDBH();
+    csdafter["Dbh_min"] = center_stand.getMinDBH();
+    sdafter["Dbh_max"] = stand.getMaxDBH();
+    csdafter["Dbh_max"] = center_stand.getMaxDBH();
+    sdafter["H_mean"] = stand.getMeanHeight();
+    csdafter["H_mean"] = center_stand.getMeanHeight();
+    sdafter["H_min"] = stand.getMinH();
+    csdafter["H_min"] = center_stand.getMinH();
+    sdafter["H_max"] = stand.getMaxH();
+    csdafter["H_max"] = center_stand.getMaxH();
+    sdafter["StandBasalArea"] = stand.getStandBasalArea();
+    csdafter["StandBasalArea"] = center_stand.getStandBasalArea();
+    sdafter["StandBasalAreaCrownBase"] = stand.getBasalAreaAtCrownBase();
+    csdafter["StandBasalAreaCrownBase"] = center_stand.getBasalAreaAtCrownBase();
+    sdafter["StandStemVol"] = stand.getStemVolume();
+    csdafter["StandStemVol"] = center_stand.getStemVolume();
+    sdafter["LAI"] = stand.getLAI();
+    csdafter["LAI"] = center_stand.getLAI();
+    sdafter["Stand_Wf"] = stand.getWfMass(); 
+    csdafter["Stand_Wf"] = center_stand.getWfMass();
+    sdafter["CrownLimit_mean"] = stand.getMeanCrownLimit();
+    csdafter["CrownLimit_mean"] = center_stand.getMeanCrownLimit();
+    for (unsigned int i = 0; i < STAND_DATA_COLUMN_NAMES.size(); i++){
+      hdf5_stand_data[year][i] = sdafter[STAND_DATA_COLUMN_NAMES[i]];
+      hdf5_center_stand_data[year][i] = csdafter[STAND_DATA_COLUMN_NAMES[i]];
+    }
   }
   ///\remark Reinitialize the `lambdav` for the next growth cycle.
   unsigned int size = lambdav.size();
@@ -1281,9 +1288,16 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::collectDataAfterGrowth(const int year)
 }
 
 template<class TREE, class TS,class BUD, class LSYSTEM>
+void GrowthLoop<TREE, TS,BUD,LSYSTEM>::collectSapwoodAfterSenescence(TREE& t, unsigned int i)
+{
+  ws = collectSapwoodMass(t);
+  ws_after_senescence[i] = ws;
+}
+
+template<class TREE, class TS,class BUD, class LSYSTEM>
 void GrowthLoop<TREE, TS,BUD,LSYSTEM>::treeAging(TREE& t)
 {
-  ///TreeAging takes care of senescence in segments (above ground part) and root mortality.
+  //TreeAging takes care of senescence in segments (above ground part) and root mortality.
   ForEach(t,TreeAging<TS,BUD>()); 
   SetValue(t,TreeWr, 
 	   GetValue(t,TreeWr)-GetValue(t,LGPsr)*GetValue(t,TreeWr));
@@ -1971,12 +1985,9 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
 
 //end of run-voxel
 
-
-/// Photosynthesis and respiration, collectDataBeforeGrowth, treeAging and
-/// collectSapwoodMass before new growth.
-/// \todo Try to move collectDataBeforeGrowth aand treeAging visible into the main growth loop. 
+/// \todo Try to move collectDataBeforeGrowth and treeAging visible into the main growth loop. 
 template<class TREE, class TS,class BUD, class LSYSTEM>
-  void GrowthLoop<TREE, TS,BUD,LSYSTEM>::photosynthesisAndRespiration()
+void GrowthLoop<TREE, TS,BUD,LSYSTEM>::photosynthesisAndRespiration()
 {
 
   for (unsigned int k = 0; k < (unsigned int)no_trees; k++){
@@ -1985,10 +1996,11 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
     respiration(*t);
     collectDataBeforeGrowth(*t,k);
     treeAging(*t);
-    //Collect  sapwood after  senescence from  all  segments.  Collect
-    //again after  new growth excluding new  segments.  The difference
-    //of  the two  will tell how much sapwood was needed  in diameter
-    //growth
+    ///collectSapwoodMass:    
+    ///Collect  sapwood after  senescence from  all  segments.  Collect
+    ///again after  new growth excluding new  segments.  The difference
+    ///of  the two  will tell how much sapwood was needed  in diameter
+    ///growth
     ws_after_senescence[k] = collectSapwoodMass(*t);
   }
 }
