@@ -84,7 +84,7 @@ class GrowthLoop:public LGMHDF5{
 public:
   ///\brief Initialize variables.
   ///
-  ///Set `location_file` to "TreeLocations.txt" for predefined tree locations.   
+  ///No tree. The `location_file` is set to "TreeLocations.txt" for predefined tree locations.   
   ///`hw_start` is set to 15.   
   ///`cv` is set to 0.30.      
   ///\sa hw_start cv
@@ -100,9 +100,43 @@ public:
      crown_limit_data(false),
      writevoxels(false),increase_xi(false),
      self_thinning(false), generate_locations(false), location_file("Treelocations.txt"),
-     no_trees(0), wood_voxel(true), evaluate_border_forest(true),seg_len_var(0.0),
+     no_trees(0), stand_output(NULL),cstand_output(NULL),wood_voxel(true), evaluate_border_forest(true),seg_len_var(0.0),
      pairwise_self(false), eero(false),  g_fun_varies(false), g_fun_var(0.0),
      random_branch_angle(false), ba_variation(0.0), dDb(0.003) {}
+  ///\brief Initialize with one tree
+  ///
+  ///One tree with its L_system. The `location_file` is set to "TreeLocations.txt" for predefined tree locations.   
+  ///`hw_start` is set to 15.       
+  ///`cv` is set to 0.30.    
+  ///`no_tree is set 1 .  
+  ///`wsapwood`, `wfoliage`, `wroot`, ws_after_senescence` and `lambdav` vectors are length 1 inital value 0.0.
+  ///\sa hw_start cv
+  ///\attention Meant only to collect HDF5 tree data. No growth.
+  ///\remark Used in CrownDensity project to collect HDF5 data with existing methods.
+  GrowthLoop(TREE* t, LSYSTEM* l)
+    :vs(NULL),verbose(false),iterations(0),start_voxel_calculation(0),
+     num_parts(1.0), interval(0),init_density(0),nsegment(0.0),
+     tree_distance(0.0),hw_start(15),light_method(0.0),
+     ws2(0.0),ws3(0.0),ws4(0.0),wr1(0.0),wfnew(0.0),
+     wfaftergrowth(0.0),wsaftergrowth(0.0),qintop1(0.0),cvol(0.0),
+     axisvol(0.0),qabs(0.0),treeAf(0.0),ASeg0(0.0),wood(0.0),
+     wstem(0.0),wbranches(0.0),stem_sw(0.0),treeP(0.0),treeM(0.0),
+     cv(0.30),to_file(false),sensitivity_analysis(false),
+     crown_limit_data(false),
+     writevoxels(false),increase_xi(false),
+     self_thinning(false), generate_locations(false), location_file("Treelocations.txt"),
+     no_trees(1),stand_output(NULL),cstand_output(NULL),wood_voxel(true), evaluate_border_forest(true),seg_len_var(0.0),
+     pairwise_self(false), eero(false),  g_fun_varies(false), g_fun_var(0.0),
+     random_branch_angle(false), ba_variation(0.0), dDb(0.003)
+  {
+    vtree.push_back(t);
+    vlsystem.push_back(l);
+    wsapwood.push_back(0.0); 
+    wfoliage.push_back(0.0); 
+    wroot.push_back(0.0); 
+    ws_after_senescence.push_back(0.0);
+    lambdav.push_back(0.0);
+  }
   ~GrowthLoop();
   ///\brief Initialize based on command line
   ///

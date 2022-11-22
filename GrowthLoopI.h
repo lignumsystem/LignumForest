@@ -76,9 +76,11 @@ GrowthLoop<TREE,TS,BUD,LSYSTEM>::~GrowthLoop()
     vdatafile[i]->close();
     delete vdatafile[i];
   }
-  
-  stand_output->close();
-  delete stand_output;
+
+  if (stand_output){
+    stand_output->close();
+    delete stand_output;
+  }
 }
 
 /// **Usage**
