@@ -1217,6 +1217,14 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::collectDataAfterGrowth(const int year,bool
     tdafter["Wbranch"] = tdafter["W"]-tdafter["Wstem"];
     double ws_stem=0.0;
     tdafter["Ws_stem"] = Accumulate(t,ws_stem,CollectStemSapwoodMass<TS,BUD>());
+    // Branch data
+    // Max branch in each quadrant 
+    vector<double> quadrantv(4,0.0);
+    CrownGroundArea<TS,BUD> cga(t);
+    vector<double>& res = Accumulate(t,quadrantv,cga);
+    // Max branch from quadrants
+    vector<double>::iterator max_branch = Lignum::max_elmnt<vector<double>::iterator>(res.begin(),res.end());
+    tdafter["MaxBranch"] = *max_branch;
     tdafter["MeanBranch_SumD^2"] = bs.d2;
     tdafter["MeanBranch_SumL"] = bs.lsum;
     tdafter["MeanBranch_SumD^2*L"] = bs.d2l;
