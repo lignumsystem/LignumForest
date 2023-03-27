@@ -30,7 +30,9 @@
 /// same gravelius order
 class PartialSapwoodAreaDown{
 public:
+  ///\param swdown Copy constructor
   PartialSapwoodAreaDown(const PartialSapwoodAreaDown& swdown):fsapwdown(swdown.fsapwdown){}
+  ///\param f Sapwood down as a function of Gravelius order \f$ \mbox{f(x)} \in [0,1]\f$ and \f$ x \in [1,GO_{max}]\f$
   PartialSapwoodAreaDown(const ParametricCurve& f):fsapwdown(f){}
   DiameterGrowthData& operator()(DiameterGrowthData& d1, DiameterGrowthData& d2)const
   {
