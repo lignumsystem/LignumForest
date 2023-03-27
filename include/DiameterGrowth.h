@@ -1,27 +1,33 @@
+/// \file DiameterGrowth.h
+/// \brief Diameter growth for Scots pine.
+///
+/// Traditionally diameter growth in allocation is done in two
+/// phases. First, iteratively adjust dimensions of the new segments
+/// and after that, second and last phase adjust simensions of all segments.
+/// \sa LGMGrowthAllocator, LGMGrowthAllocator2, LGMGrowthAllocator3 in LGMGrowthAllocator.h
 #ifndef DIAMETERGROWTH_H
 #define DIAMETERGROWTH_H
 #include <Lignum.h>
 #include <ScotsPine.h>
 
-// PartialSapwoodAreaDown makes it possible  to pass sapwood down based
-// on the  gravelius order of  the segments. The percentage  of sapwood
-// down is defined in the ParametricCurve given in the constructor.
-
-// Usage: AccumulateDown(tree,DiameterGrowthData,PartialSapwoodAreaDown(ParametricCurve),DiameterGrowth())
-
-// PartialSapwoodAreaDown is the user defined "add and assign" operator
-// that is  called by  AccumulateDown at each  branching point.   d1 is
-// coming downwards from the segment s1 above branching point b1 in the
-// same axis, i.e.   s1 and the b1 have the  same gravelius order.  The
-// 'd2' is coming  from the last segment  s2 in the axis in  b1, i.e s2
-// has one  order higher gravelius order  than b1.  d2 is  summed to d1
-// and d1 is passed downwards to  the segment s2 below in the same axis
-// (if s1 is the last one in an axis, d1 is passed to a branching point
-// the axis  belongs to  as d2).  This  summation is repeated  for each
-// axis in the branching point.  The functor DiameterGrowth() should at
-// each Bud initialize the gravelius order and at each segment s3 below
-// b1 implement the diameter growth below,  i.e. s1, b1 and s3 have the
-// same gravelius order
+/// \brief PartialSapwoodAreaDown makes it possible  to pass sapwood down based
+/// on the  gravelius order of  the segments. The percentage  of sapwood
+/// down is defined in the ParametricCurve given in the constructor.
+///
+/// Usage: AccumulateDown(tree,DiameterGrowthData,PartialSapwoodAreaDown(ParametricCurve),DiameterGrowth())  
+/// PartialSapwoodAreaDown is the user defined "add and assign" operator
+/// that is  called by  AccumulateDown at each  branching point.   d1 is
+/// coming downwards from the segment s1 above branching point b1 in the
+/// same axis, i.e.   s1 and the b1 have the  same gravelius order.  The
+/// 'd2' is coming  from the last segment  s2 in the axis in  b1, i.e s2
+/// has one  order higher gravelius order  than b1.  d2 is  summed to d1
+/// and d1 is passed downwards to  the segment s2 below in the same axis
+/// (if s1 is the last one in an axis, d1 is passed to a branching point
+/// the axis  belongs to  as d2).  This  summation is repeated  for each
+/// axis in the branching point.  The functor DiameterGrowth() should at
+/// each Bud initialize the gravelius order and at each segment s3 below
+/// b1 implement the diameter growth below,  i.e. s1, b1 and s3 have the
+/// same gravelius order
 class PartialSapwoodAreaDown{
 public:
   PartialSapwoodAreaDown(const PartialSapwoodAreaDown& swdown):fsapwdown(swdown.fsapwdown){}
@@ -31,7 +37,7 @@ public:
     double o1 = GetValue(d1,LGAomega);
     double o2 = GetValue(d2,LGAomega);
     if (o1 < o2){
-      double percent = fsapwdown(o2);
+      double percent = fsapwdown(o2);///< Percentage sapwood down function
       double As = GetValue(d2,LGAAs);
       double Asdown = percent*As;
       SetValue(d1,LGAAs,GetValue(d1,LGAAs)+Asdown);
@@ -55,9 +61,8 @@ private:
   const ParametricCurve& fsapwdown;
 };
 
-//This is must be the same as DoScotsPineDiameterGrowth method, but we
-//can't change the segment's dimensions.
-
+///TryScotsPineDiameterGrowth  must be the same as DoScotsPineDiameterGrowth method, but we
+///can't change the old segment's dimensions.
 class TryScotsPineDiameterGrowth{
 public:
   DiameterGrowthData& operator()(DiameterGrowthData& data, TreeCompartment<ScotsPineSegment,
@@ -135,6 +140,7 @@ public:
   }
 };
 
+///After allocation change dimensions based on new segments
 class DoScotsPineDiameterGrowth{
 public:
   DiameterGrowthData& operator()(DiameterGrowthData& data,TreeCompartment<ScotsPineSegment,
@@ -205,11 +211,11 @@ public:
   }
 };
 
-//This    ScotsPineDiameterGrowth   functor    can   be    used   with
-//LGMGrowthAllocator    implemented    in   LGMGrowthAllocator.h    in
-//stl-lignum. The  idea is to have  the two modes,  allocation and the
-//growth  itself, together  to make  the allocation  of photosynthates
-//less error prone
+///This    ScotsPineDiameterGrowth   functor    can   be    used   with
+///LGMGrowthAllocator    implemented    in   LGMGrowthAllocator.h    in
+///stl-lignum. The  idea is to have  the two modes,  allocation and the
+///growth  itself, together  to make  the allocation  of photosynthates
+///less error prone
 class ScotsPineDiameterGrowth{
 public:
   ScotsPineDiameterGrowth(LGMALLOCATORMODE m):mode(m){}
@@ -355,20 +361,20 @@ private:
 };
 
 
-// This   ScotsPineDiameterGrowth2    functor   can   be    used   with
-// PartialSapwoodAreaDown   implemented   in    this   file   and   the
-// LGMGrowthAllocator2 implemented in  stl-lignum.  This functor differs
-// from ScotsPineDiameterGrowth  in a sense that it  passes all sapwood
-// area  down  between  segments. PartialSapwoodAreaDown  cuts  sapwood
-// requirement in  branching points from the segments  that have higher
-// gravelius order. The result is  that all sapwood area is passed down
-// between segments in the same axis.
-
-// Note that there are  two LGMGrowthAllocator functors. The first one
-// can  be  used   if  user  relies  on  '+='   operator  defined  for
-// AccumulateDown. The  second one accepts user  defined functor (like
-// PartialSapwoodAreaDown).  For the details  see LGMGrowthAllocator.h
-// in stl-lignum.
+/// This   ScotsPineDiameterGrowth2    functor   can   be    used   with
+/// PartialSapwoodAreaDown   implemented   in    this   file   and   the
+/// LGMGrowthAllocator2 implemented in  LGMGrowthAllocator.  This functor differs
+/// from ScotsPineDiameterGrowth  in a sense that it  passes all sapwood
+/// area  down  between  segments. PartialSapwoodAreaDown  cuts  sapwood
+/// requirement in  branching points from the segments  that have higher
+/// gravelius order. The result is  that all sapwood area is passed down
+/// between segments in the same axis.
+/// \note There are  two LGMGrowthAllocator functors. The first one
+/// can  be  used   if  user  relies  on  '+='   operator  defined  for
+/// AccumulateDown. The  second one accepts user  defined functor (like
+/// PartialSapwoodAreaDown).  For the details  see LGMGrowthAllocator.h
+/// in stl-lignum.
+/// \sa ScotsPineDiameterGrowth LGMGrowthAllocator2 PartialSapwoodAreaDown 
 class ScotsPineDiameterGrowth2{
 public:
   ScotsPineDiameterGrowth2(LGMALLOCATORMODE m):mode(m){}
