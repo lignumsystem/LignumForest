@@ -11,10 +11,10 @@
 #include <ScotsPine.h>
 
 /// \brief PartialSapwoodAreaDown makes it possible  to pass sapwood down based
-/// on the  gravelius order of  the segments. The percentage  of sapwood
-/// down is defined in the ParametricCurve given in the constructor.
-///
-/// Usage: AccumulateDown(tree,DiameterGrowthData,PartialSapwoodAreaDown(ParametricCurve),DiameterGrowth())  
+/// on the  gravelius order of  the segments.
+
+/// The percentage  of sapwood down is defined in the ParametricCurve given in the constructor.<br>
+/// **Usage:** `AccumulateDown(tree,DiameterGrowthData,PartialSapwoodAreaDown(ParametricCurve),DiameterGrowth())` <br> 
 /// PartialSapwoodAreaDown is the user defined "add and assign" operator
 /// that is  called by  AccumulateDown at each  branching point.   d1 is
 /// coming downwards from the segment s1 above branching point b1 in the
@@ -58,9 +58,9 @@ public:
     }
     //cout << "O1 " << GetValue(d1,LGAomega) <<endl;
     return d1;
-  }
+  } 
 private:
-  const ParametricCurve& fsapwdown;
+  const ParametricCurve& fsapwdown;///<Partial sapwood down \f$ \in [0,1]\f$ as a function of Gravelius order
 };
 
 ///TryScotsPineDiameterGrowth  must be the same as DoScotsPineDiameterGrowth method, but we
@@ -359,7 +359,7 @@ public:
     }
   }
 private:
-  LGMALLOCATORMODE mode;
+  LGMALLOCATORMODE mode;///< LGMALLOCATE allocation mode or LGMGROWTH set segment dimensions after allocation mode
 };
 
 
@@ -493,6 +493,6 @@ public:
     }
   }
 private:
-  LGMALLOCATORMODE mode;
+  LGMALLOCATORMODE mode;///< LGMALLOCATE allocation mode or LGMGROWTH set segment dimensions after allocation mode 
 };
 #endif
