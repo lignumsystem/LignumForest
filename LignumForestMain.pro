@@ -60,6 +60,6 @@ SOURCES += branchfunctor.cc \
            harvest-stand.cc \
            forest-trees.cc \
            lignum-forest.cc \
-           src/metabolism.cc \
            src/borderforest.cc \
-           src/space.cc
+           src/space.cc \
+           ../CrownDensity/src/ScotsPine.cc
