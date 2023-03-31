@@ -2,7 +2,7 @@
 ///\file generate-tree-locations.cc
 ///\brief Tree locations  Nonstationary Poisson process.
 extern int ran3_seed;   //is a global variable
-
+namespace LignumForest{
 /// Generate tree locations: Nonstationary Poisson process: Stoyan, Kendall & Mecke, p. 52 -54
 /// \param nTrees    number of trees (input, output)
 /// \param corner1X  lower left  corner  of forest,  X, Y  (input)
@@ -72,3 +72,4 @@ void GenerateLocations(int& nTrees, double corner1X, double corner1Y, double cor
   nTrees = v.size();
 }
 
+}

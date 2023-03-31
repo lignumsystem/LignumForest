@@ -1,4 +1,5 @@
 #include <SomeFunctors.h>
+namespace LignumForest{
 summing& Branchmeans::operator()(summing& id,
 				 TreeCompartment<ScotsPineSegment, ScotsPineBud>*
 				 tc)const {
@@ -29,4 +30,5 @@ summing& Branchmeans::operator()(summing& id,
     }//if fs != NULL
   }//if (Axis....)
   return id;
+}
 }

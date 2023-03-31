@@ -1,6 +1,6 @@
 #include <ForestTrees.h>
 #include <cmath>
-
+namespace LignumForest{
 //Given the  tree_file parse it and  return file names  that match and
 //exist in the current directory, associate the given probability with
 //the file name
@@ -84,4 +84,4 @@ bool FindTreeWithProbability::operator()(const double p,const pair<string,double
 {
   return p <= e2.second;
 }
-
+}

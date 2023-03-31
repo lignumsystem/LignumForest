@@ -34,7 +34,7 @@ extern ParametricCurve bud_view_f;///<Initialized in GrowthLoopI.h
 extern bool is_bud_view_function;///<Reinitialized in GrowthLoopI.h.
 extern double global_hcb;///<Initialized in GrowthLoopI.h
 extern double L_H;///<Initialized in GrowthLoopI.h
-                                 
+namespace LignumForest{                                 
 template <class TREE,class TS, class BUD, class LSYSTEM>
 int  CreateTreeXMLDataSet(const GrowthLoop<TREE,TS,BUD,LSYSTEM>& gl, LGMHDF5File& hdf5_file,const string& group_name, const int interval)
 {
@@ -1033,7 +1033,7 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::initializeGrowthLoop()
     TREE* t = vtree[i]; 
 
     l->start();
-    l->lstringToLignum(*t,1,PBDATA);
+    l->lstringToLignum(*t,1,PineTree::PBDATA);
 
     double wf = 0.0;
     wf = Accumulate(*t,wf,CollectNewFoliageMass<TS,BUD>());
@@ -1194,9 +1194,9 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::collectDataAfterGrowth(const int year,bool
     tdafter["Wr"] = GetValue(t,TreeWr);
     tdafter["Wr_new"] = GetValue(t,LGPar)*tdafter["Wf_new"];
     list<TreeCompartment<TS,BUD>*>& ls = GetTreeCompartmentList(GetAxis(t));
-    //GetTopQin located in Pine.h
+    //PineTree::GetTopQin located in Pine.h
     double qin_top=0.0;
-    tdafter["QinTop"] = accumulate(ls.begin(),ls.end(),qin_top,GetTopQin<TS,BUD>());
+    tdafter["QinTop"] = accumulate(ls.begin(),ls.end(),qin_top,PineTree::GetTopQin<TS,BUD>());
     tdafter["QinMax"] = GetValue(t,TreeQinMax);
     tdafter["QinTop/QinMax"] =tdafter["QinTop"]/tdafter["QinMax"];
     double qabs=0.0;
@@ -1453,7 +1453,7 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
     ForEach(*t,SetScotsPineSegmentSf());
 
     bool kill = false;
-    PropagateUp(*t,kill,KillBudsAfterAllocation<TS,BUD>());
+    PropagateUp(*t,kill,PineTree::KillBudsAfterAllocation<TS,BUD>());
 
     //Now the lengths of the segments are such that G = P - M. Adjust the diameters
     // of old segments on the basis sapwood demand from above and those of new
@@ -1476,16 +1476,16 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
 
     //Segment  dimensions   have  changed  in   allocation,  update
     //L-string
-    l->lignumToLstring(*t,1,PBDATA);
-    l->lstringToLignum(*t,1,PBDATA);
+    l->lignumToLstring(*t,1,PineTree::PBDATA);
+    l->lstringToLignum(*t,1,PineTree::PBDATA);
 
     //Pass the foliage mass of the mother segment to terminating buds and
     // synchronize with L-system
     double wftobuds = 0.0;
-    PropagateUp(*t,wftobuds,ForwardWf<TS,BUD>());
+    PropagateUp(*t,wftobuds,PineTree::ForwardWf<TS,BUD>());
     double lentobuds = 0.0;
-    PropagateUp(*t,lentobuds,ForwardSegLen<TS,BUD>());
-    l->lignumToLstring(*t,1,PBDATA);
+    PropagateUp(*t,lentobuds,PineTree::ForwardSegLen<TS,BUD>());
+    l->lignumToLstring(*t,1,PineTree::PBDATA);
 
 
     //============================================================================
@@ -1518,7 +1518,7 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
     //Create new buds by making derive with mode == 1 (set above)
     branch_angle = t->getBranchAngle();        //this global variable goes to pine-em98.L
     l->derive();
-    l->lstringToLignum(*t,1,PBDATA);
+    l->lstringToLignum(*t,1,PineTree::PBDATA);
   }  //for (unsigned int k = 0; k < ...
 
   //Now, dead trees are removed from everywhere
@@ -1656,7 +1656,7 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::writeOutput(TREE& t, unsigned int tree_n,
 
     //The Qin at the top
     qintop1 = 0.0;
-    GetTopQin<TS,BUD> getTopQin1;
+    PineTree::GetTopQin<TS,BUD> getTopQin1;
     qintop1 = accumulate(ls.begin(),ls.end(),qintop1, getTopQin1);
 
     //Diameter and heigth at the crown base.
@@ -2030,7 +2030,7 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::createNewSegments()
     //This derive() creates the new segments, whose lengths will be iterated
     // (in allocationAndGrowth())
     l->derive();
-    l->lstringToLignum(*t,1,PBDATA);
+    l->lstringToLignum(*t,1,PineTree::PBDATA);
 
     //Pass the  qin to newly  created segments and to  the terminating
     //buds. Also set LGAip (qin/TreeQinMax) for the terminating buds
@@ -2052,7 +2052,7 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::createNewSegments()
 
     //Length of path from base of tree to each segment
     LGMdouble plength = 0.0;
-    PropagateUp(*t,plength,PathLength<TS,BUD>());
+    PropagateUp(*t,plength,PineTree::PathLength<TS,BUD>());
 
     //============================================================================
     // Space colonialization
@@ -2388,5 +2388,6 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::removeTreesAllOver(const vector<unsigned 
     I++;
     no_trees--;
   }
+}
 }
 #endif

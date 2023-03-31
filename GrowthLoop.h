@@ -30,6 +30,7 @@
 #include <Palubicki_functors.h>
 #include <TreeDataAfterGrowth.h>
 
+namespace LignumForest{
 ///\class CollectP
 ///\brief Collect photosynthates from the tree
 ///Use with Accumulate algorithm in stl-lignum
@@ -580,5 +581,6 @@ private:
   bool growthloop_is_heightFun; ///< If length of stem apical shoot is derived from relative crown length
   LGMdouble Db_current, Db_previous, dDb;  ///< For change in base diameter, for -heightFun
 };
+}
 #endif
 #include <GrowthLoopI.h>

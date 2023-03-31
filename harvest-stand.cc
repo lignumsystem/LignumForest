@@ -1,4 +1,5 @@
 #include <HarvestStand.h>
+namespace LignumForest{
 //Stand harvest: remove a location with probability 'r' to
 //get the wanted stand density 
 //rpos boolean vector denoting if a position is to be removed
@@ -46,5 +47,5 @@ int ClearGap(vector<pair<double,double> >& v, vector<bool>& rpos, const Point& p
   }
   return removed;
 } 
-
+}
 
