@@ -3,6 +3,8 @@
 # mkdir build
 # cd  build
 # cmake .. -DCMAKE_BUILD_TYPE=Debug/Release
+# Explicitely set c++ compiler
+# cmake ..  -DCMAKE_BUILD_TYPE=Debug  -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_FLAGS=-stdlib=libc++
 # make
 # For Xcode IDE:
 # mkdir xcode
