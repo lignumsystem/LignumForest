@@ -4,6 +4,7 @@
 using namespace Lignum;
 /// \file StandDescriptor.h
 
+namespace LignumForest{
 /// \brief StandDescriptor collects and evaluates stand level quantities.
 ///
 /// It evalueates the the stand level values from a vector of trees (input).
@@ -104,7 +105,7 @@ private:
   LGMdouble minDbase, maxDbase;
   LGMdouble Wf;
 };
-
+}
 #include <StandDescriptorI.h>
 
     

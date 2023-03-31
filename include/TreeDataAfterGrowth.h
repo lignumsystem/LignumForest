@@ -7,7 +7,7 @@
 #include <SomeFunctors.h>
 ///\file TreeDataAfterGrowth.h
 ///\brief Define data structures to be able to write HDF5 data file after simulation.
-
+namespace LignumForest{
 /// Group name for parameters
 const string PGROUP("/Parameters/");
 /// Group name for functions in Lignum Tree class
@@ -131,5 +131,5 @@ const array<LGMF,7> fna={LGMAL,LGMFM,LGMIP,LGMLONB,LGMNB,LGMVI,LGMVIONB};
 const vector<LGMF> FN_V(fna.begin(),fna.end());
 const array<string,7> fna_str={"LGMAL","LGMFM","LGMIP","LGMONB","LGMNB","LGMVI","LGMVIONB"};
 const vector<string> FNA_STR(fna_str.begin(),fna_str.end());
-
+}
 #endif

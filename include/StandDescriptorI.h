@@ -1,7 +1,7 @@
 #ifndef STANDDESCRIPTORI_H
 #define STANDDESCRIPTORI_H
 #include <StandDescriptor.h>
-
+namespace LignumForest{
 template<class TREE>
 void StandDescriptor<TREE>::evaluateStandVariables(vector<TREE*> vt, vector<pair<double,double> >& loc)
 {
@@ -118,6 +118,6 @@ void StandDescriptor<TREE>::writeOutput(ofstream& stand_output) {
 	       << LAI << " " << Wf << " " << meanCrownLimit << endl;
 }
 
-
+}
 
 #endif

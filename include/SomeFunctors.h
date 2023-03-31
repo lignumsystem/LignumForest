@@ -5,7 +5,8 @@
 #include <ScotsPine.h>
 #include <VoxelSpace.h>
 
-
+using namespace CrownDensity;
+namespace LignumForest{
 ///Propagate up the Qin to newly created segments and buds.
 ///Also set the relative light LGAip for the bud
 class ForwardScotsPineQin{
@@ -783,5 +784,5 @@ private:
   LGMdouble factor;
 };
 
-
+}
 #endif
