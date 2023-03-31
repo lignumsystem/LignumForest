@@ -1,7 +1,7 @@
 //About space colonization etc.
 
 #include <Space.h>
-
+namespace LignumForest{
 bool SphericalSector::in_SphericalSector(const Point& p) {
   Point ap = p - apex;
   double apl = ap.getLength();
@@ -20,4 +20,4 @@ bool SphericalSector::in_SphericalSector(const Point& p) {
 
   return true;
 }
-
+}

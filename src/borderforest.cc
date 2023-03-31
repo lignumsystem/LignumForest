@@ -1,6 +1,6 @@
 #include <BorderForest.h>
 #include <Nearby.h>
-namespace Lignum {
+namespace LignumForest {
 
   //Return the extinction caused by the border stand
   //Input: p0   start point of the light beam
