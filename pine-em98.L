@@ -6,6 +6,7 @@ using namespace cxxadt;
 #include <LGMUnits.h>
 using namespace Lignum;
 #include <Pine.h>
+using namespace PineTree;
 //Defines headers necessary for lsystem
 #include <lengine.h>
 

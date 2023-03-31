@@ -29,8 +29,8 @@ namespace Pine{
 //#include <RadiationCrownDens.h>
 #include <Palubicki_functors.h>
 #include <Space.h>
-
-
+using namespace LignumForest;
+using namespace PineTree;
 ///\defgroup mainglobals Global variables
 ///\brief Declaration of a number of global variables.
 ///
