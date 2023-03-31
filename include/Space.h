@@ -7,13 +7,15 @@
 #include <ScotsPine.h>
 #include <VoxelSpace.h>
 
-
-//https://en.wikipedia.org/wiki/Spherical_sector:
-//In geometry, a spherical sector is a portion of a sphere defined by
-//a conical boundary with apex at the center of the sphere. It can be described
-//as the union of a spherical cap and the cone formed by the center of the sphere
-//and the base of the cap.
-
+using namespace CrownDensity;
+namespace LignumForest{
+///\brief Spherical sector
+///
+///In geometry, a spherical sector is a portion of a sphere defined by
+///a conical boundary with apex at the center of the sphere. It can be described
+///as the union of a spherical cap and the cone formed by the center of the sphere
+///and the base of the cap.
+///\sa https://en.wikipedia.org/wiki/Spherical_sector
 class SphericalSector {
  public:
   SphericalSector(const Point& iapex, const PositionVector& idirection,
@@ -128,4 +130,5 @@ class SetBudViewFunctor
   LGMdouble cone_volume;
 	
 };
+}
 #endif
