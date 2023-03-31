@@ -875,24 +875,11 @@ WARN_LOGFILE           =
 # Note: If this tag is empty the current directory is searched.
 
 INPUT                  = . \
-                         ../c++adt/include/Bisection.h \
-                         ../c++adt/src/Bisection.cc \
-                         ../c++adt/include/LGMHDF5File.h \
-                         ../c++adt/src/LGMHDF5File.cc \
-                         ../c++adt/include/TMatrix3D.h \
-                         ../c++adt/include/TMatrix3DI.h \
-                         ../c++adt/src/HDF5example.cc \
-                         ../Pine/Pine.h \
-                         ../stl-lignum/include/LGMSymbols.h \
-                         ../XMLTree \
                          ../LEngine/include/LSystem.h \
-                         ../c++adt/include/ParametricCurve.h \
-                         ../c++adt/src/ParametricCurve.cc \
-                         ../stl-lignum/include/Algorithms.h \
-                         ../stl-lignum/include/AlgorithmsI.h \
-                         ../stl-lignum/algorithms.cc \
-                         ../stl-lignum/include/TreeFunctorI.h \
-                         ../stl-lignum/include/TreeFunctor.h
+                         ../stl-lignum/include/ \
+                         ../Pine \
+                         ../CrownDensity/include \
+                         .
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -983,7 +970,10 @@ RECURSIVE              = YES
 
 EXCLUDE                = pine-em98.cpp \
                          pine-em98.L \
-                         pine-axiom.L
+                         pine-axiom.L \
+                         build \
+                         xcode \
+                         release
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded
@@ -1017,8 +1007,7 @@ EXCLUDE_SYMBOLS        =
 # command).
 
 EXAMPLE_PATH           = . \
-                         ../c++adt/src \
-                         ../stl-lignum/
+                         ../stl-lignum/include
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp and
@@ -1327,7 +1316,7 @@ HTML_COLORSTYLE_GAMMA  = 80
 # The default value is: NO.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_TIMESTAMP         = NO
+HTML_TIMESTAMP         = YES
 
 # If the HTML_DYNAMIC_MENUS tag is set to YES then the generated HTML
 # documentation will contain a main index with vertical navigation menus that
@@ -1346,7 +1335,7 @@ HTML_DYNAMIC_MENUS     = YES
 # The default value is: NO.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_DYNAMIC_SECTIONS  = NO
+HTML_DYNAMIC_SECTIONS  = YES
 
 # With HTML_INDEX_NUM_ENTRIES one can control the preferred number of entries
 # shown in the various tree structured indices initially; the user can expand
@@ -1908,7 +1897,7 @@ PAPER_TYPE             = a4
 # If left blank no extra packages will be included.
 # This tag requires that the tag GENERATE_LATEX is set to YES.
 
-EXTRA_PACKAGES         =
+EXTRA_PACKAGES         = amsmath
 
 # The LATEX_HEADER tag can be used to specify a user-defined LaTeX header for
 # the generated LaTeX document. The header should contain everything until the
