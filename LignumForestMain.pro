@@ -8,7 +8,7 @@ TEMPLATE = app
 TARGET = lig-forest 
 #Silence "depricated" warnings from OpenGL in Graphics library
 DEFINES += GL_SILENCE_DEPRECATION
-INCLUDEPATH += /opt/local/include . include  ../c++adt/include ../stl-lignum/include ../Firmament/include ../stl-voxelspace/include ../LEngine/include
+INCLUDEPATH += /opt/local/include . ../CrownDensity/include include  ../c++adt/include ../stl-lignum/include ../Firmament/include ../stl-voxelspace/include ../LEngine/include
 INCLUDEPATH += ../Pine ../XMLTree  ../Graphics
 DEPENDPATH += $$INCLUDEPATH
 LIBS += -L/opt/local/lib -L../c++adt/lib -L../stl-lignum/lib -L../Firmament/lib -L../LEngine/lib -L../stl-voxelspace/lib
