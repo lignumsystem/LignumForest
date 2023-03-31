@@ -2,7 +2,7 @@
 #define SENSITIVITY_H
 
 #include <Lignum.h>
-
+namespace LignumForest{
 template <class TS,class BUD>
 class Sensitivity{
 public:
@@ -15,6 +15,7 @@ public:
 private:
   ofstream file;
 };
+}
 #endif
 
 #include <SensitivityI.h>

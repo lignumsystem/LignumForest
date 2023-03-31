@@ -3,7 +3,7 @@
 #include <Lignum.h>
 
 
-
+namespace LignumForest{
 
 //This is according to W. Palubicki and K. Horel and S. Longay and
 //A. Runions and B. Lane and R. Mech and P. Prusinkiewicz. 2009.
@@ -211,5 +211,5 @@ class printqin {
     return tc;
   }
 };
-
+}
 #endif

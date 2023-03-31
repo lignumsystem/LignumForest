@@ -2,6 +2,7 @@
 #define SENSITIVITYI_H
 
 #include <Sensitivity.h>
+namespace LignumForest{
 template <class TS,class BUD>
 void Sensitivity<TS,BUD>::printHeader(const string& file_name)
 {
@@ -90,5 +91,5 @@ void Sensitivity<TS,BUD>::printData(Tree<TS,BUD>& t)
        << setw(14) << wf0
        << setw(14) << wr <<endl;
 }
-
+}
 #endif
