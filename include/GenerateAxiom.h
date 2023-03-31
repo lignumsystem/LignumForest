@@ -4,7 +4,7 @@
 #include <fstream>
 using namespace std;
 
-
+namespace LignumForest{
 static int level = 0;
 //Generate the beginning of the axiom. The beginning is designed  for the
 //ScotsPine used in LignumForest
@@ -82,5 +82,5 @@ void GenerateAxiom(fstream& file, TreeCompartment<TS,B>* tc)
   else{
   }
 }
-
+}
 #endif

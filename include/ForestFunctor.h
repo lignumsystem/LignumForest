@@ -6,6 +6,7 @@
 #include <sstream>
 using namespace std;
 
+namespace LignumForest{
 //Collect   new   foliage   and   set   initial   root   mass.    Move
 //CollectNewFoliage to stl-lignum.
 class InitialRootMass{
@@ -292,5 +293,5 @@ inline void ForestPrintSummary::operator()(Tree<ScotsPineSegment,ScotsPineBud>* 
     << setw(11) << h << setw(11) << dbase << setw(11) << dbh 
     << setw(11) << hcb << setw(11) << dcb << setw(11) << hc << endl; 
 }
-
+}
 #endif
