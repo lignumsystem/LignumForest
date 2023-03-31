@@ -3,7 +3,7 @@
 
 #include <Lignum.h>
 #include <VoxelSpace.h>
-
+namespace LignumForest{
 //For a sequence (vector) of tree  locations move and dump the tree to
 //specified locations in the voxel space.
 template <class TS, class BUD>
@@ -25,5 +25,5 @@ private:
   VoxelSpace& voxel_space;
   int num_parts;
 };
-
+}
 #endif

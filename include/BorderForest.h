@@ -13,7 +13,7 @@ using namespace Lignum;
 //correspond to lower left and upper right of voxelspace but are not necessarily
 //the same since borders of the stand and borders of the voxelspace may not
 //be the same.
-namespace Lignum{ 
+namespace LignumForest{ 
 class BorderForest{
  public:
   BorderForest() : k_e(0.14){}

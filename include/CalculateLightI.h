@@ -18,6 +18,7 @@
 //
 // VoxelSpace calculation
 
+namespace LignumForest{
 template <class TS, class BUD>
 TreeCompartment<TS,BUD>* EvaluateRadiationForCfTreeSegmentInVoxelSpace<TS,BUD>::operator()
   (TreeCompartment<TS, BUD>* tc)const
@@ -130,5 +131,5 @@ TreeCompartment<TS,BUD>* EvaluateRadiationForCfTreeSegmentInVoxelSpace<TS,BUD>::
     }   
     return tc;
 }  //end of EvaluateRadiationForCfTreeSegmentInVoxelSpace  { ...
-
+}
 #endif

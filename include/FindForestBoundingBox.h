@@ -2,6 +2,7 @@
 #define FINDFORESTBOUNDINGBOX_H
 #include <Lignum.h>
 using namespace std;
+namespace LignumForest{ 
 template <class TREE, class TS, class BUD>
 class ForestBoundingBoxIndividualTrees{
 public:
@@ -139,5 +140,5 @@ BoundingBox FindForestBoundingBox(vector<TREE*>& vtree, vector<pair<double,doubl
   }
   return bb;
 }
-
+}
 #endif

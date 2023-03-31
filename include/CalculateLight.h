@@ -13,7 +13,7 @@ using namespace std;
 
 using namespace Lignum;
 using namespace sky;
-
+using namespace LignumForest;
 
 #define HIT_THE_FOLIAGE 1
 #define NO_HIT 0
@@ -21,7 +21,7 @@ using namespace sky;
 
 //===============================================================================
 // VoxelSpace calculation
-
+namespace LignumForest{
 template <class TS, class BUD>
 class EvaluateRadiationForCfTreeSegmentInVoxelSpace {
 public:
@@ -74,7 +74,7 @@ class AccumulateOpticalDepth{
 #undef HIT_THE_FOLIAGE
 #undef NO_HIT
 #undef HIT_THE_WOOD
-
+}
 #include <CalculateLightI.h>
 
 #endif

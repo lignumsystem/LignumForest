@@ -9,7 +9,7 @@
 #define DIAMETERGROWTH_H
 #include <Lignum.h>
 #include <ScotsPine.h>
-
+namespace LignumForest{
 /// \brief PartialSapwoodAreaDown makes it possible  to pass sapwood down based
 /// on the  gravelius order of  the segments.
 
@@ -495,4 +495,5 @@ public:
 private:
   LGMALLOCATORMODE mode;///< LGMALLOCATE allocation mode or LGMGROWTH set segment dimensions after allocation mode 
 };
+}
 #endif
