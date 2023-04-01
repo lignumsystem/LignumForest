@@ -34,6 +34,7 @@ summing& Branchmeans::operator()(summing& id,
 	//[LB]
 	///\endinternal
 	///\subsection diam Diameter data
+	///Collect branch data
 	///\snippet{lineno} branchfunctor.cc DD
 	///\internal
 	//[DD]

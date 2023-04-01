@@ -31,86 +31,86 @@ namespace Pine{
 #include <Space.h>
 using namespace LignumForest;
 using namespace PineTree;
-///\defgroup mainglobals Global variables
-///\brief Declaration of a number of global variables.
-///
+///\defgroup mainglobals Global variables for growth allocation
+///Declaration of a number of global variables for (*ad hoc*) growth allocation.
 ///They are easy to add to the program but maybe should be implemented as function arguments or something else,
 ///see e.g. PineBudData in Pine.h \sa PineBudData
 /// @{
-
-bool is_adhoc = false;///< If function adhoc is in use: it boosts shoot growth in lower parts of the crown, see Eq. 8 in Sievanen et al. 2018 \sa adhoc
-ParametricCurve adhoc("adhoc.fun");///< This function boosts shoot growth in lower parts of the crown, see Eq. 8 in Sievanen et al. 2018 \sa SetScotsPineSegmentLength
-double global_hcb;///< Height of grown base for function adhoc \sa adhoc
-
+///If function adhoc is in use: it boosts shoot growth in lower parts of the crown, see Eq. 8 in Sievanen et al. 2018 \sa adhoc
+bool is_adhoc = false;
+///This function boosts shoot growth in lower parts of the crown, see Eq. 8 in Sievanen et al. 2018
+///\sa SetScotsPineSegmentLength
+ParametricCurve adhoc("adhoc.fun");
+///Height of grown base for function adhoc \sa adhoc
+double global_hcb=0.0;
+///@}
 ///\defgroup spaceo Global variables to asses space occupation in shoot growth
 /// @{
-/// \brief Eq 10 in Sievanen et al. 2018 \sa SetScotsPineSegmentLength
-
+///Firmament for calculation if foliage in growth direction (Eq 10 in Sievanen et al. 2018).
+///\sa SetScotsPineSegmentLength
 Firmament dummy_firm;
-///
-/// \brief VoxelSpace for calculation if foliage in growth direction
-///
-/// Eq 10 in Sievanen et al. 2018 \sa SetScotsPineSegmentLength
+///VoxelSpace for calculation if foliage in growth direction
+///Eq 10 in Sievanen et al. 2018 \sa SetScotsPineSegmentLength
 VoxelSpace space_occupancy(Point(0.0,0.0,0.0),Point(1.0,1.0,1.0),
 			   0.1,0.1,0.1,5,5,5,dummy_firm);
-///only voxelbox at the end of new Segment is checked
+///Only one voxelbox at the end of new Segment is checked
 bool space0 = false;
-///also neighboring boxes in direction of new Segment are checked
+///Also neighboring boxes in direction of new Segment are checked
 bool space1 = false;
-///also all neighboring boxes are checked
+///Also all neighboring boxes are checked
 bool space2 = false;
-///search distance of neighboring boxes for space2
+///Search distance of neighboring boxes for space2
 double space2_distance = 0.3;
 ///@}
-
 ///\defgroup spaceb Global variables to asses amount of foliage in front of a bud
-/// @{
-/// \brief Eq 11 in Sievanen et al. 2018
-
-///This global function is used to asses
-///foliage area density in the view cone of a bud. It affects
-///the number of lateral buds created in L-system \sa pine-em98.L  \sa SetBudViewFunctor
+/// @{ 
+///`bud_view_f` global function is used to asses foliage area density in the view cone of a bud. It affects
+///the number of lateral buds created in L-system. Eq 11 in Sievanen et al. 2018.
+///\sa pine-em98.L  \sa SetBudViewFunctor
 ParametricCurve bud_view_f;
-///If *bud view function* is in use. \sa bud_view_f 
+///Sets bud view function in use. \sa bud_view_f 
 bool is_bud_view_function = false;   
 ///@}
-
-extern double L_age; /// Conveys tree age to the L-system \sa pine-em98.L
-extern double L_H;   /// Conveys tree height to the L-system \sa pine-em98.L
-
-///Random seed for `ran3` function
-int ran3_seed;
-
-///Initial height ot trees \sa pine-em98.L
-double H_0_ini;
-
-///\defgroup  ranvar Global variables for variation
+///\defgroup Lextglob Global L-system variables
+///Global variables to pass information to and from L-system
+///@{
+///Conveys tree age to the L-system \sa pine-em98.L \sa L_age
+double L_age = 0.0;
+///Conveys tree height to the L-system \sa pine-em98.L \sa L_H
+double L_H =0.0;
+///@}
+///\defgroup random Random seed
+///@{
+///Random seed for `ran3` function. \sa GrowthLoop
+int ran3_seed=-1;
+///@}
+///\defgroup  ranvar Global variables for tree variation
+///Global variables to generate random variation between tree individuals.
+///They work in the Lindenmayer system \sa pine-em98.L
 /// @{
-/// \brief Variables to generate random variation between tree individuals.
-/// They work in the Lindenmayer system \sa pine-em98.L
-
+///Initial height ot trees
+double H_0_ini=0.0;
 ///Variation of initial heights
-double  H_var_ini;
- ///Variation in the initial number of buds.
-int n_buds_ini_min, n_buds_ini_max;
+double  H_var_ini=0.0;
+///Variation in the initial number of buds.
+int n_buds_ini_min=0.0;
+int n_buds_ini_max=0.0;
 ///Variation in the number of buds
-double rel_bud;
-bool bud_variation; ///< If bud variation is on \sa pine-em98.L
-double branch_angle; ///< Variation in branching_angle
+double rel_bud=0.0;
+///If bud variation is on \sa pine-em98.L
+bool bud_variation=false;
+///Variation in branching_angle
+double branch_angle=0.0; 
 ///@}
 
-///@}
-
-/// \typedef GrowthLoop<ScotsPineTree,ScotsPineSegment,ScotsPineBud, Pine::LSystem<ScotsPineSegment,ScotsPineBud,PBNAME,PineBudData> > ScotsPineForest
-/// ScotsPineForest (i.e. GrowthLoop template instance) captures the growth loop of a forest stand.
+///\typedef GrowthLoop<ScotsPineTree,ScotsPineSegment,ScotsPineBud, Pine::LSystem<ScotsPineSegment,ScotsPineBud,PBNAME,PineBudData> > ScotsPineForest
+///ScotsPineForest (i.e. GrowthLoop template instance) captures the growth loop of a forest stand.
 typedef GrowthLoop<ScotsPineTree,ScotsPineSegment,ScotsPineBud,
 		   Pine::LSystem<ScotsPineSegment,ScotsPineBud,PBNAME,PineBudData> > ScotsPineForest;
 
 /// \defgroup groupmain Main program for growth loop
 /// @{
 /// Content of the main program to run Growth loop for LignumForest.
-/// @}
-/// \ingroup groupmain
 /// \fn int main(int argc, char** argv)
 /// \brief Main function for growth.
 /// Check and parse command line. The  command line includes switches to control
@@ -130,11 +130,11 @@ int main(int argc, char** argv)
   
   ran3(&ran3_seed);
 
-  /// \internal
-  /// MixedForest  will  implement a  class  that  can  manage a  forest
-  /// consting of several tree species.
-  /// This is a quick way to test that the class compiles.
-  /// \snippet{lineno} lignum-forest.cc Mf
+  // \snippet{lineno} lignum-forest.cc Mf
+  // \internal
+  // MixedForest  will  implement a  class  that  can  manage a  forest
+  // consting of several tree species.
+  // This is a quick way to test that the class compiles.
   // [Mf] 
   // MixedForest<ScotsPineForest,ScotsPineForest> mf;
   // mf.initialize(argc,argv);
@@ -142,17 +142,19 @@ int main(int argc, char** argv)
   // mf.afterGrowth();
   // [Mf]
   /// \endinternal
-  
-  /// **Initialize forest**
-  /// \snippet{lineno} lignum-forest.cc InitForest
-  /// \internal
+  ///**Initialize forest**
+  ///\snippet{lineno} lignum-forest.cc InitForest
+  ///\internal
   // [InitForest]
   gloop.parseCommandLine(argc,argv);
   gloop.resolveCommandLineAttributes();
   gloop.printVariables();
-  gloop.initializeFunctions();   //Reads in some functions from files
+  //Reads in some functions from files
+  gloop.initializeFunctions();
+  //Configure tree locations
   gloop.setTreeLocations();
-  gloop.createTrees();  //to locations set above
+  //Depending on configuration random or pretermined locations
+  gloop.createTrees();  
   gloop.printTreeLocations(0);
   //InitializeTrees reads in/sets a number of parameters and functions for each tree
   gloop.initializeTrees();
@@ -168,7 +170,7 @@ int main(int argc, char** argv)
   gloop.collectDataAfterGrowth(0);
   // [InitForest]
   /// \endinternal
-  /// **Intialize  HDF5 content**
+  //Initialize  HDF5 content
   string hdf5fname;
   ParseCommandLine(argc,argv,"-hdf5", hdf5fname);
   LGMHDF5File hdf5_file(hdf5fname);
@@ -213,7 +215,7 @@ int main(int argc, char** argv)
     // collectDataAfterGrowth collects data for HDF5 file. The 0th Year dimension
     // contains initial data
     gloop.collectDataAfterGrowth(year+1);
-    ///Save as xml
+    //Save as xml
     CreateTreeXMLDataSet(gloop,hdf5_trees,TXMLGROUP,gloop.getWriteInterval());
   } // End of  for(year = 0; ...)
   // [GLoop]
@@ -227,35 +229,34 @@ int main(int argc, char** argv)
     cout << "NO TREES AFTER GROWTH LOOP" <<endl;
   }
   cout << "GROWTH DONE " << "NUMBER OF TREES " << gloop.getNumberOfTrees() << endl;
-  /// **Collect HDF5 data**
-  ///
-  /// **Year by year, tree by tree data**
+  //Collect HDF5 data
+  //Year by year, tree by tree data
   TMatrix3D<double>& hdf5_data = gloop.getHDF5TreeData();
   hdf5_file.createDataSet(TREE_DATA_DATASET_NAME,hdf5_data.rows(),hdf5_data.cols(),hdf5_data.zdim(),hdf5_data);
   hdf5_file.createColumnNames(TREE_DATA_DATASET_NAME,TREE_DATA_COLUMN_ATTRIBUTE_NAME,TREE_DATA_COLUMN_NAMES);
-  /// **Aggregate stand data**
+  //Aggregate stand data
   TMatrix2D<double>& hdf5_stand_data = gloop.getHDF5StandData();
   hdf5_file.createDataSet(STAND_DATA_DATASET_NAME,hdf5_stand_data.rows(),hdf5_stand_data.cols(),hdf5_stand_data);
   hdf5_file.createColumnNames(STAND_DATA_DATASET_NAME,STAND_DATA_COLUMN_ATTRIBUTE_NAME,STAND_DATA_COLUMN_NAMES);
-  /// **Aggregate center stand data**
+  //Aggregate center stand data
   TMatrix2D<double>& hdf5_center_stand_data = gloop.getHDF5CenterStandData();
   hdf5_file.createDataSet(CENTER_STAND_DATA_DATASET_NAME,hdf5_center_stand_data.rows(),hdf5_center_stand_data.cols(),
 			  hdf5_center_stand_data);
   hdf5_file.createColumnNames(CENTER_STAND_DATA_DATASET_NAME,STAND_DATA_COLUMN_ATTRIBUTE_NAME,STAND_DATA_COLUMN_NAMES);
-  /// **Parameters used**  
+  //Parameters used 
   TMatrix2D<double> hdf5_tree_param_data = gloop.getHDF5TreeParameterData();
   hdf5_file.createDataSet(PGROUP+TREE_PARAMETER_DATASET_NAME,hdf5_tree_param_data.rows(),hdf5_tree_param_data.cols(),
 			  hdf5_tree_param_data);
   hdf5_file.createColumnNames(PGROUP+TREE_PARAMETER_DATASET_NAME,TREE_PARAMETER_ATTRIBUTE_NAME,TREE_PARAMETER_NAMES);
-  /// **Functions known in a tree**
+  //Functions known in a tree
   for (unsigned int i=0; i < FN_V.size();i++){ 
     TMatrix2D<double> hdf5_tree_fn_data = gloop.getHDF5TreeFunctionData(FN_V[i]);
     hdf5_file.createDataSet(TFGROUP+FNA_STR[i],hdf5_tree_fn_data.rows(),hdf5_tree_fn_data.cols(),hdf5_tree_fn_data);
     hdf5_file.createColumnNames(TFGROUP+FNA_STR[i],TREE_FN_ATTRIBUTE_NAME,TREE_FN_COLUMN_NAMES);
   }
-  /// **All functions used**
+  //All functions used
   hdf5_file.createFnDataSetsFromDir("*.fun",AFGROUP,TREE_FN_ATTRIBUTE_NAME,TREE_FN_COLUMN_NAMES);
-  /// **Command line**
+  //Command line
   vector<string> c_vec;
   std::copy( argv, argv+argc,back_inserter(c_vec));
   ostringstream cline;
@@ -283,3 +284,4 @@ int main(int argc, char** argv)
 // #endif
   return 0;
 }
+/// @} Group main

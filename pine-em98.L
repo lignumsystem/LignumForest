@@ -12,7 +12,7 @@ using namespace PineTree;
 
 //These globals transfer information between L-system
 //and other part of program. 
-double L_age, L_H;
+extern double L_age, L_H;
 
 extern int ran3_seed;
 
