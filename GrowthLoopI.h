@@ -1,6 +1,6 @@
 #ifndef GROWTHLOOPI_H
 #define GROWTHLOOPI_H
-
+#include <string>
 ///\file  GrowthLoopI.h
 ///\brief GrowthLoop implementation.
 ///
@@ -9,18 +9,20 @@
 
 //The following addtogroup seems to help doxygen to understand L-files
 //to some extent!
-///\addtogroup mainglobals
+///\addtogroup mainglobals Global variables in LignumForest 
 ///@{
 namespace Pine{
-
+///L system runs in two modes. first create the new segments and
+///after their lengths are adjusted, the second mode creates the new buds.
+///There are two calls to derive in the main program in pine.cc
+///\note `lig-forest`: As the `mode` is a global variable, it is visible to *all* L-systems.
+///Consequently each l[i].derive() will change the mode and alternately the L-systems 
+///will receive 0 and 1 as the mode. This is not what we want but what is needed is an additional
+///explicit call to l[i].endEach() after each l[i].derive() in pine-forest.cc that resets the mode.
   extern int mode;  ///<Declared in L-system. \sa pine-em98.L
 
 }
-///@}
-#include <string>
 using namespace Pine;
-
- 
 extern int ran3_seed; ///<Initialized in GrowthLoopI.h
 extern double H_0_ini; ///<Initialized in GrowthLoopI.h
 extern double H_var_ini;///<Initialized in GrowthLoopI.h
@@ -34,6 +36,7 @@ extern ParametricCurve bud_view_f;///<Initialized in GrowthLoopI.h
 extern bool is_bud_view_function;///<Reinitialized in GrowthLoopI.h.
 extern double global_hcb;///<Initialized in GrowthLoopI.h
 extern double L_H;///<Initialized in GrowthLoopI.h
+///@}
 namespace LignumForest{                                 
 template <class TREE,class TS, class BUD, class LSYSTEM>
 int  CreateTreeXMLDataSet(const GrowthLoop<TREE,TS,BUD,LSYSTEM>& gl, LGMHDF5File& hdf5_file,const string& group_name, const int interval)

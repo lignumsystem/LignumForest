@@ -19,6 +19,7 @@ summing& Branchmeans::operator()(summing& id,
 	double lb = 0.0;
 	list<TreeCompartment<ScotsPineSegment,ScotsPineBud>*>::iterator I
 	  = sl.begin();
+	///\section branchmeans Collecting branch data
 	///\subsection lbdata Branch length
 	///Branch length as a sum of segment lengths
 	///\snippet{lineno} branchfunctor.cc LB
