@@ -2235,7 +2235,7 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::printSegmentQin()
     //branches
     if (verbose)
       cout << "Tree " << i << " Qin and point" << endl;
-    ForEach(*t,PrintSegmentQin<TS,BUD>());
+    ForEach(*t,PineTree::PrintSegmentQin<TS,BUD>());
   }
 }
 
