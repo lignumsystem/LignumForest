@@ -47,6 +47,7 @@ include(../stl-voxelspace/lib/voxel.cmake)
 include(../LEngine/lib/L.cmake)
 include(../LEngine/lib/l2c.cmake)
 if(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin")
+  message("Compiling Visual")
   include(../Graphics/lib/Visual.cmake)
 endif()
 
