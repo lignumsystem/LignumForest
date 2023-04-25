@@ -38,10 +38,10 @@ include(../LEngine/lib/l2c.cmake)
 include(../Graphics/lib/Visual.cmake)
 
 find_package(HDF5 COMPONENTS C CXX HL REQUIRED)
-find_package(Qt4 COMPONENTS QtOpenGL QtXml QtGui QtCore REQUIRED)
-find_package(OpenGL REQUIRED)
+find_package(Qt5 COMPONENTS Xml Core REQUIRED)
+#find_package(OpenGL REQUIRED)
 # cmake 3.23 output erroneusly prints 'glut not found'. It is found. 
-find_package(GLUT REQUIRED)
+#find_package(GLUT REQUIRED)
 
 set(SOURCE_FILES lignum-forest.cc
 branchfunctor.cc
@@ -85,9 +85,8 @@ ${CMAKE_CURRENT_LIST_DIR}/../LEngine/include
 add_dependencies(lignum-forest lignum-core)
 
 target_link_libraries(lignum-forest
-HDF5::HDF5 Qt4::QtOpenGL Qt4::QtXml Qt4::QtGui Qt4::QtCore
-GLUT::GLUT OpenGL::GLU OpenGL::GL
-Visual L voxel sky LGM cxxadt
+HDF5::HDF5 Qt5::Xml Qt5::Core
+L voxel sky LGM cxxadt
 )
 
 install(TARGETS lignum-forest DESTINATION "${CMAKE_CURRENT_LIST_DIR}")
