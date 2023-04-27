@@ -132,7 +132,7 @@ void GrowthLoop<TREE,TS,BUD,LSYSTEM>::usage()const
   cout << "-seed <value>               seed for random number generator." << endl;
   cout << "-kBorderConifer <value>       Extinction coefficient for conifer foliage in border forest (default = 0.14)" << endl;
   cout << "-H_0_ini, -H_var_ini        For variation of initial heights (defaults = 0.3 and 0.0)" << endl;
-  cout << "-n_buds_ini_min, -n_buds_ini_max  For variation of initial number of buds (defaults = 4 and 4)" << endl;
+  cout << "-n_buds_ini_min, -n_buds_ini_max  For variation of initial number of buds in L system Start axiom rule (defaults = 4 and 4)" << endl;
   cout << "-p0Var <value>                Random variation of p0 +- max <value> per cent from the value in Tree.txt" << endl;
   cout << "-segLenVar <value>         Random variation of length of new segments around Lnew, per cent" << endl;
   cout << "-pairwiseSelf      Pairwise radiation calculation for the tree itself." << endl;
@@ -1343,7 +1343,7 @@ bool GrowthLoop<TREE, TS,BUD,LSYSTEM>::allocation(TREE& t, bool verbose)
   ///branching point. \sa PartialSapwoodAreaDown
 
   DiameterGrowthData data;
-  LGMGrowthAllocator2<TS,BUD,SetScotsPineSegmentLength,
+  LGMGrowthAllocator2<TS,BUD,SetScotsPineSegmentLengthBasic,
       PartialSapwoodAreaDown,ScotsPineDiameterGrowth2,DiameterGrowthData>
     G(t,data,PartialSapwoodAreaDown(GetFunction(t,SPSD))); 
  
