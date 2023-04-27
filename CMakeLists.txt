@@ -1,4 +1,5 @@
 # CMAKE file to compile LignumForest
+# ----------------------------------
 # For Unix Makefile build system for Debug:
 # mkdir debug
 # cd  debug
@@ -6,6 +7,9 @@
 # Optionally explicitely set c++ compiler
 # cmake ..  -DCMAKE_BUILD_TYPE=Debug  -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_FLAGS=-stdlib=libc++
 # make
+# -------------------
+# To install `lignum-forest` to directory above (project home) type:
+# make install
 # -------------------
 # For Unix Makefile build system for Release:
 # mkdir release
