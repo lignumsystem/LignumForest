@@ -1,10 +1,20 @@
 /// \file 
 /// \brief The main program for the LignumForest.
-
-///Lignum implementation
+///
+///Implementation of multiple Scots pine trees in a forest stand.
+///\page lsystemforest L-system file
+///The following L system file defines architecture for Scots pine 
+///\include pine-em98.L
+///\page runscriptarchforest Run script to simulate architecture effects
+///Use the following ` run-lignumforest-architecture.slurm` script as basis to simulate architecture effects
+///\include run-lignumforest-architecture.slurm
+///\page runscriptebhforest Run script to simulate EBH
+///Use the folllowing `run-ajo157-ebhreduction-lgpr0.0008.slurm` script
+///as basis to simulate EBH etc experimental effects
+///\include run-ajo157-ebhreduction-lgpr0.0008.slurm 
 #include <Lignum.h>
 #include <GrowthLoop.h> 
-///Implementation of the Scotspine tree segment and bud
+//Implementation of the Scotspine tree segment and bud
 #include <ScotsPine.h>
 
 //#include <MixedForest.h>
@@ -92,8 +102,9 @@ int ran3_seed=-1;
 double H_0_ini=0.0;
 ///Variation of initial heights
 double  H_var_ini=0.0;
-///Variation in the initial number of buds.
+///Variation in the initial number of buds (lower bound) in L system Start axiom rule.
 int n_buds_ini_min=0.0;
+///Variation in the initial number of buds (upper bound) in L system Start axiom rule.
 int n_buds_ini_max=0.0;
 ///Variation in the number of buds
 double rel_bud=0.0;
