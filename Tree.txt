@@ -7,7 +7,7 @@ LGPsf 28
 LGPms 0.024
 LGPmr 0.24
 LGPnl 0.03
-LGPpr 0.0006
+LGPpr 0.0007
 LGPar 0.5
 LGPLmin 0.04
 LGPna 0.7854
@@ -18,8 +18,8 @@ LGPss 0.07
 LGPapical 0.9
 LGPxi 0.6
 LGPaf 2
-LGPq 1.5
+LGPq 0.95
 LGPsr 1.33
 LGPlen_random 0.0
-LGPe1 50
-LGPe2 130
+LGPe1 112.872
+LGPe2 30
