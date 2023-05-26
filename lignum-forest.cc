@@ -206,13 +206,14 @@ int main(int argc, char** argv)
     L_age = (double)year;     //This is for L-system and dangerous
     gloop.setHPrev();
     gloop.setYear(year);
-    
     gloop.setVoxelSpaceAndBorderForest();
     gloop.calculateRadiation();
     gloop.increaseXi(year);
     // Currently data collection before new growth and tree aging
     gloop.photosynthesisAndRespiration();
     gloop.createNewSegments();
+    // Elongation and diameter growth with all extra experiments
+    // Also remove dead trees from vtree and simulation
     gloop.allocationAndGrowth();
     // Command line  -writeOutput exists
     //gloop.output();
