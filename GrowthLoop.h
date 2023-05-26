@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <fstream>
 #include <sstream>
+#include <set>
 #include <utility>
 #include <mathsym.h>
 #include <Point.h>
@@ -50,8 +51,29 @@ template <class TS, class BUD>
       }
     return sum;
   }
-    };
+};
 
+  ///\brief Reduce tree position number
+  ///
+  ///After tree deletion reduce tree position value
+  ///by 1 for trees on hold behind the deleted tree in `vtree`.
+  ///\sa trees_on_hold vtree GrowthLoop::deleteOnHold
+  class DecreaseTreePosition{
+  public:
+    ///\param k Position of the deleted tree in `vtree`
+    DecreaseTreePosition(int k):val(k){}
+    ///Reduce tree positon by 1
+    ///\param k The position of the tree in `vtree`.
+    ///\post If k > DecreaseTreePosition::val then k=k-1
+    void operator()(const int& k){
+      if (k > val){
+	const_cast<int&>(k) = k-1;
+      }
+    }
+  private:
+    int val;///< Trees behind position *val* will get their position reduced by 1 
+  };
+  
 /// \brief Implement the LignumForest growth loop
 /// \tparam TREE Tree
 /// \tparam TS Tree segment
@@ -364,21 +386,36 @@ public:
   ///\brief Photosynthesis, respiration, tree aging and data collection.
   ///
   /// Photosynthesis, respiration, tree aging and data collection for all trees in `vtree`.
+  /// \pre If tree is on hold omit photosynthesis and respration 
   /// \attention The following steps are taken:
   /// -# photosynthesis
   /// -# respiration
   /// -# collectDataBeforeGrowth
   /// -# treeAging
-  /// -# collectSapwoodMass
+  /// -# collectSapwoodMass after senescence
+  /// \sa trees_on_hold
   void photosynthesisAndRespiration();
   void evaluateStandVariables();
+  /// L system derivation: create new segments.<br>
+  /// \pre If tree is on hold omit the new segments 
+  /// After new segments set the following variables:
+  /// \post Set LGAip for terminating segments \sa ForwardScotsPineQin
+  /// \post Set segment needle angles \sa SetScotsPineSegmentNeedleAngle
+  /// \post Calculate vigour index \sa TreePhysiologyVigourIndex
+  /// \post Set TreeQinMax
+  /// \post Path length from base to each segment \sa PineTree::PathLength
+  /// Optionally if defined in command line:
+  /// \post Calculate space occupancy
+  /// \post  Extended Borchert-Honda calculation 
+  /// \note The sizes of these new segments will be iterated later
   void createNewSegments();
   /// \brief Allocation of net photosynthates to growth.
   ///
   /// Also responsible of keeping record of tree death.
   /// Dead trees are removed from the list of trees, L-systems
   /// and from the vectors of collected data.
-  /// \sa vtree vlsystem locations
+  /// 
+  /// \sa vtree vlsystem locations trees_on_hold
   /// \sa wsapwood wfoliage wroot ws_after_senescence vdatafile
   void allocationAndGrowth();
   int getNumberOfTrees() {return no_trees;}
@@ -387,7 +424,7 @@ public:
     for (unsigned int i = 0; i < (unsigned int)no_trees; i++)
       h_prev[(int)i] = GetValue(*vtree[i],LGAH);
   }
-  /// \brief Harvest: remove percentage of trees from the forest stand 
+  /// \brief Harvest: remove percentage of trees from the forest stand.
   /// \param percentage Percentage of shortest trees (number of trees) to be removed
   /// \post The tree vector `vtree` and associated data vectors updated
   /// \note Other criteria like several harvest times and harvesting based on basal area may follow
@@ -401,9 +438,45 @@ public:
   /// \sa vtree vlsystem locations
   /// \sa wsapwood wfoliage wroot ws_after_senescence vdatafile
   void removeTreesAllOver(const vector<unsigned int>& vremove);
+  /// \brief Set tree on hold.
+  ///
+  /// Tree has failed allocation, P - M < 0, but has foliage.
+  /// Put the tree on hold until foliage has died.
+  /// \param k Tree position in `vtree`
+  /// \sa allocationAndGrowth
+  /// \sa trees_on_hold
+  void insertOnHold(const int k){trees_on_hold.insert(k);}
+  /// \brief Check if a tree is on hold.
+  /// \param k Tree position in `vtree`
+  /// \return *true* if `k` in `trees_on_hold`, *false* if not
+  bool isOnHold(int k){
+    set<int>::iterator it = trees_on_hold.find(k);
+    if (it != trees_on_hold.end()){
+      return true;
+    }
+    return false;
+  }
+  /// \brief Reduce position number N in vtree by one for all trees on hold that have N > k.
+  ///
+  /// These trees are (implicitely) moved forward by one position in `vtree` if k:th tree is deleted.
+  /// \param k Position number of the deleted tree.
+  void decreaseOnHoldPosition(int k){
+    for_each(trees_on_hold.begin(),trees_on_hold.end(),DecreaseTreePosition(k));
+  }
+  /// \brief Delete tree from on hold.
+  ///
+  /// Tree has no longer foliage and can be/will be/has been deleted from on hold  and from the forest.
+  /// \param k  Tree position in `vtree`
+  /// \pre k is in `trees_on_hold`
+  /// \sa allocationAndGrowth
+  /// \sa vtree trees_on_hold
+  void deleteOnHold(int k){
+    trees_on_hold.erase(k);
+  } 
 private:
   vector<TREE*> vtree; ///< Vector of trees. \sa getTrees
   vector<LSYSTEM*> vlsystem; ///< Vector of L-systems, one for each tree
+  set<int> trees_on_hold; ///< Tree numbers for trees that have foliage but failed P-M=G
   vector<pair<double,double> > locations; ///< Positions of trees
   vector<ofstream*> vdatafile;///< Vector of output files (as file streams) for each tree. 
   VoxelSpace *vs; ///< The voxel space spanning the forest

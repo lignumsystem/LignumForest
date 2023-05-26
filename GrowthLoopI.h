@@ -1061,7 +1061,7 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::initializeGrowthLoop()
 
 }
 
-
+///Increase heartwood ratio in new segments
 template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::increaseXi(int& year)
 {
@@ -1332,16 +1332,15 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::setSapwoodDemandAtJunction(TREE& t)
    PropagateUp(t,alku,SetSapwoodDemandAtJunction());
 }
 
+/// \remark Allocate    net    photosynthesis:   
+///Testing the implementation where the sapwood area is passed down
+///as such  between segments that are  in the same  axis.  Only the
+///segments  of higher gravelius  order require  less sapwood  in a
+///branching point. \sa PartialSapwoodAreaDown
 template<class TREE, class TS,class BUD, class LSYSTEM>
 bool GrowthLoop<TREE, TS,BUD,LSYSTEM>::allocation(TREE& t, bool verbose)
 
 {
-  /// \remark Allocate    net    photosynthesis:   
-  ///Testing the implementation where the sapwood area is passed down
-  ///as such  between segments that are  in the same  axis.  Only the
-  ///segments  of higher gravelius  order require  less sapwood  in a
-  ///branching point. \sa PartialSapwoodAreaDown
-
   DiameterGrowthData data;
   LGMGrowthAllocator2<TS,BUD,SetScotsPineSegmentLengthBasic,
       PartialSapwoodAreaDown,ScotsPineDiameterGrowth2,DiameterGrowthData>
@@ -1372,14 +1371,18 @@ bool GrowthLoop<TREE, TS,BUD,LSYSTEM>::allocation(TREE& t, bool verbose)
   return true;
 }
 
-
-///
 /// Allocation of photosynthetic production to growth of new segments and
 /// expansion of existing ones. The tree structure is also updated and
 /// new buds are created.
-/// If iterative allocation does not succeed in allocation() (probably
-/// P - M < 0.0) the tree is considered dead and removed from the tree
-/// list (and no_trees is updated)
+/// If iterative allocation does not succeed in GrowthLoop::allocation
+/// (P - M < 0.0) the tree is considered dead. The tree removal is in two
+/// phases. If the tree has foliage it is put on hold and remains there until all foliage
+/// has died. After that  the tree is put to `dead_trees` list and removed from simulation.
+/// \post All dead trees with foliage are inserted to `trees_on_hold`
+/// \post All dead trees without foliage are removed from `vtree`
+/// \post All dead trees without foliage are removed from `trees_on_hold`
+/// \post Trees on hold will have their position number updated based on their relative
+///       position to deleted trees (in front or behind).
 template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::allocationAndGrowth()
 {
@@ -1393,8 +1396,18 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
     cout << "Allocation loop with k: " << k << " No trees " << no_trees <<endl; 
     TREE* t = vtree[k];
     LSYSTEM* l = vlsystem[k];
-
-
+    if (isOnHold(k)){
+      double wf = 0.0;
+      wf = Accumulate(*t,wf,CollectFoliageMass<TS,BUD>());
+      if (wf < R_EPSILON){
+	cout << "1. Tree " << k << " on hold, no foliage -> tree deleted" <<endl; 
+	dead_trees.push_back(k);
+      }
+      else{
+	cout << "1.2 Tree " << k << " on hold, foliage " << wf << " kgC" << endl;
+      }
+      continue;
+    }
     // if(growthloop_is_heightFun) {
     //   if(L_age == 0) {
     // 	dDb = 0.003;    // 3 mm --> length growth about 50*0.003 = 0.15
@@ -1418,15 +1431,31 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
     // [PipeModel]
     /// \endinternal
     if(!allocation(*t,bracket_verbose)){
-      cout << "Allocation failed, P - M < 0" <<endl;
-      dead_trees.push_back(k);       //iteration failed, this tree is dead
-      cout << "Pushed " << k << " to dead trees" <<endl;
+      cout << "2. Allocation failed, P - M < 0" << ", tree " << k << endl;
+      double qin=0.0;
+      //Kill all buds in the tree 
+      PropagateUp(*t,qin,PineTree::KillBuds<TS,BUD>(true));
+      //Pass the information to L-system (no new growth)
+      l->lignumToLstring(*t,1,PineTree::PBDATA);
+      double wf=0.0;
+      wf = Accumulate(*t,wf,CollectFoliageMass<TS,BUD>());
+      if (wf < R_EPSILON) {
+	dead_trees.push_back(k);       //iteration failed, this tree is dead
+	cout << "2.1 Pushed " << k << " to dead trees" <<endl;
+      }
+      else{
+	cout << "2.2a Still " << wf << " kgC foliage in tree " << k << ", cancel new growth, insert on hold, remains in forest" <<endl;
+	ForEach(*t,CancelNewGrowth<TS,BUD>());
+	cout << "2.2b Cancelled new growth " << wf << " kgC foliage in tree " << k << endl;
+	insertOnHold(k);
+      }
       continue;
     }
-    else if(GetValue(*t,LGAH) - h_prev[(int)k] < 0.001) {
-      cout << L_age << " " << k << " " << no_h[(int)k] << endl;
+    else if((GetValue(*t,LGAH) - h_prev[(int)k] < 0.001) && (GetValue(*t,LGAH) - h_prev[(int)k] > 0.0)){
+      cout << "3. Allocation but slow gowth in tree " << k << ", age " <<  L_age << ", # " << no_h[(int)k] << endl;
       no_h[(int)k] += 1;
       if(no_h[(int)k] >= 3){
+	cout << "3.1. Allocation slow growth " << no_h[(int)k] <<  " times, pushed tree " << k << " to dead trees" <<endl;
 	dead_trees.push_back(k);
       }
       continue;
@@ -1436,20 +1465,20 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
     // If -heightFun
     //
     //=============================================================================
-      if(growthloop_is_heightFun && L_age > 10) {
-	//Here length of leader at tree level, if height function
-	Axis<TS,BUD>& stem =  GetAxis(*t);
-	TreeSegment<TS,BUD>* last =
-	  GetLastTreeSegment(stem);
-	double e1 = GetValue(*t,LGPe1);
-	double e2 = GetValue(*t,LGPe2);
-	// cout << " e1 e2 " << e1 << " " << e2 << endl;
-	// cout << " Hc H dDb " << L_H << " " << global_hcb << " " << dDb << endl;
-	double Lnew = (e1 + e2*global_hcb/L_H) * dDb;
-        if(Lnew < 0.1)           //safeguarding against losing top
-            Lnew = 0.1;
-	SetValue(*last, LGAL, Lnew);
-      }
+    if(growthloop_is_heightFun && L_age > 10) {
+      //Here length of leader at tree level, if height function
+      Axis<TS,BUD>& stem =  GetAxis(*t);
+      TreeSegment<TS,BUD>* last =
+	GetLastTreeSegment(stem);
+      double e1 = GetValue(*t,LGPe1);
+      double e2 = GetValue(*t,LGPe2);
+      // cout << " e1 e2 " << e1 << " " << e2 << endl;
+      // cout << " Hc H dDb " << L_H << " " << global_hcb << " " << dDb << endl;
+      double Lnew = (e1 + e2*global_hcb/L_H) * dDb;
+      if(Lnew < 0.1)           //safeguarding against losing top
+	Lnew = 0.1;
+      SetValue(*last, LGAL, Lnew);
+    }
 
     //Calculate  the  LGAsf  for   newly  created  segments,  sf  in  P
     //Kaitaniemi data depens on segment length
@@ -1522,7 +1551,7 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
     branch_angle = t->getBranchAngle();        //this global variable goes to pine-em98.L
     l->derive();
     l->lstringToLignum(*t,1,PineTree::PBDATA);
-  }  //for (unsigned int k = 0; k < ...
+  } // Allocation: for (unsigned int k = 0; k < ...
 
   //Now, dead trees are removed from everywhere
   typename vector<TREE*>::iterator It = vtree.begin();
@@ -1544,6 +1573,7 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
   unsigned int previous = 0;
   while(I != dead_trees.end())
     {
+      //This is the tree position in vtree
       unsigned int this_advance = *I - previous;
       advance(It, this_advance);
       advance(Is, this_advance);
@@ -1587,7 +1617,18 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
       I++;
       no_trees--;
     }
-	  
+  //We can in this round delete from trees on hold straightfowardly based on position number
+  for (auto it=dead_trees.begin();it != dead_trees.end();it++){
+    int k = *it;
+    deleteOnHold(k);
+  }
+  //For the next round for each deleted tree decrease the position number
+  //for each tree still on hold behind the deleted tree.
+  //The dead trees are sorted in dead_trees by the position number
+  for (auto it = dead_trees.begin();it != dead_trees.end();it++){
+    int k = *it;
+    decreaseOnHoldPosition(k);
+  } 
 }
 
 /// \tparam TREE Tree
@@ -1958,13 +1999,12 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
   border_forest.setLAI(stand.getLAI());
 }
 
-//===================================================================
-// calculateRadiation UnDumps a tree (except the first tree, since
-// it was not dumped in setVoxelspace()) and calculates radiation
-// 1) by pairwise for itself and 2) through voxelspace and
-// 3) borderforest outside itself
-// and then dumps it back to voxelspace
-//===================================================================
+
+/// calculateRadiation Undumps a tree (except the first tree, since
+/// it was not dumped in setVoxelspace()) and calculates radiation
+/// 1) by pairwise for itself and 2) through voxelspace and
+/// 3) borderforest outside itself
+/// and then dumps it back to voxelspace
 template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::calculateRadiation()
 {
@@ -1998,15 +2038,18 @@ template<class TREE, class TS,class BUD, class LSYSTEM>
 
 //end of run-voxel
 
-/// \todo Try to move collectDataBeforeGrowth and treeAging visible into the main growth loop. 
+/// \todo Try to move collectDataBeforeGrowth and treeAging visible into the main growth loop.
 template<class TREE, class TS,class BUD, class LSYSTEM>
 void GrowthLoop<TREE, TS,BUD,LSYSTEM>::photosynthesisAndRespiration()
 {
 
   for (unsigned int k = 0; k < (unsigned int)no_trees; k++){
+    //
     TREE* t = vtree[k];
-    photosynthesis(*t);
-    respiration(*t);
+    if (!isOnHold(k)){
+	photosynthesis(*t);
+	respiration(*t);
+    }
     collectDataBeforeGrowth(*t,k);
     treeAging(*t);
     ///collectSapwoodMass:    
@@ -2018,15 +2061,15 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::photosynthesisAndRespiration()
   }
 }
 
-
-/// Create new segments and set some variables
-/// \note The sizes of these new segments will be iterated later
 template<class TREE, class TS,class BUD, class LSYSTEM>
 void GrowthLoop<TREE, TS,BUD,LSYSTEM>::createNewSegments()
 {
   mode = 0;    //For  L-system
      
   for (unsigned int k = 0; k < (unsigned int)no_trees; k++){
+    if (isOnHold(k)){
+      continue;
+    }
     TREE* t = vtree[k];
     LSYSTEM* l = vlsystem[k];
 
@@ -2047,7 +2090,7 @@ void GrowthLoop<TREE, TS,BUD,LSYSTEM>::createNewSegments()
     //before length growth by vigor index
     double o0 = 1.0;
     PropagateUp(*t,o0,SetScotsPineSegmentApical());
-
+    //Vigour index
     TreePhysiologyVigourIndex(*t);
 
     //QinMax
