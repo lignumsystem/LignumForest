@@ -1,35 +1,36 @@
-# CMAKE file to compile LignumForest
-# ----------------------------------
+# -----------------------------------------
+# CMAKE file to compile 'lignum-forest' and
+# install it in LignumForest directory
+# -----------------------------------------
 # For Unix Makefile build system for Debug:
 # mkdir debug
 # cd  debug
 # cmake .. -DCMAKE_BUILD_TYPE=Debug
 # Optionally explicitely set c++ compiler
 # cmake ..  -DCMAKE_BUILD_TYPE=Debug  -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_CXX_FLAGS=-stdlib=libc++
-# make
-# -------------------
-# To install `lignum-forest` to directory above (project home) type:
 # make install
-# -------------------
+# ------------------------------------------
 # For Unix Makefile build system for Release:
 # mkdir release
 # cd release
 # cmake .. -DCMAKE_BUILD_TYPE=Release
-# make
-# -------------------
-# For Xcode IDE:
+# make install
+# ---------------------------------------------
+# For Xcode IDE first create Xcode project file:
 # mkdir xcode
 # cd xcode
 # cmake .. -G Xcode
+# -------------------------------------
 # Open Xcode IDE
 # open lignum-forest.xcodeproj
-# --------------------
-# Build the 'lignum-forest' Product in Xcode.
+# -------------------------------------
+# Build the 'lignum-forest' Product in Xcode for debugging.
 # See also Xcode -> Product (in menu bar) -> Scheme is set to 'lignum-forest' to allow Run to debug.
 # Copy necessary *.fun files and *.txt parameter files to xcode/Debug where 'lignum-forest´ is located.
 # Otherwise hard coded files are not found in the program.
 # Set command line parameters for 'lignum-forest' in Product (menu bar) -> Scheme -> Edit Schmeme -> Arguments.
 # Divide the command line into practical parts for debugging from Arguments -> '+'.
+# -------------------------------------
 message(${CMAKE_HOST_SYSTEM_NAME})
 cmake_minimum_required(VERSION 3.12)
 # cmake 3.23 for Xcode 13 recommends the policy CMP0114 (warning output)
@@ -123,6 +124,7 @@ elseif(CMAKE_HOST_SYSTEM_NAME MATCHES "Linux")
     HDF5::HDF5 Qt5::Xml Qt5::Core
     L voxel sky LGM cxxadt
   )
+  message("REMEMBER to type \"make install\" to install lignum-forest") 
 else()
   message(${CMAKE_HOST_SYSTEM_NAME} " not supported")
   message(FATAL_ERROR "Exiting cmake")
