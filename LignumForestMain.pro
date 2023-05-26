@@ -5,7 +5,7 @@ CONFIG -= app_bundle
 CONFIG += qt
 QT += xml
 TEMPLATE = app
-TARGET = lig-forest 
+TARGET = lignum-forest 
 #Silence "depricated" warnings from OpenGL in Graphics library
 DEFINES += GL_SILENCE_DEPRECATION
 INCLUDEPATH += /opt/local/include . ../CrownDensity/include include  ../c++adt/include ../stl-lignum/include ../Firmament/include ../stl-voxelspace/include ../LEngine/include
