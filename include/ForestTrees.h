@@ -11,12 +11,14 @@
 #include <vector>
 #include <utility>
 using namespace std;
-
-vector<pair<string,double> > FindTreeFiles(const string& tree_file,double age);
-
-class FindTreeWithProbability{
-public:
-  bool operator()(const double val,const pair<string,double>& e)const;
-};
-
+namespace LignumForest{
+  vector<pair<string,double> > FindTreeFiles(const string& tree_file,double age);
+  ///Find a tree with a probability 
+  class FindTreeWithProbability{
+  public:
+    ///\param val Probability to return *true*  for a tree
+    ///\param  e Representation of a tree from a file \sa FindTreeFiles
+    bool operator()(const double val,const pair<string,double>& e)const;
+  };
+}
 #endif

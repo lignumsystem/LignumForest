@@ -9,7 +9,7 @@
 using namespace std;
 using namespace cxxadt;
 
-
+namespace LignumForest{
 int HarvestForestStand(vector<pair<double,double> >& v,
 		       vector<Tree<ScotsPineSegment,ScotsPineBud>*>& tv,
 		       vector<Pine::LSystem<ScotsPineSegment,ScotsPineBud,
@@ -18,5 +18,6 @@ void RemoveDeadTrees(vector<pair<double,double> >& v,
 		     vector<Tree<ScotsPineSegment,ScotsPineBud>*>& pinev,
 		     vector<Pine::LSystem<ScotsPineSegment,ScotsPineBud,
 		     PBNAME,PineBudData>*>& plv);
+}
 		     
 #endif

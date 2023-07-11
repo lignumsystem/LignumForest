@@ -1,13 +1,15 @@
 #include <BorderForest.h>
 #include <Nearby.h>
-namespace Lignum {
+namespace LignumForest{
 
-  //Return the extinction caused by the border stand
-  //Input: p0   start point of the light beam
-  //       dir  direction of the light beam, |dir| == 1 (!!!)
-  //Calculate the  point where  the light beam  exits the  voxel space
-  //(there  must be  one). NearByShading  then returns  the extinction
-  //coeffcient
+  ///\brief Calculate extinction of homogenous conifer border forest
+  ///\param p0   Start point of the light beam
+  ///\param dir  Direction of the light beam, |dir| == 1 (!!!)
+  ///\param k_conifer The K value for homogenousus conifer border forest 
+  ///\return tau The extinction caused by the border stand
+  ///Calculate the  point where  the light beam  exits the  voxel space
+  ///(there  must be  one). NearByShading  then returns  the extinction
+  ///coeffcient. \sa NearByShading
   double BorderForest::getBorderForestExtinction(const Point& p0, const PositionVector& dir,
 						 LGMdouble k_conifer)
   {
@@ -101,6 +103,5 @@ namespace Lignum {
  
     return tau;
   }
-    
- 
-}  //Namespace Lignum
+     
+}  //End namespace LignumForest

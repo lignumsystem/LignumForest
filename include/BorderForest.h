@@ -13,12 +13,12 @@ using namespace Lignum;
 //correspond to lower left and upper right of voxelspace but are not necessarily
 //the same since borders of the stand and borders of the voxelspace may not
 //be the same.
-namespace Lignum{ 
-class BorderForest{
- public:
-  BorderForest() : k_e(0.14){}
+namespace LignumForest{ 
+  class BorderForest{
+  public:
+    BorderForest() : k_e(0.14){}
     BorderForest(const Point l, const Point r) : k_e(0.14), corner_l(l),
-      corner_r(r) {}
+						 corner_r(r) {}
     void setH(LGMdouble h) {H = h;}
     void setHcb(LGMdouble hcb) {Hcb = hcb;}
     void setLAI(LGMdouble l) {LAI = l;}
@@ -33,12 +33,12 @@ class BorderForest{
     Point& getConrerR() {return corner_r;}
     LGMdouble getBorderForestExtinction(const Point& start, 
 					const PositionVector& dir, LGMdouble k_conifer);
- private:
+  private:
     LGMdouble k_e;
     LGMdouble H;
     LGMdouble Hcb;
     LGMdouble LAI;
     Point corner_l, corner_r;   //corners of the stand that is bordered
-};
-}
+  };
+}//End namespace LignumForest
 #endif

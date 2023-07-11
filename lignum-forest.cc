@@ -3,11 +3,15 @@
 
 ///Lignum implementation
 #include <Lignum.h>
+#include <CrownDensityGlobals.h>
 #include <GrowthLoop.h> 
 ///Implementation of the Scotspine tree segment and bud
 #include <ScotsPine.h>
+#include <SomeFunctors.h>
+#include <DiameterGrowth.h>
+#include <Palubicki_functors.h>
+#include <Space.h>
 
-//#include <MixedForest.h>
 
 #if defined (__APPLE__) || defined(__MACOSX__)
 #include <VisualFunctor.h>
@@ -24,88 +28,18 @@ namespace Pine{
 #include <LSystem.h>
 }
 
-#include <SomeFunctors.h>
-#include <DiameterGrowth.h>
-//#include <RadiationCrownDens.h>
-#include <Palubicki_functors.h>
-#include <Space.h>
 
 
-///\defgroup mainglobals Global variables
-///\brief Declaration of a number of global variables.
-///
-///They are easy to add to the program but maybe should be implemented as function arguments or something else,
-///see e.g. PineBudData in Pine.h \sa PineBudData
-/// @{
+using namespace Pine;
+using namespace CrownDensity;
+using namespace LignumForest;
 
-bool is_adhoc = false;///< If function adhoc is in use: it boosts shoot growth in lower parts of the crown, see Eq. 8 in Sievanen et al. 2018 \sa adhoc
-ParametricCurve adhoc("adhoc.fun");///< This function boosts shoot growth in lower parts of the crown, see Eq. 8 in Sievanen et al. 2018 \sa SetScotsPineSegmentLength
-double global_hcb;///< Height of grown base for function adhoc \sa adhoc
-
-///\defgroup spaceo Global variables to asses space occupation in shoot growth
-/// @{
-/// \brief Eq 10 in Sievanen et al. 2018 \sa SetScotsPineSegmentLength
-
-Firmament dummy_firm;
-///
-/// \brief VoxelSpace for calculation if foliage in growth direction
-///
-/// Eq 10 in Sievanen et al. 2018 \sa SetScotsPineSegmentLength
-VoxelSpace space_occupancy(Point(0.0,0.0,0.0),Point(1.0,1.0,1.0),
-			   0.1,0.1,0.1,5,5,5,dummy_firm);
-///only voxelbox at the end of new Segment is checked
-bool space0 = false;
-///also neighboring boxes in direction of new Segment are checked
-bool space1 = false;
-///also all neighboring boxes are checked
-bool space2 = false;
-///search distance of neighboring boxes for space2
-double space2_distance = 0.3;
-///@}
-
-///\defgroup spaceb Global variables to asses amount of foliage in front of a bud
-/// @{
-/// \brief Eq 11 in Sievanen et al. 2018
-
-///This global function is used to asses
-///foliage area density in the view cone of a bud. It affects
-///the number of lateral buds created in L-system \sa pine-em98.L  \sa SetBudViewFunctor
-ParametricCurve bud_view_f;
-///If *bud view function* is in use. \sa bud_view_f 
-bool is_bud_view_function = false;   
-///@}
-
-extern double L_age; /// Conveys tree age to the L-system \sa pine-em98.L
-extern double L_H;   /// Conveys tree height to the L-system \sa pine-em98.L
-
-///Random seed for `ran3` function
-int ran3_seed;
-
-///Initial height ot trees \sa pine-em98.L
-double H_0_ini;
-
-///\defgroup  ranvar Global variables for variation
-/// @{
-/// \brief Variables to generate random variation between tree individuals.
-/// They work in the Lindenmayer system \sa pine-em98.L
-
-///Variation of initial heights
-double  H_var_ini;
- ///Variation in the initial number of buds.
-int n_buds_ini_min, n_buds_ini_max;
-///Variation in the number of buds
-double rel_bud;
-bool bud_variation; ///< If bud variation is on \sa pine-em98.L
-double branch_angle; ///< Variation in branching_angle
-///@}
-
-///@}
-
-/// \typedef GrowthLoop<ScotsPineTree,ScotsPineSegment,ScotsPineBud, Pine::LSystem<ScotsPineSegment,ScotsPineBud,PBNAME,PineBudData> > ScotsPineForest
-/// ScotsPineForest (i.e. GrowthLoop template instance) captures the growth loop of a forest stand.
-typedef GrowthLoop<ScotsPineTree,ScotsPineSegment,ScotsPineBud,
-		   Pine::LSystem<ScotsPineSegment,ScotsPineBud,PBNAME,PineBudData> > ScotsPineForest;
-
+namespace LignumForest{
+  /// \typedef GrowthLoop<ScotsPineTree,ScotsPineSegment,ScotsPineBud, Pine::LSystem<ScotsPineSegment,ScotsPineBud,PBNAME,PineBudData> > ScotsPineForest
+  /// ScotsPineForest (i.e. GrowthLoop template instance) captures the growth loop of a forest stand.
+  typedef GrowthLoop<ScotsPineTree,ScotsPineSegment,ScotsPineBud,
+		     Pine::LSystem<ScotsPineSegment,ScotsPineBud,PBNAME,PineBudData> > ScotsPineForest;
+}
 /// \defgroup groupmain Main program for growth loop
 /// @{
 /// Content of the main program to run Growth loop for LignumForest.
@@ -124,7 +58,7 @@ int main(int argc, char** argv)
   /// \internal
   // [Vars]
   Sensitivity<ScotsPineSegment,ScotsPineBud> sensitivity;                                                           
-  GrowthLoop<ScotsPineTree,ScotsPineSegment,ScotsPineBud,Pine::LSystem<ScotsPineSegment,ScotsPineBud,PBNAME,PineBudData> > gloop;
+  ScotsPineForest gloop;
   // [Vars]
   /// \endinternal
   
@@ -200,7 +134,7 @@ int main(int argc, char** argv)
     // Currently data collection before new growth and tree aging
     gloop.photosynthesisAndRespiration();
     gloop.createNewSegments();
-    gloop.allocationAndGrowth();
+    gloop.allocationAndGrowth(fip_mode,fgo_mode);
     // Command line  -writeOutput exists
     //gloop.output();
     // Prune dead parts from the trees 
