@@ -5,16 +5,28 @@ CONFIG -= app_bundle
 CONFIG += qt
 QT += xml
 TEMPLATE = app
-TARGET = lig-forest 
+TARGET = lignum-forest 
 #Silence "depricated" warnings from OpenGL in Graphics library
 DEFINES += GL_SILENCE_DEPRECATION
 INCLUDEPATH += /opt/local/include . include  ../c++adt/include ../stl-lignum/include ../Firmament/include ../stl-voxelspace/include ../LEngine/include
-INCLUDEPATH += ../Pine ../XMLTree  ../Graphics
+INCLUDEPATH += ../Pine ../XMLTree  ../Graphics ../CrownDensity/include 
 DEPENDPATH += $$INCLUDEPATH
 LIBS += -L/opt/local/lib -L../c++adt/lib -L../stl-lignum/lib -L../Firmament/lib -L../LEngine/lib -L../stl-voxelspace/lib
 LIBS += -lsky -lL -lvoxel -lLGM  -lcxxadt
 LIBS += -lhdf5_cpp -lhdf5 -lz -ldl -lm
 # Input
+SOURCES += branchfunctor.cc \
+#           calculate-light.cc \
+           generate-tree-locations.cc \
+           harvest-stand.cc \
+           forest-trees.cc \
+           lignum-forest.cc \
+           src/metabolism.cc \
+           src/borderforest.cc \
+           src/space.cc \
+           ../CrownDensity/globalvariables.cc \
+           ../CrownDensity/crowndensity_globals.cc
+
 unix{
    system(../LEngine/bin/l2c pine-em98.L pine-em98.cpp){
      SOURCES += pine-em98.cpp
@@ -52,14 +64,6 @@ HEADERS += include/CalculateLight.h \
            include/StandDescriptor.h \
            ../stl-voxelspace/include/VoxelSpace.h \
 	   include/StandDescriptorI.h \
-	   GrowthLoopI.h\
-           MixedForest.h
-SOURCES += branchfunctor.cc \
-#           calculate-light.cc \
-           generate-tree-locations.cc \
-           harvest-stand.cc \
-           forest-trees.cc \
-           lignum-forest.cc \
-           src/metabolism.cc \
-           src/borderforest.cc \
-           src/space.cc
+           GrowthLoopI.h\
+           MixedForest.h\
+           ../CrownDensity/include/CrownDensityGlobals.h
