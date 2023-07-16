@@ -120,10 +120,10 @@ namespace LignumForest{
     int n_br; ///< Number of branches 
   };
   
-  ///\brief Calculate data for mean branch
+  ///\brief Calculate data for mean branch.
   class Branchmeans{
   public:
-    /// The operator to be used  with Accumulate and summing
+    /// The operator to be used  with Lignum::Accumulate and LignumForest::summing
     /// \param id The identity element for Accumulate
     /// \param ts The tree segment for Accumulate
     /// \remark Implemented in branchfunctor.cc

@@ -1,5 +1,6 @@
 #include <SomeFunctors.h>
 namespace LignumForest{
+  ///Branch data for Gravelius order 2
   summing& Branchmeans::operator()(summing& id,
 				   TreeCompartment<ScotsPineSegment, ScotsPineBud>*
 				   tc)const {
@@ -14,6 +15,11 @@ namespace LignumForest{
 	  double lb = 0.0;
 	  list<TreeCompartment<ScotsPineSegment,ScotsPineBud>*>::iterator I
 	    = sl.begin();
+	  ///\par Branch length
+	  ///Branch length as a sum of segment lengths
+	  ///\internal
+	  ///\snippet{lineno} branchfunctor.cc LB
+	  // [LB]
 	  while(I != sl.end()) {
 	    if (ScotsPineSegment* seg = 
 		dynamic_cast<ScotsPineSegment*>(*I)) {
@@ -21,11 +27,20 @@ namespace LignumForest{
 	    }
 	    I++;
 	  }
+	  // [LB]
+	  ///\endinternal
+	  ///\par Diameter data
+	  ///\internal
+	  ///\snippet{lineno} branchfunctor.cc DD
+	  //[DD]
+	  //Diameter of the first segment 
 	  double d = 2.0 * GetValue(*fs, LGAR);
 	  id.d2 += d * d;
 	  id.d2l += d * d * lb;
 	  id.lsum += lb;
 	  id.n_br++;
+	  //[DD]
+	  ///\endinternal
 	}
       }//if fs != NULL
     }//if (Axis....)
