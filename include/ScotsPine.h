@@ -352,8 +352,10 @@ namespace LignumForest{
   ///Currently the functor captures the following experiments.
   ///-# Basic model where \f$ L = \lambda \times f_{ip} \times f_{go} \times f_{vi} \f$
   ///-# So called EBH model to distribute resources. Mutually exclusive with Basic model.
-  ///-# Ad hoc (random) submodel to have variability in segment lengths (even with similar conditions)
-  ///-# Space occupancy submodel (segment length on/off)
+  ///-# Optional Ad hoc submodel (ParametricCurve) based on relative height to have variability
+  ///   in segment lengths (even for segments with similar conditions)
+  ///-# Optional space occupancy submodel to set segment length 0  if segment in already occupied space
+  ///-# Optional hard coded random effect in branches (both Basic and EBH model)
   ///-# Growth mode and architecture mode change in Basic model
   ///    -# Architecture mode change in L-system  tries to generate flat branches arranged in a plane
   ///    -# Growth mode change applies new  \f$f_{ip}\f$, \f$f_{go}\f$ functions and tree parameters (*Tree.txt*)
