@@ -62,7 +62,9 @@ namespace LignumForest{
     template <class TREE1,class TS1,class BUD1,class LSYSTEM1>
     /// \brief Create XML string reprentations for the trees in the forest stand.
     ///
-    /// Each tree will be its own dataset in its age group.
+    /// Each tree will be its own dataset in its age group. Trees are (must be) collected
+    /// during the growth loop.
+    /// \pre The HDF5 file `hdf5_file` must be open
     /// \param gl The GrowLoop
     /// \param hdf5_file The HDF5 file where the XML strings will be stored
     /// \param dataset_name The name of the root group (dataset) for the XML strings
@@ -70,6 +72,8 @@ namespace LignumForest{
     /// \return 0 Always returns zero. 
     /// \note The dataset naming for the trees will be */dataset_name/`age`/Tree_`tree_id`*,
     /// where the `age` is the age of the tree and `tree_id` the ID of the tree.
+    /// \post  The HDF5 file `hdf5_file` remains open
+    /// \attention The `hdf5_file` must be closed after the growth loop before program exit.
     /// \todo Improve the use of the return value to use return values from HDF5 functions
     friend int CreateTreeXMLDataSet(const GrowthLoop<TREE,TS,BUD,LSYSTEM>& gl, LGMHDF5File& hdf5_file,const string& dataset_name,
 				    const int interval);
