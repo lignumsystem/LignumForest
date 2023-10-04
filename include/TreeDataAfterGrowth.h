@@ -19,7 +19,19 @@ namespace LignumForest{
   const string CLGROUP("/CommandLine/");
   /// Group name for trees as xml std::string
   const string TXMLGROUP("/TreeXML/");
+  /// Group name for Tree parameter files
+  const string PFILEGROUP("/AllParameters/");
+  /// Group name for MetaFile files
+  const string ALLMETAFILEGROUP("/AllMetaFiles/");
+  /// Group name for parameter files
+  const string ALLPARAMFILEGROUP("/AllParameterFiles/");
+  /// Group name for function files
+  const string ALLFNFILEGROUP("/AllFunctionFiles/");
+  /// Group name for Firmament
+  const string FIRMAMENTGROUP("/Firmament/");
   /// File prefix for the HDF5 file containg XML representation for the trees
+  const string VOXELSPACEGROUP("/VoxelSpace/");
+  /// File prefix for XML trees.
   const string TREEXML_PREFIX("TreesXML_");
   /// HDF5 Dataset name for command line
   const string COMMAND_LINE_DATASET_NAME("CommandLine");
@@ -125,8 +137,13 @@ namespace LignumForest{
   ///Column names for functions used in simulations
   const array<string,2> fn_columns={"X","F(X)"};
   const vector<string> TREE_FN_COLUMN_NAMES(fn_columns.begin(),fn_columns.end());
+  ///Column names for tree paramters
+  const array<string,2> p_columns={"Name","Value"};
+  const vector<string> TREE_PARAMETER_COLUMN_NAMES(p_columns.begin(),p_columns.end());
   ///Attribute name for function datasetes, i.e. column names for data frames 
   const string TREE_FN_ATTRIBUTE_NAME("ColumnNames");
+  ///Attribute name for tree parameter attributes
+  const string TREE_PARAMETER_FILE_ATTRIBUTE_NAME=("ColumnNames");
   ///Vector of functions to write to HDF5 file
   const array<LGMF,7> fna={LGMAL,LGMFM,LGMIP,LGMLONB,LGMNB,LGMVI,LGMVIONB};
   const vector<LGMF> FN_V(fna.begin(),fna.end());
