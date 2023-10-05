@@ -23,7 +23,7 @@ namespace LignumForest{
   /// \todo It might be the best to collect, and easiest to see and retrieve afterwards, string datasets only for files used (functions,
   ///       parameters, Metafiles, Firmament etc.
   /// \todo Save snapshots of the Voxel space as 3D matrix for further study 
-  void CreateHDF5Files(const string& hdf5fname, const TMatrix3D<double>& hdf5_data, TMatrix2D<double> hdf5_tree_param_data,int argc, char** argv);
+  void CreateLignumHDF5File(const string& hdf5fname, const TMatrix3D<double>& hdf5_data, TMatrix2D<double> hdf5_tree_param_data,int argc, char** argv);
 }
 
 #endif

@@ -1,7 +1,7 @@
 #include <CreateHDF5Files.h>
 ///\file CreateHDF5Files.cc
 namespace LignumForest{
-  void CreateHDF5Files(const string& hdf5fname, const TMatrix3D<double>& hdf5_data, TMatrix2D<double> hdf5_tree_param_data,int argc, char** argv)
+  void CreateLignumHDF5File(const string& hdf5fname, const TMatrix3D<double>& hdf5_data, TMatrix2D<double> hdf5_tree_param_data,int argc, char** argv)
   {
     //Create and open HDF5 file for write
     LGMHDF5File hdf5_file(hdf5fname);
