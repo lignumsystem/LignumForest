@@ -9,7 +9,7 @@ namespace LignumForest{
   ///\pre Simulation i.e. the growth loop is done and the results are in `hdf5_data` and in `hdf5_tree_param_data`
   ///\param hdf5fname File name for the HDF5 file
   ///\param hdf5_data Simulation results for each tree and each year, 3D matrix
-  ///\param hdf5_param_data Parameter values collected from the trees, 2D matrix
+  ///\param hdf5_tree_param_data Parameter values collected from the trees, 2D matrix
   ///\param argc Command line parameter: number of command line parameters
   ///\param argv Command line parameter: parameters from the command line
   ///\post The HDF5 file `hdf5fname` is closed
@@ -22,7 +22,7 @@ namespace LignumForest{
   /// -# VoxelSpace.txt The initial Voxel space used
   /// \todo It might be the best to collect, and easiest to see and retrieve afterwards, string datasets only for files used (functions,
   ///       parameters, Metafiles, Firmament etc.
-  /// \todo Save snapshots of the Voxel space as 3D matrix for further study 
+  /// \todo Save snapshots of the contents of the Voxel space as 3D matrix (matrices) for further study 
   void CreateLignumHDF5File(const string& hdf5fname, const TMatrix3D<double>& hdf5_data, TMatrix2D<double> hdf5_tree_param_data,int argc, char** argv);
 }
 

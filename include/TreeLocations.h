@@ -16,7 +16,7 @@ namespace LignumForest{
   typedef pair<pair<double,double>,double> ForestGap;
 
   /// /// Generate tree locations as Nonstationary Poisson process: Stoyan, Kendall & Mecke, p. 52 -54
-  /// \param nTrees Number of trees as target number in a forest plot
+  /// \param[in,out] nTrees Number of trees as target number in a forest plot and number of trees actually generated.
   /// \param corner1X Lower left corner X
   /// \param corner1Y Lower left corner Y
   /// \param corner2X Upper right corner X
@@ -24,9 +24,7 @@ namespace LignumForest{
   /// \param rmin     Minimum distance between trees
   /// \param gap      Representation of a circular gap. ForestGap is simply pair<pair<x,y>,r> 
   ///                 where pair<x,y> is the position and r the radius of the circular gap. \sa ForestGap
-  /// \param v       Vector to contain generated tree locations
-  /// \return nTrees Number of trees generated  in a forest plot
-  /// \return v Vector of generated tree locations
+  /// \param[in,out] v       Vector to contain generated tree locations
   void GenerateLocations(int& nTrees, double corner1X, double corner1Y, 
 			 double corner2X, double corner2Y, double rmin, 
 			 const ForestGap& gap,
