@@ -40,6 +40,17 @@ project(lignum-forest DESCRIPTION "Indiviudal trees in heterogenous forest")
 # Lignum core projects as an ExternalProject. 'lignum-core' target is compiled first
 # Note: lignum-core  has to be configured with cmake first. See lignum-core/CMakeLists.txt
 include(ExternalProject)
+# Comment out other L-systems
+#Note other L-systems than  pine-em98-branch-C.L may generate "dupclicate symbols" errors
+#due to restructuring CrownDensity and LignumForest and rigorous use of using namespaces.
+#set(LSYSTEMFILE pine-em98.L)
+#set(LSYSTEMSRC  pine-em98.cpp)
+#set(LSYSTEMFILE pine-em98-branch-A.L)
+#set(LSYSTEMSRC  pine-em98-branch-A.cpp)
+#set(LSYSTEMFILE pine-em98-branch-B.L)
+#set(LSYSTEMSRC  pine-em98-branch-B.cpp)
+set(LSYSTEMFILE pine-em98-branch-C.L)
+set(LSYSTEMSRC  pine-em98-branch-C.cpp)
 ExternalProject_add(lignum-core
 SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/..
 DOWNLOAD_COMMAND "")
@@ -58,8 +69,12 @@ endif()
 
 find_package(HDF5 COMPONENTS C CXX HL REQUIRED)
 if(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin")
-  message("SYSTEM: Apple platform")
-  find_package(Qt4 COMPONENTS QtOpenGL QtXml QtGui QtCore REQUIRED)
+  message("SYSTEM: Apple Darwin platform")
+  # The following lines find Qt4 headers and libraries, qmake must be in PATH
+  #find_package(Qt4 COMPONENTS QtOpenGL QtXml QtGui QtCore REQUIRED)
+  #find_package(OpenGL REQUIRED)
+  # The following lines find Qt5 headers and libraries, qmake must be in PATH
+  find_package(Qt5 COMPONENTS Xml Core  REQUIRED)           
   find_package(OpenGL REQUIRED) 
   # cmake 3.23 output erroneusly prints 'glut not found'. It is found. 
   find_package(GLUT REQUIRED)
@@ -75,7 +90,7 @@ endif()
 set(SOURCE_FILES lignum-forest.cc
   ../CrownDensity/crowndensity_globals.cc
   ../CrownDensity/globalvariables.cc
-  pine-em98.cpp
+  ${LSYSTEMSRC}
   branchfunctor.cc
   forest-trees.cc
   generate-tree-locations.cc
@@ -88,9 +103,9 @@ set(SOURCE_FILES lignum-forest.cc
 
 # Rebuild L system compiler with custom command for 'l2c'
 add_custom_command(
-OUTPUT ${CMAKE_CURRENT_LIST_DIR}/pine-em98.cpp
-DEPENDS ${CMAKE_CURRENT_LIST_DIR}/pine-em98.L l2c
-COMMAND ${CMAKE_CURRENT_LIST_DIR}/../LEngine/bin/l2c ${CMAKE_CURRENT_LIST_DIR}/pine-em98.L  ${CMAKE_CURRENT_LIST_DIR}/pine-em98.cpp
+OUTPUT ${CMAKE_CURRENT_LIST_DIR}/${LSYSTEMSRC}
+DEPENDS ${CMAKE_CURRENT_LIST_DIR}/${LSYSTEMFILE} l2c
+COMMAND ${CMAKE_CURRENT_LIST_DIR}/../LEngine/bin/l2c ${CMAKE_CURRENT_LIST_DIR}/${LSYSTEMFILE}  ${CMAKE_CURRENT_LIST_DIR}/${LSYSTEMSRC}
 )
 
 # Main target, the executable 'lignum-forest'.
@@ -117,7 +132,8 @@ add_dependencies(lignum-forest lignum-core)
 
 if(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin")
   target_link_libraries(lignum-forest
-    HDF5::HDF5 Qt4::QtOpenGL Qt4::QtXml Qt4::QtGui Qt4::QtCore
+    #HDF5::HDF5 Qt4::QtOpenGL Qt4::QtXml Qt4::QtGui Qt4::QtCore
+    HDF5::HDF5 Qt5::Xml Qt5::Core
     GLUT::GLUT OpenGL::GLU OpenGL::GL
     Visual L voxel sky LGM cxxadt
   )
