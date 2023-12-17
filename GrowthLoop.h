@@ -407,6 +407,7 @@ namespace LignumForest{
     /// \sa vtree vlsystem locations
     /// \sa wsapwood wfoliage wroot ws_after_senescence vdatafile
     void removeTreesAllOver(const vector<unsigned int>& vremove);
+    vector<TREE*>& getTreeVector() {return vtree;}
   private:
     vector<TREE*> vtree; ///< Vector of trees. \sa getTrees
     vector<LSYSTEM*> vlsystem; ///< Vector of L-systems, one for each tree

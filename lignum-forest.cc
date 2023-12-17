@@ -134,6 +134,11 @@ int main(int argc, char** argv)
     // Currently data collection before new growth and tree aging
     gloop.photosynthesisAndRespiration();
     gloop.createNewSegments();
+
+    // REMOVE THESE WHEN YOU REMOVE fgomode,fipmode FROM LGMGrowthAllocator2 !!!!!!!!!!!!!!!!!!
+    ParametricCurve fip_mode = GetFunction(*(gloop.getTreeVector())[0], LGMIP);
+    ParametricCurve fgo_mode = GetFunction(*(gloop.getTreeVector())[0], SPFGO);
+
     gloop.allocationAndGrowth(fip_mode,fgo_mode);
     // Command line  -writeOutput exists
     //gloop.output();
