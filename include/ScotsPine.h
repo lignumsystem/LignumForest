@@ -533,21 +533,18 @@ namespace LignumForest{
 	  }
 
 	  //Random variation in lengths of segments (not stem)
-	  //NOTE for both Basic and EBH models
-	  if(CrownDensity::is_random_variation==true && go > 1.0) {
+	  if(go > 1.0) {
 	    LGMdouble rp = GetValue(GetTree(*ts),LGPlen_random);
 	    ///\par Optional random segment length variation
 	    ///Applied to both Basic and EBH models
-	    ///\sa CrownDensity::Usage CrownDensity::is_random_variation
 	    ///\snippet{lineno} ScotsPine.h RANDOM
 	    ///\internal
 	    // [RANDOM]
 	    // For branches if random variation in use
-	    Lnew *= 1.0 + (rp/0.5)*(ran3(&ran3_seed)-0.5);
+	    Lnew *= 1.0 + (rp/0.5)*(ran3(&CrownDensity::ran3_seed)-0.5);
 	    // [RANDOM]
 	    ///\endinternal
 	  }
-	  //	  cout << Lnew << " ";
 
 	  //Here Space occupancy, segment length on/off
 	  if(space0 || space1 || space2) {
