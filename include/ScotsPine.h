@@ -367,42 +367,25 @@ namespace LignumForest{
     ///\param lamda Lambda to iterate segment length
     SetScotsPineSegmentLength(double lamda):l(lamda)  
     {space_occupancy.resetOccupiedTry();}
-    ///Constructor setting Gravelius order (fgo) and relative light (fip) functions
-    ///to model growth mode change.
-    ///\param lamda Lambda to iterate segment length
-    ///\param fgo1 Gravelius order function on segment length
-    ///\param fip1 Relative light function on sgment length
-    ///\param fgo2 Gravelius order function after growth mode change
-    ///\param fip2 Relative light function  after growth mode change
-    ///\note fgo1, fip1, fgo2 and fip2 can be set in the main loop   
-    SetScotsPineSegmentLength(double lamda,const ParametricCurve& fgo1, const ParametricCurve& fip1,
-			      const ParametricCurve& fgo2, const ParametricCurve& fip2)
-      :l(lamda),fgo(fgo1),fip(fip1),fgo_mode(fgo2),fip_mode(fip2)  
-    {space_occupancy.resetOccupiedTry();}
     SetScotsPineSegmentLength(const SetScotsPineSegmentLength& sl)
-      :l(sl.l),fgo(sl.fgo),fip(sl.fip),fgo_mode(sl.fgo_mode),fip_mode(sl.fip_mode)
-       /*,apical(sl.apical),qin(sl.qin)*/{}
+      :l(sl.l){}
     SetScotsPineSegmentLength& operator=(const SetScotsPineSegmentLength& sl){
       l = sl.l;
-      fgo=sl.fgo;
-      fip = sl.fip;
-      fgo_mode = sl.fgo_mode;
-      fip_mode = sl.fip_mode;
-      // apical = sl.apical;
-      // qin = sl.qin;
       return *this;
     }
     ///\brief Set segment new length.
     ///
-    ///Experiment with various methods and mechanisms to set segment length. Set appropriate command line options.
+    ///Experiment with various methods and mechanisms to set segment length. Set command line options to set appropriate global variables.
     ///\test Basic model  \f$L = \lambda \times R \times A \times f_{ip} \times f_{go} \times f_{vi}\f$
-    ///where \f$R\f$ is the random effect and \f$A\f$ is apical dominance. \sa ScotsPineSegment::getApical LGPlen_random for a tree
+    ///where \f$R\f$ is the optional random effect and \f$A\f$ is apical dominance. \sa ScotsPineSegment::getApical LGPlen_random for a tree
     ///\test EBH model
     ///\test Space occupancy model (segment length on/off)
     ///\test Growth mode change based on Basic model
     ///\param tc Tree compartment
     ///\note `CrownDensity::is_mode_change` and `CrownDensity::mode_change_year` are global variables
-    ///\sa CrownDensity::is_architecture_change CrownDensity::architecture_change_year
+    ///\note `CrownDensity::is_random_length` is a global variable 
+    ///\note Functions are set during tree initializations are known in a tree.
+    ///\sa CrownDensity::is_architecture_change CrownDensity::architecture_change_year CrownDenesity::is_random_length
     ///\sa CrownDensity::Usage
     TreeCompartment<ScotsPineSegment,ScotsPineBud>* 
     operator()(TreeCompartment<ScotsPineSegment,ScotsPineBud>* tc)const
@@ -411,29 +394,24 @@ namespace LignumForest{
 	if (GetValue(*ts,LGAage) == 0.0){
 	  double go =  GetValue(*ts,LGAomega); 
 	  double Lnew = 0.0;
+	  //Vigour index effect on segment length
+	  double vi = GetValue(*ts,LGAvi);
 	  ///\par Set growth functions
-	  ///Functions before and after growth mode change, fip(ip) and fgo(go).
+	  ///Functions before and after growth mode change are given in Meta files
+	  ///and are known by the tree after the tree initialization.
 	  ///\snippet{lineno} ScotsPine.h SetFuncs
 	  ///\internal
 	  // [SetFuncs]
-	  //First set default f(go) and f(vi), no growth mode chane yet
-	  ParametricCurve fgo_tmp(fgo);
-	  ParametricCurve fip_tmp(fip);
+	  ParametricCurve fgo(GetFunction(GetTree(*ts),Lignum::LGMGO));
+	  ParametricCurve fip(GetFunction(GetTree(*ts),Lignum::LGMIP));
+	  //In Tree Physiology for side branches fp is for example as follows:
+	  //fp = (1-a)f(vi) = (1-0.2)(0.15+0.85vi) = 0.8(0.15+0.85vi)
+	  const ParametricCurve& fvi = GetFunction(GetTree(*ts),LGMVI);
 	  //If growth mode change has happened set appropriate f(go) and f(vi)
-	  if (is_mode_change && GetValue(GetTree(*ts),LGAage) >= mode_change_year){
-	    fgo_tmp = fgo_mode;
-	    fip_tmp = fip_mode;
-	  }
 	  // [SetFuncs]
 	  ///\endinternal
 	  //No EBH -> Basic model
 	  if(GetValue(dynamic_cast<ScotsPineTree&>(GetTree(*ts)), SPis_EBH) < 1.0) {
-	    //Vigour index effect on segment length
-	    double vi = GetValue(*ts,LGAvi);
-	    //	double q = GetValue(GetTree(*ts),LGPq);
-	    //In Tree Physiology for side branches fp is for example as follows:
-	    //fp = (1-a)f(vi) = (1-0.2)(0.15+0.85vi) = 0.8(0.15+0.85vi)
-	    const ParametricCurve& fvi = GetFunction(GetTree(*ts),LGMVI);
 	    //The value of  'apical' is [0,1] for new branches  and set to 1
 	    //after that (see below)
 	    ///\par Basic segment elongation model 
@@ -443,7 +421,7 @@ namespace LignumForest{
 	    double my_apical = ts->getApical();
 	    //Intermediate result for Basic model (no EBH)
 	    //Apical, vigour index and Gravelius order
-	    Lnew = my_apical*fvi(vi)*fgo_tmp(go);
+	    Lnew = my_apical*fvi(vi)*fgo(go);
 	    // [LBasic1]
 	    ///\endinternal
 	    /* 	    cout << "a vi fvi go fgo ip " << my_apical << " "<< vi << " "<< fvi(vi) */
@@ -515,7 +493,7 @@ namespace LignumForest{
 	    // [LBasic2]
 	    //Result of the Basic model if no ad_hoc
 	    //The l denotes lambda, fip(ip) denotes relative light
-	    Lnew = l*fip_tmp(ip)*adhoc_factor*Lnew;
+	    Lnew = l*fip(ip)*adhoc_factor*Lnew;
 	    // [LBasic2]
 	    ///\endinternal
 	    //	  cout << Lnew << " ";
@@ -533,7 +511,7 @@ namespace LignumForest{
 	  }
 
 	  //Random variation in lengths of segments (not stem)
-	  if(go > 1.0) {
+	  if(CrownDensity::is_random_length && (go > 1.0)) {
 	    LGMdouble rp = GetValue(GetTree(*ts),LGPlen_random);
 	    ///\par Optional random segment length variation
 	    ///Applied to both Basic and EBH models
@@ -662,10 +640,6 @@ namespace LignumForest{
     }
   private:
     double l;///<Lamda to iterate segment lengths
-    ParametricCurve fgo; ///< Gravelius order function
-    ParametricCurve fip; ///< fip (rel. light) function
-    ParametricCurve fgo_mode;///< Gravelius order function after growth mode change
-    ParametricCurve fip_mode;///< fip (rel. light) function after growth mode change
   };
 
 
