@@ -9,7 +9,7 @@ some program changes and checks are needed.
 - [ ] Implement required changes by the new command line in the main loop
 - [x] Check L-system is identical to L-system in CrownDensity
 - [ ] Change SetSegmentLength to one used in CrownDensity
-- [ ] Check the Meta files, parameter and function files in CrownDensity
+- [X] Check the Meta files, parameter and function files in CrownDensity
       that they are the ones that produce a satisfactory tree development
 - [ ] Change Meta files, parameter and function files to ones 
       used in CrownDensity
