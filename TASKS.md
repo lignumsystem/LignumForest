@@ -13,8 +13,8 @@ some program changes and checks are needed.
       that they are the ones that produce a satisfactory tree development
 - [ ] Change Meta files, parameter and function files to ones 
       used in CrownDensity
-- [ ] Transfer global variables used from CrownDensity to LignumForest
-      and use LignumForest namespace
+- [-] Transfer global variables used from CrownDensity to LignumForest
+      and use LignumForest namespace. **Jari** work in progress.
 	  
 ## Additional tasks
 
