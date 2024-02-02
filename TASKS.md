@@ -27,3 +27,5 @@ or perhaps even relatively straightforward at best.
       These are probably repreented as polygon meshes or some other 
 	  low level geometric primitives supported by CGAL.
 
+- --> According to this example: https://github.com/CGAL/cgal-paraview-plugins  ?
+
