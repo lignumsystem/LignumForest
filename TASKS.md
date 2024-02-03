@@ -19,12 +19,14 @@ some program changes and checks are needed.
 ## Additional tasks
 
 It seems CGAL 5.6 (latest manual in cgal.org) can write 
-Paraview *vtp* files and also *.obj* used by Blender. 
-This could help transition from LignumWb to Paraview and/or Blender 
-or perhaps even relatively straightforward at best.
+Paraview VTK (VTU / VTP) files and also Wavefront Advanced Visualizer 
+Object Format (OBJ) used by Blender. This could help transition from 
+LignumWb to Paraview and/or Blender or perhaps even relatively 
+straightforward at best.
 
 - [ ] Study how to create segment cylinders and leaf polygons in CGAL.
       These are probably repreented as polygon meshes or some other 
 	  low level geometric primitives supported by CGAL.
 
-
+The manual page [CGAL 5.6 - IO Streams]( https://doc.cgal.org/latest/Stream_support/index.html)
+might be a good starting point.

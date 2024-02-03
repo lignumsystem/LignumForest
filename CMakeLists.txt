@@ -88,8 +88,7 @@ else()
 endif()
 
 set(SOURCE_FILES lignum-forest.cc
-  ../CrownDensity/crowndensity_globals.cc
-  ../CrownDensity/globalvariables.cc
+  src/globalvariables.cc
   ${LSYSTEMSRC}
   branchfunctor.cc
   forest-trees.cc
