@@ -7,32 +7,139 @@ Other publications that are referred to in this document are
 - Perttunen J, Sievänen R, Nikinmaa R, Salminen H, Saarenmaa H, Väkevä J. 1996. LIGNUM: a tree model based on simple structural units. Annals of Botany 77: 87–98.
 - Perttunen J, Sievänen R, Nikinmaa E. 1998. LIGNUM: a model combining the structure and the functioning of trees. Ecological Modelling 108: 189–198.
 
-## Compilation
-This project must reside under *lignum-core* directory. That means first
-clone [lignum-core](https://github.com/lignumsystem/lignum-core.git) repository and then
-in lignum-core clone [LignumForest](https://github.com/lignumsystem/LignumForest.git).
 
-To compile LignumForest (and lignum-core) type:
+## LignumForest: CMake for macOS and Unix/Linux Makefile build system
+
+To create Makefile build system with CMake first create the
+build tree  directory and  then with `cmake`  the Unix  Makefile build
+system itself. To build the Lignum core system:
+
+	cd lignum-core
+	mkdir build
+	cd build 
+	cmake .. 
+	make install
+	
+See also *lignum-core* [README](https://github.com/lignumsystem/lignum-core/blob/master/README.md).
+
+To create LignumForest Makefile build system for debug and compile `lignum-forest` binary 
+type:
 
     cd LignumForest
-    qmake  LignumForest.pro
-    make
+    mkdir debug
+    cd  debug
+    cmake .. -DCMAKE_BUILD_TYPE=Debug
+    make install 
 
-To compile with optimization on (faster, no debug) type:
+For LignumForest Makefile build system for Release (optimised, no debug information) type:
 
-    qmake  "CONFIG+=release" LignumForest.pro
-    make
+    cd LignumForest
+    mkdir release
+    cd release
+    cmake .. -DCMAKE_BUILD_TYPE=Release
+    make install
 
-To remove all compilation work type `make distclean`.
+In both cases `make install` will move `lignum-forest` to LignumForest directory
+where there are two example  shell scripts to run the program:
+	
+    run-lignum-forest.sh
 
-## Running the program
-
-Command line options and their short documentation can be obtained by running the program
-without any parameters: <CODE> ./lig-forest </CODE>
-You will will see the output from usage(): \sa GrowthLoop::usage()
+Command line options and their  short documentation can be obtained by
+running `./lignum-forest`  without any  command line parameters.  See also
+LignumForest::Usage().
 
 The growth loop for LignumForest is implemented in *lignum-forest.cc* in *main()* function.
 
+>[!NOTE] 
+>To create identical command line with CrownDensity in LignumForest is work under progress. 
+
+>[!IMPORTANT]
+>It is important to type `make install` to also move `lignum-forest` to
+>directory above to be used by the scripts to run simulatations.
+>Typing just `make` the `lignum-forest` program remains in the compilation directory.
+
+
+To recompile `lignum-forest` type:
+
+	make clean
+	make install
+	
+>[!IMPORTANT]
+>CMake tracks by default file changes only in the current project (e.g. LignumForest in this case). 
+>To let CMake  follow all file dependencies `make clean` is mandatory before recompilation. 
+>CMake will have correct build tree from previous software  build.
+
+>[!IMPORTANT]
+>To remove all CMake  configurations and compilation work just
+>remove the build  tree directory (i.e. *debug*,  *release* or *xcode*)
+>and recreate the build tree directory.
+
+CMake  projects   are   configured  with   *CMakeLists.txt*
+files. For  this CMake  has an  extensive set  of CMake  variables and
+built-in functions that can be set in CMakeLists.txt files or given in
+command line.
+
+The best way to  learn CMake is by  studying examples.
+lignum-core and LignumForest provide  CMakeLists.txt file examples how
+to create libraries, find and integrate external libraries (Qt, HDF5),
+create and use external binaries (`l2c` to compile L-system files) and
+setup the final product with its dependenices.
+
+>[!NOTE]
+>its seems Qt4 is becoming difficult maintain in MacPorts. Also Qt `qmake` is becoming obsolete; Qt project
+>has switched to CMake since Qt6.
+
+## LignumForest: CMake for Xcode
+
+For Xcode IDE create the Xcode project file:
+
+    mkdir xcode
+    cd xcode
+    cmake .. -G Xcode
+
+Open  Xcode  IDE  from  Terminal. Alternatively open  the  Xcode  project  file
+`lignum-forest.xcodeproj` from XCode:
+     
+	 open lignum-forest.xcodeproj
+
+Build the `lignum-forest` Product in  Xcode for debugging.  It will appear
+in *xcode/Debug*  directory:
+
+	Xcode -> Product (in the menu bar) -> Build For -> Running/Testing/Profiling
+
+See  also that: 
+
+	Xcode -> Product (in the menu bar) -> Scheme 
+
+is set  to `lignum-forest` to allow Run: 
+
+	Xcode -> Product (in the menu bar) -> Run
+	
+to debug the program. Xcode IDE itself tracks file dependencies.
+
+Copy necessary \*.fun  function files and \*.txt parameter files to
+*xcode/Debug*  where   the  `lignum-forest`  is  located   in  this  case.
+Otherwise  hard coded  files names  in the  program are  not found  by
+`lignum-forest`. You can also copy `lignum-forest` to LignumForest project
+directory instead and load the binary to Xcode from there. 
+
+Set command  line parameters for  `lignum-forest` in Xcode:
+
+	Xcode -> Product (in the menu  bar) -> Scheme ->  Edit Scheme -> Arguments.
+
+Divide the command line into practical parts for debugging from `Arguments -> '+'`.
+
+## CMake for LignumForest dependency graph
+
+CMake allows to generate `graphviz` output file to show all library and executable dependencies of the project.
+Then with `dot` create image file with desired file format. For example in the *release* directory type:
+	
+	mkdir graphviz
+	cmake ..   --graphviz=graphviz/LignumForest.dot
+	dot -Tpdf -Kneato -Goverlap=prism  graphviz/LignumForest.dot  -o  LignumForest.pdf
+	
+The output file *LignumForest.pdf* contains the visual presentation of the target dependenices including
+external binaries and required link libraries. The option `-T` understands many well known image file formats.
 
 ## Documentation
 
