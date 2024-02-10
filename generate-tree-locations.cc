@@ -1,9 +1,9 @@
 #include <TreeLocations.h>
-#include <CrownDensityGlobals.h>
-using namespace CrownDensity;
+#include <LignumForestGlobals.h>
+using namespace LignumForest;
 ///\file generate-tree-locations.cc
 ///\brief Tree locations  Nonstationary Poisson process.
-//extern int ran3_seed;   //is a global variable
+//extern int LignumForest::ran3_seed;   //is a global variable
 namespace LignumForest{
   
   void GenerateLocations(int& nTrees, double corner1X, double corner1Y, double corner2X, 
@@ -23,8 +23,8 @@ namespace LignumForest{
 
     ///First: generate all coordinates 
     for(int i = 0; i < nTrees; i++)   {
-      xVal[i] = corner1X + xDist * ran3( &ran3_seed );
-      yVal[i] = corner1Y + yDist * ran3( &ran3_seed );
+      xVal[i] = corner1X + xDist * ran3( &LignumForest::ran3_seed );
+      yVal[i] = corner1Y + yDist * ran3( &LignumForest::ran3_seed );
     }
 
 
