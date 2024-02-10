@@ -51,8 +51,8 @@ namespace LignumForest{
 	  
 	    // extern bool is_by_branches;
 	    // if(is_by_branches) {
-	    //     extern int ran3_seed;
-	    //     ap *= (1.0 + 0.1*(ran3(&ran3_seed)-0.5));
+	    //     extern int LignumForest::ran3_seed;
+	    //     ap *= (1.0 + 0.1*(ran3(&LignumForest::ran3_seed)-0.5));
 	    //     if(ap > 1.0) ap = 1.0;
 	    // }
 	    ts->setApical(ap);
