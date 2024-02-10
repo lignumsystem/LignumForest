@@ -1,7 +1,7 @@
 #ifndef GROWTHLOOPI_H
 #define GROWTHLOOPI_H
 #include <string>
-#include <CrownDensityGlobals.h>
+#include <LignumForestGlobals.h>
 ///\file  GrowthLoopI.h
 ///\brief GrowthLoop implementation.
 ///
@@ -21,20 +21,19 @@ namespace Pine{
 
 using namespace Pine;
 
-using namespace CrownDensity;
 using namespace LignumForest;
-// extern int ran3_seed; ///<Initialized in GrowthLoopI.h
-// extern double H_0_ini; ///<Initialized in GrowthLoopI.h
-// extern double H_var_ini;///<Initialized in GrowthLoopI.h
-// extern int n_buds_ini_min;///<Initialized in GrowthLoopI.h
-// extern int n_buds_ini_max;///<Initialized in GrowthLoopI.h
+// extern int LignumForest::ran3_seed; ///<Initialized in GrowthLoopI.h
+// extern double LignumForest::H_0_ini; ///<Initialized in GrowthLoopI.h
+// extern double LignumForest::H_var_ini;///<Initialized in GrowthLoopI.h
+// extern int LignumForest::n_buds_ini_min;///<Initialized in GrowthLoopI.h
+// extern int LignumForest::n_buds_ini_max;///<Initialized in GrowthLoopI.h
 // extern double L_age; ///<Initialized in GrowthLoopI.h
-// extern double rel_bud;///<Initialized in GrowthLoopI.h
-// extern bool bud_variation;///<Initialized in GrowthLoopI.h
-// extern double branch_angle;///<Initialized in GrowthLoopI.h
-// extern ParametricCurve bud_view_f;///<Initialized in GrowthLoopI.h
-// extern bool is_bud_view_function;///<Reinitialized in GrowthLoopI.h.
-// extern double global_hcb;///<Initialized in GrowthLoopI.h
+// extern double LignumForest::rel_bud;///<Initialized in GrowthLoopI.h
+// extern bool LignumForest::bud_variation;///<Initialized in GrowthLoopI.h
+// extern double LignumForest::branch_angle;///<Initialized in GrowthLoopI.h
+// extern ParametricCurve LignumForest::bud_view_f;///<Initialized in GrowthLoopI.h
+// extern bool LignumForest::is_bud_view_function;///<Reinitialized in GrowthLoopI.h.
+// extern double LignumForest::global_hcb;///<Initialized in GrowthLoopI.h
 // extern double L_H;///<Initialized in GrowthLoopI.h
 namespace LignumForest{                                 
   template <class TREE,class TS, class BUD, class LSYSTEM>
@@ -381,12 +380,12 @@ namespace LignumForest{
       evaluate_border_forest = false;
 
     ///+ Parse `-seed`, seed for ran3() random number generator, default `-123321`. \sa ran3_seed. 
-    ran3_seed = -123231;
+    LignumForest::ran3_seed = -123231;
     int s_ini;
     if (ParseCommandLine(argc,argv,"-seed", clarg)){
       if (clarg.length() > 0){
 	s_ini = atoi(clarg.c_str());
-	ran3_seed = -abs(s_ini);
+	LignumForest::ran3_seed = -abs(s_ini);
       }
     }
     ///+ Parse `-kBorderConifer`, extinction coefficient for homogenous conifer border forest, default 0.14. \sa k_border_conifer.
@@ -397,28 +396,29 @@ namespace LignumForest{
 
     ///+ Parse parameters to adjust tree growth. Needs to be documented.
     ///\sa H_0_ini, H_var_ini, n_buds_ini_min, n_buds_ini_max, p0_var, seg_len_var,
-    ///\sa parwise_self, rel_bud, eero, g_fun_var, ba_variation, is_adhoc,
-    ///\sa is_bud_view_function, space0, space1, space2, space2_distance,
+    ///\sa parwise_self, rel_bud, eero, g_fun_var, ba_variation, LignumForest::is_adhoc,
+    ///\sa LignumForest::is_bud_view_function, LignumForest::space0, LignumForest::space1, LignumForest::space2,
+    ///LignumForest::space2_distance,
     ///\sa growthloop_is_EBH, growthloop_is_EBH1, growthloop_EBH1_value
-    H_0_ini = 0.3;
+    LignumForest::H_0_ini = 0.3;
     clarg.clear();
     if (ParseCommandLine(argc,argv,"-H_0_ini", clarg))
-      H_0_ini = atof(clarg.c_str());
+      LignumForest::H_0_ini = atof(clarg.c_str());
 
-    H_var_ini = 0.0;
+    LignumForest::H_var_ini = 0.0;
     clarg.clear();
     if (ParseCommandLine(argc,argv,"-H_var_ini", clarg))
-      H_var_ini = atof(clarg.c_str());
+      LignumForest::H_var_ini = atof(clarg.c_str());
 
-    n_buds_ini_min = 4;
+    LignumForest::n_buds_ini_min = 4;
     clarg.clear();
     if (ParseCommandLine(argc,argv,"-n_buds_ini_min", clarg))
-      n_buds_ini_min  = atoi(clarg.c_str());
+      LignumForest::n_buds_ini_min  = atoi(clarg.c_str());
 
-    n_buds_ini_max = 4;
+    LignumForest::n_buds_ini_max = 4;
     clarg.clear();
     if (ParseCommandLine(argc,argv,"-n_buds_ini_max", clarg))
-      n_buds_ini_max = atoi(clarg.c_str());
+      LignumForest::n_buds_ini_max = atoi(clarg.c_str());
 
     p0_var = 0.0;
     clarg.clear();
@@ -436,12 +436,12 @@ namespace LignumForest{
       pairwise_self = true;
     }
 
-    rel_bud = 0.0;
-    bud_variation = false;
+    LignumForest::rel_bud = 0.0;
+    LignumForest::bud_variation = false;
     clarg.clear();
     if (ParseCommandLine(argc,argv,"-budVariation", clarg)) {
-      bud_variation = true;
-      rel_bud = atof(clarg.c_str())/100.0;
+      LignumForest::bud_variation = true;
+      LignumForest::rel_bud = atof(clarg.c_str())/100.0;
     }
 
     eero = false;
@@ -463,30 +463,30 @@ namespace LignumForest{
       ba_variation = atof(clarg.c_str())*PI_VALUE/100.0;
     }
 
-    is_adhoc = false;
+    LignumForest::is_adhoc = false;
     if(CheckCommandLine(argc,argv,"-adHoc")) {
-      is_adhoc = true;
+      LignumForest::is_adhoc = true;
     }
 
-    is_bud_view_function = false;
+    LignumForest::is_bud_view_function = false;
     if(CheckCommandLine(argc,argv,"-budViewFunction")) {
-      is_bud_view_function = true;
+      LignumForest::is_bud_view_function = true;
     }
 
-    space0 = false;
-    space1 = false;
-    space2 = false;
+    LignumForest::space0 = false;
+    LignumForest::space1 = false;
+    LignumForest::space2 = false;
     if(CheckCommandLine(argc,argv,"-space0")) {
-      space0 = true;
+      LignumForest::space0 = true;
     }
     if(CheckCommandLine(argc,argv,"-space1")) {
-      space1 = true;
+      LignumForest::space1 = true;
     }
     if(CheckCommandLine(argc,argv,"-space2")) {
-      space2 = true;
+      LignumForest::space2 = true;
       clarg.clear();
       if (ParseCommandLine(argc,argv,"-space2Distance",clarg)) {
-	space2_distance = atof(clarg.c_str());
+	LignumForest::space2_distance = atof(clarg.c_str());
       }
     }
 
@@ -539,10 +539,10 @@ namespace LignumForest{
       ebh_final_value = atof(clarg.c_str());
     }
 
-    growthloop_ebh_mode = 0;
+    LignumForest::ebh_mode = 0;
     clarg.clear();
     if(ParseCommandLine(argc,argv,"-EBHInput", clarg)) {
-      growthloop_ebh_mode  = atoi(clarg.c_str());
+      LignumForest::ebh_mode  = atoi(clarg.c_str());
     }
 
     growthloop_is_radiation_use_efficiency = false;
@@ -573,7 +573,7 @@ namespace LignumForest{
   {
     if(eero) {
       p0_var = 0.0;
-      bud_variation = false;
+      LignumForest::bud_variation = false;
       seg_len_var = 0.0;
     }
 
@@ -758,16 +758,16 @@ namespace LignumForest{
     }
 
     // Bud View Function to Lsystem
-    // Its use is controlled by the global variable is_bud_view_function
+    // Its use is controlled by the global variable LignumForest::is_bud_view_function
     // If it is == false, bud_view_f is ignored
     //  Bud View Function file is specifed in the constructor of the tree
-    bud_view_f = GetFunction(*vtree[0], SPBVF);
+    LignumForest::bud_view_f = GetFunction(*vtree[0], SPBVF);
 
     //Random variation in the photosynthetic parameter
 
     for (unsigned int i=0; i < vtree.size(); i++){
       LGMdouble p0 = GetValue(*vtree[i],LGPpr);
-      p0 *= 1.0 + ((ran3(&ran3_seed) - 0.5)/0.5)*p0_var/100.0;
+      p0 *= 1.0 + ((ran3(&LignumForest::ran3_seed) - 0.5)/0.5)*p0_var/100.0;
       SetValue(*vtree[i],LGPpr,p0);
     }
  
@@ -792,7 +792,7 @@ namespace LignumForest{
 
 	//Light-use efficiency
 	LGMdouble LUE = GetValue(*vtree[i],LGPpr);
-	LGMdouble LUE_change = 1.0 + ((ran3(&ran3_seed)-0.5)/0.5) * LUE_factor;
+	LGMdouble LUE_change = 1.0 + ((ran3(&LignumForest::ran3_seed)-0.5)/0.5) * LUE_factor;
 	if(LUE_change < 0.0)
 	  LUE_change = 0.0;
 
@@ -801,9 +801,9 @@ namespace LignumForest{
 	SetValue(*vtree[i],LGPmf,LUE_change*mf);      //LUE and respiration correlated
 
 	//SLA - assumes that the function is defined at argument values 0.0, 1.0, and 1.1
-	LGMdouble SLA_change = 1.0 + ((ran3(&ran3_seed)-0.5)/0.5) * SLA_factor;
+	LGMdouble SLA_change = 1.0 + ((ran3(&LignumForest::ran3_seed)-0.5)/0.5) * SLA_factor;
 	while(SLA_change < 0.0) {
-	  SLA_change = 1.0 + ((ran3(&ran3_seed)-0.5)/0.5) * SLA_factor;
+	  SLA_change = 1.0 + ((ran3(&LignumForest::ran3_seed)-0.5)/0.5) * SLA_factor;
 	}
 	/*       if(SLA_change < 0.0) */
 	/* 	SLA_change = 0.0; */
@@ -821,7 +821,7 @@ namespace LignumForest{
 	//defined at values 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, and 6.0
 	//Foliage longevity changes are obtained by stretching the argument values 
 
-	LGMdouble FMc = 1.0 + ran3(&ran3_seed)*fol_age_factor;
+	LGMdouble FMc = 1.0 + ran3(&LignumForest::ran3_seed)*fol_age_factor;
 	//      int FMc = (int)FM_change;
 	if(FMc < 0.0)
 	  FMc = 0.0;
@@ -848,7 +848,7 @@ namespace LignumForest{
 	ParametricCurve G_fun = GetFunction(*vtree[i],SPFGO);
 	//Assumes that function has been defined for orders 0, ..., 7, orders 0,1 are
 	//not changed
-	LGMdouble G_c = 1.0 + ((ran3(&ran3_seed)-0.5)/0.5) * g_fun_var;
+	LGMdouble G_c = 1.0 + ((ran3(&LignumForest::ran3_seed)-0.5)/0.5) * g_fun_var;
 	double v2 = G_c*G_fun(2.0);
 	double v3 = G_c*G_fun(3.0);
 	double v4 = G_c*G_fun(4.0);
@@ -878,13 +878,13 @@ namespace LignumForest{
 
 
     //must set branch_angle to trees any way
-    branch_angle = 45.0 * PI_VALUE / 180.0;
+    LignumForest::branch_angle = 45.0 * PI_VALUE / 180.0;
 
     for (unsigned int i=0; i < vtree.size(); i++){
       if(random_branch_angle) {
-	branch_angle *= 1.0 + ((ran3(&ran3_seed)-0.5)/0.5) * ba_variation; 
+	LignumForest::branch_angle *= 1.0 + ((ran3(&LignumForest::ran3_seed)-0.5)/0.5) * ba_variation; 
       }
-      vtree[i]->setBranchAngle(branch_angle);
+      vtree[i]->setBranchAngle(LignumForest::branch_angle);
     }  
   }
 
@@ -1130,8 +1130,8 @@ namespace LignumForest{
   template<class TREE, class TS, class BUD, class LSYSTEM>
   void GrowthLoop<TREE,TS,BUD,LSYSTEM>::collectDataAfterGrowth(const int year,bool collect_stand)
   {
-    ///\note Global variables `L_H` (tree height) and `global_hcb` (height of crown base) are set here for next iteration.
-    ///\sa L_H global_hcb
+    ///\note Global variables `L_H` (tree height) and `LignumForest::global_hcb` (height of crown base) are set here for next iteration.
+    ///\sa L_H LignumForest::global_hcb
     for (unsigned int tree_num = 0; tree_num < vtree.size(); tree_num++){
       map<string,double> tdafter;//collect decriptive data first into this dictionary 
       summing bs; // Branch summaries for mean branch.
@@ -1155,7 +1155,7 @@ namespace LignumForest{
       tdafter["TreeDbh"] = GetValue(t,LGADbh);
       tdafter["TreeDCrownBase"] = dcl.DCrownBase();
       tdafter["TreeHCrownBase"] = dcl.HCrownBase();
-      global_hcb = dcl.HCrownBase();
+      LignumForest::global_hcb = dcl.HCrownBase();
       tdafter["TreeAsBase"] = GetValue(t,LGAAsbase);
       tdafter["TreeAsDbh"] = GetValue(t,LGAAsDbh);
       tdafter["TreeAsCrownBase"] = dcl.ASwCrownBase();
@@ -1343,10 +1343,9 @@ namespace LignumForest{
     ///branching point. \sa PartialSapwoodAreaDown
 
     DiameterGrowthData data;
-    LGMGrowthAllocator2<TS,BUD,SetScotsPineSegmentLength,
-			PartialSapwoodAreaDown,ScotsPineDiameterGrowth2,DiameterGrowthData>
-      G(t,data,PartialSapwoodAreaDown(GetFunction(t,SPSD)),GetFunction(t,LGMIP),GetFunction(t,SPFGO),
-	fip_mode,fgo_mode); 
+    LGMGrowthAllocator2<TS,BUD,LignumForest::SetScotsPineSegmentLength,
+			LignumForest::PartialSapwoodAreaDown,LignumForest::ScotsPineDiameterGrowth2,DiameterGrowthData>
+      G(t,data,PartialSapwoodAreaDown(GetFunction(t,SPSD))); 
  
     treeP = G.getP();
     treeM = G.getM();
@@ -1446,8 +1445,8 @@ namespace LignumForest{
 	double e1 = GetValue(*t,LGPe1);
 	double e2 = GetValue(*t,LGPe2);
 	// cout << " e1 e2 " << e1 << " " << e2 << endl;
-	// cout << " Hc H dDb " << L_H << " " << global_hcb << " " << dDb << endl;
-	double Lnew = (e1 + e2*global_hcb/L_H) * dDb;
+	// cout << " Hc H dDb " << L_H << " " << LignumForest::global_hcb << " " << dDb << endl;
+	double Lnew = (e1 + e2*LignumForest::global_hcb/L_H) * dDb;
         if(Lnew < 0.1)           //safeguarding against losing top
 	  Lnew = 0.1;
 	SetValue(*last, LGAL, Lnew);
@@ -1497,7 +1496,7 @@ namespace LignumForest{
       // Here is calculation of estimation of local needle area density for
       // using in estimation of bud fate
       //=============================================================================
-      if (is_bud_view_function) {
+      if (LignumForest::is_bud_view_function) {
 	BoundingBox b1;
 	bool foliage = true;
 	FindCfBoundingBox<TS,BUD> fb1(foliage);
@@ -1521,7 +1520,7 @@ namespace LignumForest{
       }
 
       //Create new buds by making derive with mode == 1 (set above)
-      branch_angle = t->getBranchAngle();        //this global variable goes to pine-em98.L
+      LignumForest::branch_angle = t->getBranchAngle();        //this global variable goes to pine-em98.L
       l->derive();
       l->lstringToLignum(*t,1,PBDATA);
     }  //for (unsigned int k = 0; k < ...
@@ -2062,7 +2061,7 @@ namespace LignumForest{
       //============================================================================
       // Space colonialization
       //=============================================================================
-      if (space0 || space1 || space2) {
+      if (LignumForest::space0 || LignumForest::space1 || LignumForest::space2) {
 	BoundingBox bbs;
 	FindCfBoundingBox<TS,BUD> fbs(true); 
 	//Segments with needles considered only
@@ -2071,9 +2070,9 @@ namespace LignumForest{
 	Point lls = bbs.getMin();
 	Point urs = bbs.getMax();
 
-	space_occupancy.resize(lls+Point(-0.5,-0.5,-0.5), urs+Point(0.5,0.5,0.5));
+	LignumForest::space_occupancy.resize(lls+Point(-0.5,-0.5,-0.5), urs+Point(0.5,0.5,0.5));
 	DumpTreeOccupy<TS,BUD> dto(3);     //in 3 parts, only foliage parts
-	dto.space = &space_occupancy;
+	dto.space = &LignumForest::space_occupancy;
 
 	ForEach(*t, dto);
       }
@@ -2123,7 +2122,7 @@ namespace LignumForest{
 
       
 	EBH_basipetal_info EBHbI0, EBHbI1;
-	EBHbI1 = AccumulateDown(*t, EBHbI0, EBH_basipetal(lambda_fun, growthloop_ebh_mode) );
+	EBHbI1 = AccumulateDown(*t, EBHbI0, EBH_basipetal(lambda_fun, LignumForest::ebh_mode) );
 
 	EBH_acropetal_info EBHaI0(1.0, 1.0/lambda_fun(1.0), 1.0);
 	PropagateUp(*t, EBHaI0, EBH_acropetal(lambda_fun) );
