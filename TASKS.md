@@ -9,14 +9,13 @@ some program changes and checks are needed.
 - [ ] Implement required changes by the new command line in the main loop
 - [x] Check L-system is identical to L-system in CrownDensity
 - [x] Change SetSegmentLength to one used in CrownDensity.
-      - Using explicitely LignumForest::SetScotsPineSegmentLength
+      Using explicitely LignumForest::SetScotsPineSegmentLength
 - [X] Check the Meta files, parameter and function files in CrownDensity
       that they are the ones that produce a satisfactory tree development
 - [ ] Change Meta files, parameter and function files to ones 
       used in CrownDensity
 - [x] Transfer global variables used from CrownDensity to LignumForest
-      and use LignumForest namespace. **Jari** work in progress.
-	  - LignumForest compiles. 
+      and use LignumForest namespace. LignumForest compiles. 
 ## Additional tasks
 
 It seems CGAL 5.6 (latest manual in cgal.org) can write 
