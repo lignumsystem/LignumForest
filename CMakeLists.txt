@@ -112,7 +112,6 @@ add_executable(lignum-forest ${SOURCE_FILES})
 target_include_directories(lignum-forest PUBLIC . include
 ${CMAKE_CURRENT_LIST_DIR}/
 ${CMAKE_CURRENT_LIST_DIR}/include
-${CMAKE_CURRENT_LIST_DIR}/../CrownDensity/include
 ${CMAKE_CURRENT_LIST_DIR}/../stl-voxelspace/include
 ${CMAKE_CURRENT_LIST_DIR}/../Pine
 ${CMAKE_CURRENT_LIST_DIR}/../XMLTree
