@@ -3,7 +3,7 @@
 
 ///Lignum implementation
 #include <Lignum.h>
-#include <CrownDensityGlobals.h>
+#include <LignumForestGlobals.h>
 #include <GrowthLoop.h> 
 ///Implementation of the Scotspine tree segment and bud
 #include <ScotsPine.h>
@@ -31,7 +31,7 @@ namespace Pine{
 
 
 using namespace Pine;
-using namespace CrownDensity;
+using namespace LignumForest;
 using namespace LignumForest;
 
 namespace LignumForest{
