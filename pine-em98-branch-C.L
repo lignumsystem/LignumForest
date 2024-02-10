@@ -15,8 +15,8 @@ using namespace PineTree;
 //Defines headers necessary for lsystem
 #include <lengine.h>
 
-#include <CrownDensityGlobals.h>
-using namespace CrownDensity;
+#include <LignumForestGlobals.h>
+using namespace LignumForest;
 
 
 
@@ -88,7 +88,7 @@ derivation length: 9;
 Start:
 {
   PineBudData data(ALIVE,0.0,1.0,1.0,1.0);
-  produce F(0.30) SB() Down(1.0) Pitch(pitch) B(data,2,l1,1.0) EB() 
+  produce F(0.30) SB() Down(1.0) Pitch(pitch) B(data,2,Pine::l1,1.0) EB() 
                   SB() Roll(rollmain4) Down(1.0) Pitch(pitch)  B(data,2,1.0,1.0) EB()
 	          SB() Roll(2.0*rollmain4) Down(1.0) Pitch(pitch) B(data,2,1.0,1.0) EB()
 		  SB() Roll(3.0*rollmain4) Down(1.0) Pitch(pitch)  B(data,2,1.0,1.0) EB()
@@ -143,7 +143,7 @@ B(data,omega,l,phys_age):
          nbuds = static_cast<int>(static_cast<double>(nbuds) * bud_view_f(data.view));
       }
 
-    if (nbuds == 0 && L_age < 4)
+    if (nbuds == 0 && Pine::L_age < 4)
        nbuds = 1;
 
     if (data.state == DEAD){
@@ -157,56 +157,56 @@ B(data,omega,l,phys_age):
     }
     else if (omega == 1){//Main_axis, do not increase physiological age
        if (nbuds == 1)
-          produce  SB() Down(1.0) Pitch(pitch)B(data,omega+1,l1,phys_age) EB()
+          produce  SB() Down(1.0) Pitch(pitch)B(data,omega+1,Pine::l1,phys_age) EB()
                    B(data,omega,l,phys_age);
        else if (nbuds == 2)
-          produce  SB() Down(1.0) Pitch(pitch)B(data,omega+1,l1,phys_age+1) EB() 
-                   SB() Roll(rollmain2) Down(1.0) Pitch(pitch) B(data,omega+1,l1,phys_age) EB()
+          produce  SB() Down(1.0) Pitch(pitch)B(data,omega+1,Pine::l1,phys_age+1) EB() 
+                   SB() Roll(rollmain2) Down(1.0) Pitch(pitch) B(data,omega+1,Pine::l1,phys_age) EB()
                    B(data,omega,l,phys_age);
        else if (nbuds == 3)
-          produce  SB() Down(1.0) Pitch(pitch) B(data,omega+1,l1,phys_age) EB() 
-                   SB() Roll(rollmain3) Down(1.0) Pitch(pitch) B(data,omega+1,l1,phys_age) EB()
-	           SB() Roll(2.0*rollmain3) Down(1.0) Pitch(pitch) B(data,omega+1,l1,phys_age) EB()
+          produce  SB() Down(1.0) Pitch(pitch) B(data,omega+1,Pine::l1,phys_age) EB() 
+                   SB() Roll(rollmain3) Down(1.0) Pitch(pitch) B(data,omega+1,Pine::l1,phys_age) EB()
+	           SB() Roll(2.0*rollmain3) Down(1.0) Pitch(pitch) B(data,omega+1,Pine::l1,phys_age) EB()
                    B(data,omega,l,phys_age);
        else if (nbuds == 4)
-          produce  SB() Down(1.0) Pitch(pitch) B(data,omega+1,l1,phys_age) EB() 
-                   SB() Roll(rollmain4) Down(1.0) Pitch(pitch)  B(data,omega+1,l1,phys_age) EB()
-	           SB() Roll(2.0*rollmain4) Down(1.0) Pitch(pitch) B(data,omega+1,l1,phys_age) EB()
-		   SB() Roll(3.0*rollmain4) Down(1.0) Pitch(pitch)  B(data,omega+1,l1,phys_age) EB()
+          produce  SB() Down(1.0) Pitch(pitch) B(data,omega+1,Pine::l1,phys_age) EB() 
+                   SB() Roll(rollmain4) Down(1.0) Pitch(pitch)  B(data,omega+1,Pine::l1,phys_age) EB()
+	           SB() Roll(2.0*rollmain4) Down(1.0) Pitch(pitch) B(data,omega+1,Pine::l1,phys_age) EB()
+		   SB() Roll(3.0*rollmain4) Down(1.0) Pitch(pitch)  B(data,omega+1,Pine::l1,phys_age) EB()
                    B(data,omega,l,phys_age);
        else if (nbuds == 5)
-          produce  SB() Down(1.0) Pitch(pitch)B(data,omega+1,l1,phys_age) EB() 
-                   SB() Roll(rollmain5) Down(1.0) Pitch(pitch) B(data,omega+1,l1,phys_age) EB()
-		   SB() Roll(2.0*rollmain5) Down(1.0) Pitch(pitch) B(data,omega+1,l1,phys_age) EB()
-		   SB() Roll(3.0*rollmain5) Down(1.0) Pitch(pitch) B(data,omega+1,l1,phys_age) EB()
-		   SB() Roll(4.0*rollmain5) Down(1.0) Pitch(pitch) B(data,omega+1,l1,phys_age) EB()
+          produce  SB() Down(1.0) Pitch(pitch)B(data,omega+1,Pine::l1,phys_age) EB() 
+                   SB() Roll(rollmain5) Down(1.0) Pitch(pitch) B(data,omega+1,Pine::l1,phys_age) EB()
+		   SB() Roll(2.0*rollmain5) Down(1.0) Pitch(pitch) B(data,omega+1,Pine::l1,phys_age) EB()
+		   SB() Roll(3.0*rollmain5) Down(1.0) Pitch(pitch) B(data,omega+1,Pine::l1,phys_age) EB()
+		   SB() Roll(4.0*rollmain5) Down(1.0) Pitch(pitch) B(data,omega+1,Pine::l1,phys_age) EB()
                    B(data,omega,l,phys_age);
        else if (nbuds == 6)
-          produce  SB() Down(1.0) Pitch(pitch) B(data,omega+1,l1,phys_age) EB() 
-                   SB() Roll(rollmain6) Down(1.0) Pitch(pitch) B(data,omega+1,l1,phys_age) EB()
-	           SB() Roll(2.0*rollmain6) Down(1.0) Pitch(pitch) B(data,omega+1,l1,phys_age) EB()
-		   SB() Roll(3.0*rollmain6) Down(1.0) Pitch(pitch) B(data,omega+1,l1,phys_age) EB()
-		   SB() Roll(4.0*rollmain6) Down(1.0) Pitch(pitch) B(data,omega+1,l1,phys_age) EB()
-		   SB() Roll(5.0*rollmain6) Down(1.0) Pitch(pitch) B(data,omega+1,l1,phys_age) EB()
+          produce  SB() Down(1.0) Pitch(pitch) B(data,omega+1,Pine::l1,phys_age) EB() 
+                   SB() Roll(rollmain6) Down(1.0) Pitch(pitch) B(data,omega+1,Pine::l1,phys_age) EB()
+	           SB() Roll(2.0*rollmain6) Down(1.0) Pitch(pitch) B(data,omega+1,Pine::l1,phys_age) EB()
+		   SB() Roll(3.0*rollmain6) Down(1.0) Pitch(pitch) B(data,omega+1,Pine::l1,phys_age) EB()
+		   SB() Roll(4.0*rollmain6) Down(1.0) Pitch(pitch) B(data,omega+1,Pine::l1,phys_age) EB()
+		   SB() Roll(5.0*rollmain6) Down(1.0) Pitch(pitch) B(data,omega+1,Pine::l1,phys_age) EB()
                    B(data,omega,l,phys_age);
        else if (nbuds == 7)
-          produce  SB() Down(1.0) Pitch(pitch)B(data,omega+1,l1,phys_age) EB() 
-                   SB() Roll(rollmain7) Down(1.0) Pitch(pitch) B(data,omega+1,l1,phys_age) EB()
-		   SB() Roll(2.0*rollmain7) Down(1.0) Pitch(pitch) B(data,omega+1,l1,phys_age) EB()
-		   SB() Roll(3.0*rollmain7) Down(1.0) Pitch(pitch) B(data,omega+1,l1,phys_age) EB()
-		   SB() Roll(4.0*rollmain7) Down(1.0) Pitch(pitch) B(data,omega+1,l1,phys_age) EB()
-		   SB() Roll(5.0*rollmain7) Down(1.0) Pitch(pitch) B(data,omega+1,l1,phys_age) EB()
-		   SB() Roll(6.0*rollmain7) Down(1.0) Pitch(pitch) B(data,omega+1,l1,phys_age) EB()
+          produce  SB() Down(1.0) Pitch(pitch)B(data,omega+1,Pine::l1,phys_age) EB() 
+                   SB() Roll(rollmain7) Down(1.0) Pitch(pitch) B(data,omega+1,Pine::l1,phys_age) EB()
+		   SB() Roll(2.0*rollmain7) Down(1.0) Pitch(pitch) B(data,omega+1,Pine::l1,phys_age) EB()
+		   SB() Roll(3.0*rollmain7) Down(1.0) Pitch(pitch) B(data,omega+1,Pine::l1,phys_age) EB()
+		   SB() Roll(4.0*rollmain7) Down(1.0) Pitch(pitch) B(data,omega+1,Pine::l1,phys_age) EB()
+		   SB() Roll(5.0*rollmain7) Down(1.0) Pitch(pitch) B(data,omega+1,Pine::l1,phys_age) EB()
+		   SB() Roll(6.0*rollmain7) Down(1.0) Pitch(pitch) B(data,omega+1,Pine::l1,phys_age) EB()
                    B(data,omega,l,phys_age);
        else if (nbuds >= 8)
-          produce  SB() Down(1.0) Pitch(pitch)B(data,omega+1,l1,phys_age) EB() 
-                   SB() Roll(rollmain8) Down(1.0) Pitch(pitch) B(data,omega+1,l1,phys_age) EB()
-		   SB() Roll(2.0*rollmain8) Down(1.0) Pitch(pitch) B(data,omega+1,l1,phys_age) EB()
-		   SB() Roll(3.0*rollmain8) Down(1.0) Pitch(pitch) B(data,omega+1,l1,phys_age) EB()
-		   SB() Roll(4.0*rollmain8) Down(1.0) Pitch(pitch) B(data,omega+1,l1,phys_age) EB()
-		   SB() Roll(5.0*rollmain8) Down(1.0) Pitch(pitch) B(data,omega+1,l1,phys_age) EB()
-		   SB() Roll(6.0*rollmain8) Down(1.0) Pitch(pitch) B(data,omega+1,l1,phys_age) EB()
-                   SB() Roll(7.0*rollmain8) Down(1.0) Pitch(pitch) B(data,omega+1,l1,phys_age) EB()
+          produce  SB() Down(1.0) Pitch(pitch)B(data,omega+1,Pine::l1,phys_age) EB() 
+                   SB() Roll(rollmain8) Down(1.0) Pitch(pitch) B(data,omega+1,Pine::l1,phys_age) EB()
+		   SB() Roll(2.0*rollmain8) Down(1.0) Pitch(pitch) B(data,omega+1,Pine::l1,phys_age) EB()
+		   SB() Roll(3.0*rollmain8) Down(1.0) Pitch(pitch) B(data,omega+1,Pine::l1,phys_age) EB()
+		   SB() Roll(4.0*rollmain8) Down(1.0) Pitch(pitch) B(data,omega+1,Pine::l1,phys_age) EB()
+		   SB() Roll(5.0*rollmain8) Down(1.0) Pitch(pitch) B(data,omega+1,Pine::l1,phys_age) EB()
+		   SB() Roll(6.0*rollmain8) Down(1.0) Pitch(pitch) B(data,omega+1,Pine::l1,phys_age) EB()
+                   SB() Roll(7.0*rollmain8) Down(1.0) Pitch(pitch) B(data,omega+1,Pine::l1,phys_age) EB()
                    B(data,omega,l,phys_age);
     }//omega == 1
     else if (omega >= 2 && omega <= 100){
@@ -221,85 +221,85 @@ B(data,omega,l,phys_age):
            //NOTE: this can go forever unless growth conditions and functions set the segment length to 0
            PineBudData mother_bud_data(data);
            mother_bud_data.phys_age += 1.0;
-           produce  SB() Turn(turn_branch_max)Down(3.0)   B(data,omega+1,l1,phys_age) EB() 
-                    SB() Turn(-turn_branch_max)Down(3.0)   B(data,omega+1,l1,phys_age) EB()
+           produce  SB() Turn(turn_branch_max)Down(3.0)   B(data,omega+1,Pine::l1,phys_age) EB() 
+                    SB() Turn(-turn_branch_max)Down(3.0)   B(data,omega+1,Pine::l1,phys_age) EB()
            Down(-1) B(mother_bud_data,omega,l,phys_age+1.0);
         }
         else if (nbuds == 1){
            PineBudData mother_bud_data(data);
            mother_bud_data.phys_age += 1.0;
-           produce  SB() Roll(roll)  Turn(turn_branch)Down(3.0)   B(data,omega+1,l1,data.phys_age) EB()
+           produce  SB() Roll(roll)  Turn(turn_branch)Down(3.0)   B(data,omega+1,Pine::l1,data.phys_age) EB()
                     Down(-1) B(mother_bud_data,omega,l,phys_age+1.0);
         }
         else if (nbuds == 2){
            PineBudData mother_bud_data(data);
            mother_bud_data.phys_age += 1.0;
            //Two new branches at the same plane to the opposite sides
-           produce  SB() Roll(roll)   Turn(turn_branch)Down(3.0)   B(data,omega+1,l1,data.phys_age) EB() 
-                    SB() Roll(2*roll)  Turn(turn_branch)Down(3.0)   B(data,omega+1,l1,data.phys_age) EB()
+           produce  SB() Roll(roll)   Turn(turn_branch)Down(3.0)   B(data,omega+1,Pine::l1,data.phys_age) EB() 
+                    SB() Roll(2*roll)  Turn(turn_branch)Down(3.0)   B(data,omega+1,Pine::l1,data.phys_age) EB()
                     Down(-1) B(mother_bud_data,omega,l,phys_age+1.0);
         }
         else if (nbuds == 3){
            PineBudData mother_bud_data(data);
            mother_bud_data.phys_age += 1.0;
-           produce  SB() Roll(roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,l1,data.phys_age) EB() 
-                    SB() Roll(2*roll)  Turn(turn_branch)Down(3.0)  B(data,omega+1,l1,data.phys_age) EB()
-   		    SB() Roll(3.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,l1,data.phys_age) EB()
+           produce  SB() Roll(roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,Pine::l1,data.phys_age) EB() 
+                    SB() Roll(2*roll)  Turn(turn_branch)Down(3.0)  B(data,omega+1,Pine::l1,data.phys_age) EB()
+   		    SB() Roll(3.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,Pine::l1,data.phys_age) EB()
                     Down(-1) B(mother_bud_data,omega,l,phys_age+1.0);
         }
         else if (nbuds == 4){
            PineBudData mother_bud_data(data);
            mother_bud_data.phys_age += 1.0;
-           produce  SB() Roll(roll)  Turn(turn_branch)Down(3.0)    B(data,omega+1,l1,data.phys_age) EB() 
-                    SB() Roll(2.0*roll)  Turn(turn_branch)Down(3.0)    B(data,omega+1,l1,data.phys_age) EB()
-   		    SB() Roll(3.0*roll)  Turn(turn_branch)Down(3.0)    B(data,omega+1,l1,data.phys_age) EB()
-   		    SB() Roll(4.0*roll)  Turn(turn_branch)Down(3.0)     B(data,omega+1,l1,data.phys_age) EB()
+           produce  SB() Roll(roll)  Turn(turn_branch)Down(3.0)    B(data,omega+1,Pine::l1,data.phys_age) EB() 
+                    SB() Roll(2.0*roll)  Turn(turn_branch)Down(3.0)    B(data,omega+1,Pine::l1,data.phys_age) EB()
+   		    SB() Roll(3.0*roll)  Turn(turn_branch)Down(3.0)    B(data,omega+1,Pine::l1,data.phys_age) EB()
+   		    SB() Roll(4.0*roll)  Turn(turn_branch)Down(3.0)     B(data,omega+1,Pine::l1,data.phys_age) EB()
                     Down(-1) B(mother_bud_data,omega,l,phys_age+1.0);
         }
         else if (nbuds == 5){
            PineBudData mother_bud_data(data);
            mother_bud_data.phys_age += 1.0;
-           produce  SB()  Roll(roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,l1,data.phys_age) EB() 
-                    SB()  Roll(2.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,l1,data.phys_age) EB()
-   		    SB()  Roll(3.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,l1,data.phys_age) EB()
-   		    SB()  Roll(4.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,l1,data.phys_age) EB()
-   		    SB()  Roll(5.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,l1,data.phys_age) EB()
+           produce  SB()  Roll(roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,Pine::l1,data.phys_age) EB() 
+                    SB()  Roll(2.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,Pine::l1,data.phys_age) EB()
+   		    SB()  Roll(3.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,Pine::l1,data.phys_age) EB()
+   		    SB()  Roll(4.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,Pine::l1,data.phys_age) EB()
+   		    SB()  Roll(5.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,Pine::l1,data.phys_age) EB()
                     Down(-1) B(mother_bud_data,omega,l,phys_age+1.0);
        }
        else if (nbuds == 6){
            PineBudData mother_bud_data(data);
            mother_bud_data.phys_age += 1.0;
-           produce  SB()  Roll(roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,l1,data.phys_age) EB() 
-                    SB()  Roll(2.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,l1,data.phys_age) EB()
-   		    SB()  Roll(3.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,l1,data.phys_age) EB()
-   		    SB()  Roll(4.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,l1,data.phys_age) EB()
-                    SB()  Roll(5.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,l1,data.phys_age) EB()
-                    SB()  Roll(6.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,l1,data.phys_age) EB()
+           produce  SB()  Roll(roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,Pine::l1,data.phys_age) EB() 
+                    SB()  Roll(2.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,Pine::l1,data.phys_age) EB()
+   		    SB()  Roll(3.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,Pine::l1,data.phys_age) EB()
+   		    SB()  Roll(4.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,Pine::l1,data.phys_age) EB()
+                    SB()  Roll(5.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,Pine::l1,data.phys_age) EB()
+                    SB()  Roll(6.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,Pine::l1,data.phys_age) EB()
                     Down(-1) B(mother_bud_data,omega,l,phys_age+1.0);
        }
        else if (nbuds == 7){
            PineBudData mother_bud_data(data);
            mother_bud_data.phys_age += 1.0;
-           produce  SB()  Roll(roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,l1,data.phys_age) EB() 
-                    SB()  Roll(2.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,l1,data.phys_age) EB()
-   		    SB()  Roll(3.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,l1,data.phys_age) EB()
-   		    SB()  Roll(4.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,l1,data.phys_age) EB()
-                    SB()  Roll(5.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,l1,data.phys_age) EB()
-                    SB()  Roll(6.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,l1,data.phys_age) EB()
-                    SB()  Roll(7.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,l1,data.phys_age) EB()
+           produce  SB()  Roll(roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,Pine::l1,data.phys_age) EB() 
+                    SB()  Roll(2.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,Pine::l1,data.phys_age) EB()
+   		    SB()  Roll(3.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,Pine::l1,data.phys_age) EB()
+   		    SB()  Roll(4.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,Pine::l1,data.phys_age) EB()
+                    SB()  Roll(5.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,Pine::l1,data.phys_age) EB()
+                    SB()  Roll(6.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,Pine::l1,data.phys_age) EB()
+                    SB()  Roll(7.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,Pine::l1,data.phys_age) EB()
                     Down(-1) B(mother_bud_data,omega,l,phys_age+1.0);
        }
        else if (nbuds >= 8){
            PineBudData mother_bud_data(data);
            mother_bud_data.phys_age += 1.0;
-           produce  SB()  Roll(roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,l1,data.phys_age) EB() 
-                    SB()  Roll(2.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,l1,data.phys_age) EB()
-   		    SB()  Roll(3.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,l1,data.phys_age) EB()
-   		    SB()  Roll(4.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,l1,data.phys_age) EB()
-                    SB()  Roll(5.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,l1,data.phys_age) EB()
-                    SB()  Roll(6.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,l1,data.phys_age) EB()
-                    SB()  Roll(7.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,l1,data.phys_age) EB()
-                    SB()  Roll(8.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,l1,data.phys_age) EB()
+           produce  SB()  Roll(roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,Pine::l1,data.phys_age) EB() 
+                    SB()  Roll(2.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,Pine::l1,data.phys_age) EB()
+   		    SB()  Roll(3.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,Pine::l1,data.phys_age) EB()
+   		    SB()  Roll(4.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,Pine::l1,data.phys_age) EB()
+                    SB()  Roll(5.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,Pine::l1,data.phys_age) EB()
+                    SB()  Roll(6.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,Pine::l1,data.phys_age) EB()
+                    SB()  Roll(7.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,Pine::l1,data.phys_age) EB()
+                    SB()  Roll(8.0*roll)   Turn(turn_branch)Down(3.0)  B(data,omega+1,Pine::l1,data.phys_age) EB()
                     Down(-1) B(mother_bud_data,omega,l,phys_age+1.0);
       }
     }//2 <= omega <= 100		    
