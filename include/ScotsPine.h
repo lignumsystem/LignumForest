@@ -2,11 +2,10 @@
 #define SCOTSPINE_H
 #include <Pine.h>
 #include <VoxelSpace.h>
-#include <CrownDensityGlobals.h>
+#include <LignumForestGlobals.h>
 ///\file ScotsPine.h
 ///\brief Implementation of ScotsPineTree, ScotsPineSegment and ScotsPineBud
 using namespace PineTree;
-using namespace CrownDensity;
 using namespace Pine;
 
 
@@ -360,13 +359,13 @@ namespace LignumForest{
   ///    -# Architecture mode change in L-system  tries to generate flat branches arranged in a plane
   ///    -# Growth mode change applies new  \f$f_{ip}\f$, \f$f_{go}\f$ functions and tree parameters (*Tree.txt*)
   ///    -# Growth mode and architecture mode are independent from each other.
-  ///\sa CrownDensity::Usage 
+  ///\sa Usage 
   class SetScotsPineSegmentLength{
   public:
     ///\deprecated fgo and fip should be set explicitely
     ///\param lamda Lambda to iterate segment length
     SetScotsPineSegmentLength(double lamda):l(lamda)  
-    {space_occupancy.resetOccupiedTry();}
+    {LignumForest::space_occupancy.resetOccupiedTry();}
     SetScotsPineSegmentLength(const SetScotsPineSegmentLength& sl)
       :l(sl.l){}
     SetScotsPineSegmentLength& operator=(const SetScotsPineSegmentLength& sl){
@@ -382,11 +381,11 @@ namespace LignumForest{
     ///\test Space occupancy model (segment length on/off)
     ///\test Growth mode change based on Basic model
     ///\param tc Tree compartment
-    ///\note `CrownDensity::is_mode_change` and `CrownDensity::mode_change_year` are global variables
-    ///\note `CrownDensity::is_random_length` is a global variable 
+    ///\note `is_mode_change` and `mode_change_year` are global variables
+    ///\note `LignumForest::is_random_length` is a global variable 
     ///\note Functions are set during tree initializations are known in a tree.
-    ///\sa CrownDensity::is_architecture_change CrownDensity::architecture_change_year CrownDenesity::is_random_length
-    ///\sa CrownDensity::Usage
+    ///\sa is_architecture_change architecture_change_year CrownDenesity::is_random_length
+    ///\sa Usage
     TreeCompartment<ScotsPineSegment,ScotsPineBud>* 
     operator()(TreeCompartment<ScotsPineSegment,ScotsPineBud>* tc)const
     { ///\section setsegmentlength Steps in setting segment length 
@@ -453,23 +452,23 @@ namespace LignumForest{
 	  // [ADHOC]
 	  //Calculate adhoc factor for segment length i branches 
 	  double adhoc_factor = 1.0;
-	  if(is_adhoc) {
+	  if(LignumForest::is_adhoc) {
 	    if(go > 1.0) {
 	      //Check bounding values for adhoc factor
-	      if(global_hcb >= L_H ) {
+	      if(LignumForest::global_hcb >= L_H ) {
 		adhoc_factor = 1.0;
-	      } else if(global_hcb < 0.0) {
+	      } else if(LignumForest::global_hcb < 0.0) {
 		adhoc_factor = 1.0;
 	      } else {
 		//Find relative heigth value
 		double z = GetPoint(*ts).getZ();
-		double rel_z = (z-global_hcb)/(L_H - global_hcb);
+		double rel_z = (z-LignumForest::global_hcb)/(L_H - LignumForest::global_hcb);
 		if(rel_z > 1.0)
 		  rel_z = 1.0;
 		if(rel_z < 0.0)
 		  rel_z = 0.0;
 		//adhoc is function of the relative heigth value
-		adhoc_factor = adhoc(rel_z);
+		adhoc_factor = LignumForest::adhoc(rel_z);
 		//Final adjustment for adhoc value
 		if(go < 3.0 && adhoc_factor > 1.5) {
 		  //  adhoc_factor = 1.0/adhoc_factor;
@@ -511,7 +510,7 @@ namespace LignumForest{
 	  }
 
 	  //Random variation in lengths of segments (not stem)
-	  if(CrownDensity::is_random_length && (go > 1.0)) {
+	  if(LignumForest::is_random_length && (go > 1.0)) {
 	    LGMdouble rp = GetValue(GetTree(*ts),LGPlen_random);
 	    ///\par Optional random segment length variation
 	    ///Applied to both Basic and EBH models
@@ -519,49 +518,49 @@ namespace LignumForest{
 	    ///\internal
 	    // [RANDOM]
 	    // For branches if random variation in use
-	    Lnew *= 1.0 + (rp/0.5)*(ran3(&CrownDensity::ran3_seed)-0.5);
+	    Lnew *= 1.0 + (rp/0.5)*(ran3(&LignumForest::ran3_seed)-0.5);
 	    // [RANDOM]
 	    ///\endinternal
 	  }
 
 	  //Here Space occupancy, segment length on/off
-	  if(space0 || space1 || space2) {
+	  if(LignumForest::space0 || LignumForest::space1 || LignumForest::space2) {
 	    if(go > 1.0) {
 	      if(Lnew > R_EPSILON && Lnew < 1.5) {
 		Point p0 = GetPoint(*ts);
 		PositionVector dir = GetDirection(*ts);
 		Point end_p = p0 + Lnew*Point(dir);
-		vector<int> e_ind = space_occupancy.getBoxIndexes(end_p);
-		vector<int> s_ind = space_occupancy.getBoxIndexes(p0);
+		vector<int> e_ind = LignumForest::space_occupancy.getBoxIndexes(end_p);
+		vector<int> s_ind = LignumForest::space_occupancy.getBoxIndexes(p0);
 
 		if(!((abs(e_ind[0]-s_ind[0])+abs(e_ind[1]-s_ind[1])+abs(e_ind[2]-s_ind[2])) == 0)) {
 		  bool out_of_space = false;
-		  VoxelBox& vb = space_occupancy.voxboxes[1][1][1];
+		  VoxelBox& vb = LignumForest::space_occupancy.voxboxes[1][1][1];
 		  try{
-		    vb = space_occupancy.getVoxelBox(end_p);
+		    vb = LignumForest::space_occupancy.getVoxelBox(end_p);
 		  }
 		  catch(Lignum::OutOfVoxelSpaceException& e) {
 		    out_of_space = true;
 		  }
 
 		  vector<VoxelBox> neighborhood;
-		  if(space1) {
-		    neighborhood = space_occupancy.
+		  if(LignumForest::space1) {
+		    neighborhood = LignumForest::space_occupancy.
 		      getVoxelBoxPositiveNeighborhood(end_p, dir);
 		  }
-		  if(space2) {
-		    list<vector<int> > neighbors = space_occupancy.
-		      getBoxesAroundPoint(end_p, space2_distance, false);
+		  if(LignumForest::space2) {
+		    list<vector<int> > neighbors = LignumForest::space_occupancy.
+		      getBoxesAroundPoint(end_p, LignumForest::space2_distance, false);
 		    list<vector<int> >::iterator I;
 		    for(I = neighbors.begin(); I != neighbors.end(); I++) {
 		      if(!((abs((*I)[0]-s_ind[0])+abs((*I)[1]-s_ind[1])+abs((*I)[2]-s_ind[2])) == 0)) {
-			neighborhood.push_back(space_occupancy.voxboxes[(*I)[0]][(*I)[1]][(*I)[2]]);
+			neighborhood.push_back(LignumForest::space_occupancy.voxboxes[(*I)[0]][(*I)[1]][(*I)[2]]);
 		      }
 		    }
 		  }
 
 		  int nb_occupied = 0;
-		  if(space1 || space2) {
+		  if(LignumForest::space1 || LignumForest::space2) {
 		    int lv = static_cast<int>(neighborhood.size());
 		    for(int i = 0; i < lv; i++) {
 		      if(neighborhood[i].getOccupied() || neighborhood[i].getOccupiedTry())
@@ -592,7 +591,7 @@ namespace LignumForest{
 		} //if(!((abs(e_ind[0]-s_ind[0])+abs(e_i ...
 	      }
 	    } //if(go > 1) {
-	  } //if(space0 || space1 || space2) { 
+	  } //if(LignumForest::space0 || LignumForest::space1 || LignumForest::space2) { 
 	  ///\par Segment length consitency checks
 	  ///\snippet{lineno} ScotsPine.h LCHECKS
 	  ///\internal
