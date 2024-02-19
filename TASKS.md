@@ -5,17 +5,38 @@ Before simulating Scots pine stand with LignumForest
 some program changes and checks are needed.
 
 ## Task list
-- [ ] Change LignumForest command line identical to CrownDensity command line.
-- [ ] Implement required changes by the new command line in the main loop
+- [x] Added script `run-lignum-forest.sh` to be used. 
+- [x] Merge CrownDensity command line with LignumForest command line.<br>
+      *`run-lignum-forest.sh` command line from `run-crowndens-basic-model.sh` except LignumForest 
+	  specific arguments (for example -generateTrees, -treeDist)*
+- [ ] Implement required changes by the new command line in the main loop<br>
+      Some of the arguments are already present (e.g. -iter). Also, I think the work 
+	  could be done in parallel: a matter of setting global variables. Rereading MetaFiles, functions and
+	  parameters (clearly and not in a messy way) might require more work.
+  - [ ] -iter
+  - [ ] -metafile
+  - [ ] -voxelspace
+  - [ ] -voxelCalculation
+  - [ ] -modeChange
+  - [ ] -architectureChange
+  - [ ] -numParts
+  - [ ] -hw 
+  - [ ] -kBorderForest
+  - [ ] -writeInterval
+  - [ ] -increaseXi 
+  - [ ] -generateLocations
+  - [ ] -treeDist 
+  - [ ] -hdf5
 - [x] Check L-system is identical to L-system in CrownDensity
-- [x] Change SetSegmentLength to one used in CrownDensity.
-      Using explicitely LignumForest::SetScotsPineSegmentLength
-- [X] Check the Meta files, parameter and function files in CrownDensity
+- [x] Change SetSegmentLength to one used in CrownDensity.<br>
+      *Using explicitely LignumForest::SetScotsPineSegmentLength*
+- [x] Check the Meta files, parameter and function files in CrownDensity
       that they are the ones that produce a satisfactory tree development
 - [ ] Change Meta files, parameter and function files to ones 
-      used in CrownDensity
+      used in CrownDensity. Especially -modeChange requires rereading MetaFiles.
 - [x] Transfer global variables used from CrownDensity to LignumForest
-      and use LignumForest namespace. LignumForest compiles. 
+      and use LignumForest namespace. <br>
+	  *LignumForest compiles*. 
 ## Additional tasks
 
 It seems CGAL 5.6 (latest manual in cgal.org) can write 
