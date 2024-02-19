@@ -67,7 +67,7 @@ namespace LignumForest{
     /// \pre The HDF5 file `hdf5_file` must be open
     /// \param gl The GrowLoop
     /// \param hdf5_file The HDF5 file where the XML strings will be stored
-    /// \param dataset_name The name of the root group (dataset) for the XML strings
+    /// \param group_name The name of the root group (dataset) for the XML strings
     /// \param interval Write interval: trees will be written when `age mod interval = 0`.
     /// \return 0 Always returns zero. 
     /// \note The dataset naming for the trees will be */dataset_name/`age`/Tree_`tree_id`*,
@@ -75,7 +75,7 @@ namespace LignumForest{
     /// \post  The HDF5 file `hdf5_file` remains open
     /// \attention The `hdf5_file` must be closed after the growth loop before program exit.
     /// \todo Improve the use of the return value to use return values from HDF5 functions
-    friend int CreateTreeXMLDataSet(const GrowthLoop<TREE,TS,BUD,LSYSTEM>& gl, LGMHDF5File& hdf5_file,const string& dataset_name,
+    friend int CreateTreeXMLDataSet(const GrowthLoop<TREE,TS,BUD,LSYSTEM>& gl, LGMHDF5File& hdf5_file,const string& group_name,
 				    const int interval);
     /// \brief Update `ws_after_senescence` vector
     /// \param gl GrowthLoop
