@@ -5,25 +5,28 @@ Before simulating Scots pine stand with LignumForest
 some program changes and checks are needed.
 
 ## Task list
-- [x] Added script `run-lignum-forest.sh` to be used. 
+- [x] Added script `run-lignum-forest.sh` to be used. **Note** the `lignum-forest` binary.
 - [x] Merge CrownDensity command line with LignumForest command line.<br>
-      *`run-lignum-forest.sh` command line from `run-crowndens-basic-model.sh` except LignumForest 
-	  specific arguments (for example -generateTrees, -treeDist)*
-- [ ] Implement required changes by the new command line in the main loop<br>
-      Some of the arguments are already present (e.g. -iter). Also, I think the work 
+      *Command line of the `run-lignum-forest.sh` copied from `run-crowndens-basic-model.sh`.
+	  LignumForest specific arguments present (for example -generateTrees, -treeDist)*
+- [ ] Implement required changes by the new command line in the main loop.
+      Some of the arguments are already present (e.g. -iter). Also, the work 
 	  could be done in parallel: a matter of setting global variables. Rereading MetaFiles, functions and
-	  parameters (clearly and not in a messy way) might require more work.
-  - [ ] -iter
-  - [ ] -metafile
-  - [ ] -voxelspace
-  - [ ] -voxelCalculation
+	  parameters (clearly, at least not in a messy ad hoc way) might require more work. <br>
+	  Check and implement the following command line options: 
+  - [x] -iter
+  - [x] -metafile
+  - [x] -voxelspace
+  - [x] -voxelCalculation <br>
+       *No -voxelCalculation in `lignum-forest`, removed from command line. VoxelSpace always in use. See -pairwiseSelf*. 
   - [ ] -modeChange
   - [ ] -architectureChange
-  - [ ] -numParts
-  - [ ] -hw 
-  - [ ] -kBorderForest
-  - [ ] -writeInterval
-  - [ ] -increaseXi 
+  - [x] -numParts
+  - [x] -hw 
+  - [x] -kBorderConifer
+  - [x] -writeInterval
+  - [x] -increaseXi <br>
+       *The same implementation as in CrownDensity*
   - [ ] -generateLocations
   - [ ] -treeDist 
   - [ ] -hdf5
