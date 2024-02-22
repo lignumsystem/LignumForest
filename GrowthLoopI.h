@@ -116,7 +116,7 @@ namespace LignumForest{
     cout << "-treeDist <dist>          Minimum distance between two trees (default = 0), works only with -generateLocations." << endl;  
     cout << "-numParts <parts>         Segments can be dumped to voxels by parts (i.e. they may belong to different voxels," << endl;
     cout << "                          default = 1)" << endl;
-    cout << "-hw <hw_start>            Starting year of formation of sapwood. Default = 15 years" << endl;
+    cout << "-hw <hw_start>            Starting year of formation of heartwood Default = 15 years" << endl;
     cout << "-increaseXi               If parameter ksi (fraction of heartwood in new segments) increases, value = starting year (default = 15)"
 	 << endl;
     cout << "                          as increase = 0.004/year after year 15 up to value 0.85 (as in FPB 35: 964-975 2008 article)"
@@ -167,8 +167,8 @@ namespace LignumForest{
   template<class TREE, class TS, class BUD, class LSYSTEM>
   void GrowthLoop<TREE,TS,BUD,LSYSTEM>::checkCommandLine(int argc, char** argv)const
   {
-    if (argc < 4){
-      cout << "Three mandatory arguments are required!" << endl << endl;
+    if (argc < 5){
+      cout << "Five (5) mandatory command line arguments are required!" << endl << endl;
       usage();
       exit(0);
     }
@@ -206,7 +206,7 @@ namespace LignumForest{
   template<class TREE, class TS, class BUD, class LSYSTEM>
   void GrowthLoop<TREE,TS,BUD,LSYSTEM>::parseCommandLine(int argc, char** argv)
   {
-    //first verbose
+    //Check verbose
     verbose = false;
     if (CheckCommandLine(argc,argv,"-verbose")){
       verbose = true;
@@ -1066,13 +1066,23 @@ namespace LignumForest{
   {
     if (increase_xi && year >= xi_start){
       bool first = true;
-
       for (unsigned int i = 0; i < (unsigned int)no_trees; i++) {
-	TREE* t = vtree[i]; 
+	TREE* t = vtree[i];
+	///\par Increase the value of LGPxi
+	///Increase the share of heartwood in new segments.
+	///The share of heartwood increases as the tree matures, grows older
+	///until LGPxi has reached its maximum value.
+	///\internal
+	///\snippet{lineno} GrowthLoopI.h XI
+	//[XI]
 	double xii = GetValue(*t, LGPxi);
-	xii += 0.1/25.0;   
+	//LGPXi Increment
+	xii += 0.1/25.0;
+	//Check for max value
 	if(xii > 0.85) xii=0.85;
 	SetValue(*t,LGPxi, xii);
+	//[XI]
+	///\endinternal
 	if (verbose && first) {
 	  cout << "Increasing LGPxi from " << GetValue(*t,LGPxi) << " to " << xii <<endl;
 	  first = false;
@@ -1959,13 +1969,6 @@ namespace LignumForest{
     border_forest.setLAI(stand.getLAI());
   }
 
-  //===================================================================
-  // calculateRadiation UnDumps a tree (except the first tree, since
-  // it was not dumped in setVoxelspace()) and calculates radiation
-  // 1) by pairwise for itself and 2) through voxelspace and
-  // 3) borderforest outside itself
-  // and then dumps it back to voxelspace
-  //===================================================================
   template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::calculateRadiation()
   {

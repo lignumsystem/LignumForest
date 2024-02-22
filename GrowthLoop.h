@@ -217,6 +217,10 @@ namespace LignumForest{
     void initializeFunctions();
     /// \brief Initialize L-systems and Tree root masses
     void initializeGrowthLoop();
+    /// \brief Increase the value of Lignum::LGPxi in trees after given year
+    /// \param year The start year to increase Lignum::LGPxi
+    /// \attention Currently hard coded without specific parametrization
+    /// \note The implementation is the same as in CrownDensity
     void increaseXi(int& year);
     ///Generate random tree locations, or read them from a file
     ///Establish also stand corners with this information
@@ -359,6 +363,12 @@ namespace LignumForest{
     ///\sa cxxadt::ParametricCurve LGMF vtree
     TMatrix2D<double> getHDF5TreeFunctionData(const LGMF fn_enum);
     void setVoxelSpaceAndBorderForest();
+    ///Calculates radiation for the trees 
+    ///-# If *pairwise_self* pairwise for a tree itself
+    ///-# Through voxelspace 
+    ///-# Account for border forest
+    ///\sa pairwise_self
+    ///\sa Lignum::EvaluateRadiationForCfTreeSegmentInVoxelSpace
     void calculateRadiation();
     StandDescriptor<TREE>& getStand() {return stand;}
     ///\brief Access the vector of trees.
@@ -366,7 +376,7 @@ namespace LignumForest{
     ///\return `vtree` the vector of trees
     ///\sa vtree
     const vector<TREE*>& getTrees() const  {return  vtree;}
-    void increaseXi();
+    ///void increaseXi();
     ///\brief Photosynthesis, respiration, tree aging and data collection.
     ///
     /// Photosynthesis, respiration, tree aging and data collection for all trees in `vtree`.
@@ -437,7 +447,7 @@ namespace LignumForest{
     /// is dumped to the corresponding voxel box. \sa setVoxelSpaceAndBorderForest
     int num_parts;
     int interval; ///< Write interval for output
-    int init_density;///< NOT IN USE CURRENTLY! Init density for forced self-thinning.
+    int init_density;///< Init density for forced self-thinning. \attention Not in use currently! 
     int nsegment;///< Number of TreeSegments for output
     double tree_distance ;///< Minimum allowed tree distance \sa setTreeLocations
     int  hw_start;///< Starting year of heartwood build up
@@ -505,7 +515,7 @@ namespace LignumForest{
     ///
     /// The effect of primary wood for sapwood proportion in new segments is described in
     /// Perttunen et al. 1996. Primary wood proportion = LGPXi LIGNUM parameter, see
-    /// stl-lignum/include/LGMSymbols.h \sa increaseXi
+    /// stl-lignum/include/LGMSymbols.h \sa xi_start
     bool increase_xi;
     int xi_start; ///< Starting year of Xi increase \sa increase_xi
     bool self_thinning;///< NOT IN USE CURRENTLY! If forced self thinning.
