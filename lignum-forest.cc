@@ -1,4 +1,4 @@
-/// \file 
+/// \file lignum-forest.cc 
 /// \brief The main program for the LignumForest.
 
 ///Main program growth loop generates now only HDF5 files for result analysis.<br>
