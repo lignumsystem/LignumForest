@@ -376,7 +376,6 @@ namespace LignumForest{
     ///\return `vtree` the vector of trees
     ///\sa vtree
     const vector<TREE*>& getTrees() const  {return  vtree;}
-    ///void increaseXi();
     ///\brief Photosynthesis, respiration, tree aging and data collection.
     ///
     /// Photosynthesis, respiration, tree aging and data collection for all trees in `vtree`.
