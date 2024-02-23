@@ -90,7 +90,7 @@ namespace LignumForest{
 /// \param argv Vector of command line argument strings.
 int main(int argc, char** argv)
 {
-  /// **Growth loop variables**
+  /// \par Growth loop variables
   /// \snippet{lineno} lignum-forest.cc Vars
   /// \internal
   // [Vars]
@@ -99,22 +99,9 @@ int main(int argc, char** argv)
   // [Vars]
   /// \endinternal
   
-  ran3(&ran3_seed);
-
-  /// \internal
-  /// MixedForest  will  implement a  class  that  can  manage a  forest
-  /// consting of several tree species.
-  /// This is a quick way to test that the class compiles.
-  /// \snippet{lineno} lignum-forest.cc Mf
-  // [Mf] 
-  // MixedForest<ScotsPineForest,ScotsPineForest> mf;
-  // mf.initialize(argc,argv);
-  // mf.growthLoop();
-  // mf.afterGrowth();
-  // [Mf]
-  /// \endinternal
+  ran3(&LignumForest::ran3_seed);
   
-  /// **Initialize forest**
+  /// \par Initialize forest
   /// \snippet{lineno} lignum-forest.cc InitForest
   /// \internal
   // [InitForest]
@@ -139,7 +126,10 @@ int main(int argc, char** argv)
   gloop.collectDataAfterGrowth(0);
   // [InitForest]
   /// \endinternal
-  /// **Intialize  HDF5 content**
+  /// \par Intialize  HDF5 content
+  /// \snippet{lineno} lignum-forest.cc HDF5init
+  /// \internal
+  // [HDF5init]
   string hdf5fname;
   ParseCommandLine(argc,argv,"-hdf5", hdf5fname);
   LGMHDF5File hdf5_file(hdf5fname);
@@ -148,7 +138,9 @@ int main(int argc, char** argv)
   hdf5_file.createGroup(TFGROUP);
   hdf5_file.createGroup(AFGROUP);
   hdf5_trees.createGroup(TXMLGROUP);
-  /// **Growth loop**
+  // [HDF5init]
+  /// \endinternal
+  /// \par Growth loop
   /// \snippet{lineno} lignum-forest.cc GLoop
   /// \internal
   // [GLoop]
@@ -189,12 +181,12 @@ int main(int argc, char** argv)
     // collectDataAfterGrowth collects data for HDF5 file. The 0th Year dimension
     // contains initial data
     gloop.collectDataAfterGrowth(year+1);
-    ///Save as xml
+    //Save trees as xml
     CreateTreeXMLDataSet(gloop,hdf5_trees,TXMLGROUP,gloop.getWriteInterval());
   } // End of  for(year = 0; ...)
   // [GLoop]
   /// \endinternal
-  /// **After growth collect and write results**
+  /// \par After growth collect and write results
   /// \snippet{lineno} lignum-forest.cc AGrowth
   /// \internal
   // [AGrowth]
@@ -203,35 +195,35 @@ int main(int argc, char** argv)
     cout << "NO TREES AFTER GROWTH LOOP" <<endl;
   }
   cout << "GROWTH DONE " << "NUMBER OF TREES " << gloop.getNumberOfTrees() << endl;
-  /// **Collect HDF5 data**
+  ///\par Collect HDF5 data
   ///
-  /// **Year by year, tree by tree data**
+  ///+ Year by year, tree by tree data
   TMatrix3D<double>& hdf5_data = gloop.getHDF5TreeData();
   hdf5_file.createDataSet(TREE_DATA_DATASET_NAME,hdf5_data.rows(),hdf5_data.cols(),hdf5_data.zdim(),hdf5_data);
   hdf5_file.createColumnNames(TREE_DATA_DATASET_NAME,TREE_DATA_COLUMN_ATTRIBUTE_NAME,TREE_DATA_COLUMN_NAMES);
-  /// **Aggregate stand data**
+  ///+ Aggregate stand data
   TMatrix2D<double>& hdf5_stand_data = gloop.getHDF5StandData();
   hdf5_file.createDataSet(STAND_DATA_DATASET_NAME,hdf5_stand_data.rows(),hdf5_stand_data.cols(),hdf5_stand_data);
   hdf5_file.createColumnNames(STAND_DATA_DATASET_NAME,STAND_DATA_COLUMN_ATTRIBUTE_NAME,STAND_DATA_COLUMN_NAMES);
-  /// **Aggregate center stand data**
+  ///+ Aggregate center stand data
   TMatrix2D<double>& hdf5_center_stand_data = gloop.getHDF5CenterStandData();
   hdf5_file.createDataSet(CENTER_STAND_DATA_DATASET_NAME,hdf5_center_stand_data.rows(),hdf5_center_stand_data.cols(),
 			  hdf5_center_stand_data);
   hdf5_file.createColumnNames(CENTER_STAND_DATA_DATASET_NAME,STAND_DATA_COLUMN_ATTRIBUTE_NAME,STAND_DATA_COLUMN_NAMES);
-  /// **Parameters used**  
+  ///+ Parameters used
   TMatrix2D<double> hdf5_tree_param_data = gloop.getHDF5TreeParameterData();
   hdf5_file.createDataSet(PGROUP+TREE_PARAMETER_DATASET_NAME,hdf5_tree_param_data.rows(),hdf5_tree_param_data.cols(),
 			  hdf5_tree_param_data);
   hdf5_file.createColumnNames(PGROUP+TREE_PARAMETER_DATASET_NAME,TREE_PARAMETER_ATTRIBUTE_NAME,TREE_PARAMETER_NAMES);
-  /// **Functions known in a tree**
+  ///+ Functions known in a tree
   for (unsigned int i=0; i < FN_V.size();i++){ 
     TMatrix2D<double> hdf5_tree_fn_data = gloop.getHDF5TreeFunctionData(FN_V[i]);
     hdf5_file.createDataSet(TFGROUP+FNA_STR[i],hdf5_tree_fn_data.rows(),hdf5_tree_fn_data.cols(),hdf5_tree_fn_data);
     hdf5_file.createColumnNames(TFGROUP+FNA_STR[i],TREE_FN_ATTRIBUTE_NAME,TREE_FN_COLUMN_NAMES);
   }
-  /// **All functions used**
+  ///+ All functions in the run directory
   hdf5_file.createFnDataSetsFromDir("*.fun",AFGROUP,TREE_FN_ATTRIBUTE_NAME,TREE_FN_COLUMN_NAMES);
-  /// **Command line**
+  ///+ Command line
   vector<string> c_vec;
   std::copy( argv, argv+argc,back_inserter(c_vec));
   ostringstream cline;
@@ -239,23 +231,8 @@ int main(int argc, char** argv)
   hdf5_file.createDataSet(COMMAND_LINE_DATASET_NAME,cline.str());
   hdf5_file.close();
   cout << "DATA SAVED AND SIMULATION DONE" <<endl;
-  //gloop.writeTreeToXMLFile(gloop.getTargetTree(),GetValue(gloop.getTargetTree(),LGAage),1);
   // [AGrowth]
   /// \endinternal
 
-// #if defined (__APPLE__) || defined(__MACOSX__)
-//   if(CheckCommandLine(argc,argv,"-viz")) {
-//     LGMVisualization viz;
-//     viz.InitVisualization(argc,argv);
-//     // textures 512x512
-//     viz.AddCfTree(gloop.getTargetTree(), "Manty.bmp", "neulaset5.tga");
-//     float th = (float)GetValue(gloop.getTargetTree(),LGAH);
-//     cout << th << endl;
-//     //viz.ResetCameraPosition(th);
-//     viz.SetMode(SOLID);
-//     //viz.ResetCameraPosition(GetValue(gloop.getTargetTree(),LGAH));
-//     viz.StartVisualization();
-//   }
-// #endif
   return 0;
 }
