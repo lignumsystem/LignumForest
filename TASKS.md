@@ -11,8 +11,9 @@ some program changes and checks are needed.
 	  LignumForest specific arguments present (for example -generateTrees, -treeDist)*
 - [ ] Implement required changes by the new command line in the main loop.
       Some of the arguments are already present (e.g. -iter). Also, the work 
-	  could be done in parallel: a matter of setting global variables. Rereading MetaFiles, functions and
-	  parameters (clearly, at least not in a messy ad hoc way) might require more work. <br>
+	  could be done in parallel: a matter of setting global variables or data members in GrowthLoop. 
+	  Rereading MetaFiles, functions and parameters (clearly, at least not in a messy ad hoc way) 
+	  might require more work. <br>
 	  Check and implement the following command line options: 
   - [x] -iter
   - [x] -metafile
@@ -27,9 +28,9 @@ some program changes and checks are needed.
   - [x] -writeInterval
   - [x] -increaseXi <br>
        *The same implementation as in CrownDensity*
-  - [ ] -generateLocations
-  - [ ] -treeDist 
-  - [ ] -hdf5
+  - [x] -generateLocations
+  - [x] -treeDist 
+  - [x] -hdf5
 - [x] Check L-system is identical to L-system in CrownDensity
 - [x] Change SetSegmentLength to one used in CrownDensity.<br>
       *Using explicitely LignumForest::SetScotsPineSegmentLength*
