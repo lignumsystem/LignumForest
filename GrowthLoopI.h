@@ -103,7 +103,7 @@ namespace LignumForest{
     cout << "[-space0] [-space1] [-space2] [-adHoc]" << endl;
     cout << "[-budViewFunction] [-EBH] -EBH1 <value>]" << endl;
     cout << "[-space2Distance <Value>] [-EBHREDUCTION <value>] [-EBHFINAL <value>] [-EBHInput <int>] [-RUE <value>]" << endl;
-    cout << "[-heightFun]" << endl;
+    cout << "[-heightFun] [-architecureChange <year>]" << endl;
     cout << "------------------------------------------------------------------------------------------------" << endl;
     cout << "-iter Number of years to simulate" << endl;
     cout << "-metafile File (usually called Metafile,txt) containg file locations for Tree parameters, Firmament configuration and Tree functions" << endl;
@@ -157,6 +157,7 @@ namespace LignumForest{
     cout << "                   conditions. Photosynthetic production of TreeSegment = rue * LGApr * Qabs. <value> = degree of" << endl;
     cout << "                   increase of rue as a function of shadiness (0 < <value> < 2)." << endl;
     cout << "-heightFun         If length of stem apical shoot is derived from relative crown length (params. LGPe1, LGPe2)." << endl;
+    cout << "-architectureChange Change the braching pattern in L-system." <<endl; 
     cout << endl;
   }
   // [Usagex]
@@ -215,132 +216,131 @@ namespace LignumForest{
     if (verbose){
       cout << "parseCommandLine begin" <<endl;
     }
-    //Check the command line.
+    ///\paragraph cl1 Check the command line for mandatory arguments.
+    ///\sa GrowthLoop::checkCommandLine CheckCommandLine 
     checkCommandLine(argc,argv);
-    ///\snippet{lineno} GrowthLoopI.h InitClarg
-    ///Parse arguments to `clarg`. Clear the sring before each new argument. \sa `checkCommandLine`
-    ///\internal
-    // [InitClarg]
+    ///\paragraph cl2 Parse command line arguments
+    ///\sa ParseCommandLine
     string clarg;
-    // [InitClarg]
-    ///\endinternal
-    ///Parse mandatory arguments
+    ///\paragraph cl3 Parse arguments for iterations, MetaFile and VoxelSpace
+    ///
     ///+ `-iter`, number of iterations (i.e. years)
     if (ParseCommandLine(argc,argv,"-iter", clarg)){
       iterations = atoi(clarg.c_str());
     }
-  
-    ///+ `-metafile`, file containing actual parameter files etc.
+    ///+ `-metafile`, file containing actual parameter files etc. \sa metafile
     clarg.clear();
     if (ParseCommandLine(argc,argv,"-metafile", clarg)){
       metafile = clarg;
     }
-    ///+ `-voxelspace`, voxel space definition
+    ///+ `-voxelspace`, voxel space definition \sa voxelfile
     clarg.clear();
     if (ParseCommandLine(argc,argv,"-voxelspace", clarg)){
       voxelfile = clarg;
     }
+    ///+ `-pairwiseSelf` in voxel space radiation regime  \sa pairwise_self
+    pairwise_self = false;
+    if (CheckCommandLine(argc,argv,"-pairwiseSelf")) {
+      pairwise_self = true;
+    }
 
-    //End of mandatory arguments 
-
-    //  clarg.clear();
-    //  if (ParseCommandLine(argc,argv,"-treeDist", clarg))
-    //    tree_distance = atof(clarg.c_str());
-
-    ///Parse output files
-    ///+ Parse `-toFile`, output to data file. This is  the base name
-    ///each tree will add its coordinates to make unique files.
+    ///\paragraph cl4 Parse output files
+    ///+ `-toFile`, output to data file. This is  the base name
+    ///each tree will add its coordinates to make unique files. \sa datafile
+    ///\deprecated Using HDF5 files instead
     clarg.clear();
     to_file = ParseCommandLine(argc,argv,"-toFile", clarg);
     if (to_file){
       datafile = clarg;
     }
 
-    ///+ Parse `-cstandFile`, default *cstand.dat*.
+    ///+ `-cstandFile`, default *cstand.dat*.
+    ///\deprecated Using HDF5 files instead
     cstand_file = "cstand-values.dat"; 
     clarg.clear();
     ParseCommandLine(argc,argv,"-cstandFile", clarg);
     cstand_file = clarg;
 
-    ///+ Parse `-standFile`, default *stand-values.dat*.
+    ///+ `-standFile`, default *stand-values.dat*.
+    ///\deprecated Using HDF5 files instead
     stand_file = "stand-values.dat"; 
     clarg.clear();
     if(ParseCommandLine(argc,argv,"-standFile", clarg))
       stand_file = clarg;
-    ///+ Parse sensitivity analysis file, no default value.
+    ///+ `-sensitivity`, sensitivity analysis file, no default value. \sa sensitivity_analysis sensitivity
     clarg.clear();
     sensitivity_analysis = ParseCommandLine(argc,argv,"-sensitivity", clarg);
     if (sensitivity_analysis){
       sensitivity.printHeader(clarg);
     }
-
-    ///Parse simulation parameters
-    ///+ Parse `-crownLimitData`, Wrrite  crown limit data.
+    ///+ `-crownLimitData`, write  crown limit data.
     crown_limit_data =  CheckCommandLine(argc,argv,"-crowmLimitData");
-
-    ///+ Parse `-xml`, XML file where the tree can be saved and restored from.
+    ///+ `-xml`, XML file where the tree can be saved and restored from.
+    ///\deprecated Using HDF5 files instead
     clarg.clear();
     ParseCommandLine(argc,argv,"-xml", clarg);
     xmlfile = clarg;
 
-    ///+ Parse `-fipdistrib`, the vertical distribution of fip from segments.
+    ///+ `-fipdistrib`, the vertical distribution of fip from segments.
+    ///\deprecated Using HDF5 instead
     clarg.clear();
     ParseCommandLine(argc,argv,"-fipdistrib", clarg);
     fipfile = clarg;
-
-    ///+ Parse and check boolean `-writeVoxels`, Write voxels, the file will be named as `VoxelSpace-x-y-age.txt`, default `false`.
+    
+    ///+ `-writeVoxels`, boolean write voxels, the file will be named as `VoxelSpace-x-y-age.txt`, default `false`.
     if (CheckCommandLine(argc,argv,"-writeVoxels")){
       writevoxels = true;
     }
+    ///+ `-writeOutput`, boolean write output in the first place, default `false`.
+    ///\deprecated Using HDF5 files
+    write_output = false;
+    if (CheckCommandLine(argc,argv,"-writeOutput"))
+      write_output = true;
 
-    ///+ Parse `-numParts`, Number of segment parts used to assess Qabs.
+    ///\paragraph cl5 Parse arguments to control and conduct simulation
+    ///
+    ///+ `-numParts`, Number of segment parts used to assess Qabs.
     num_parts = 1;
     clarg.clear();
     if (ParseCommandLine(argc,argv,"-numParts", clarg))
       num_parts = atoi(clarg.c_str());
 
-    ///+ Parse boolean `-noWoodVoxel`, no woody parts into voxels, default `true`. 
+    ///+ `-noWoodVoxel`, boolean no woody parts into voxels, default `true`. 
     wood_voxel = true;
     if (CheckCommandLine(argc,argv,"-noWoodVoxel"))
       wood_voxel = false;
 
-    ///+ Parse `-writeInterval`, write interval (timesteps) in output, default `1`.
+    ///+ `-writeInterval`, write interval (timesteps) in output, default `1`.
     interval = 1;
     clarg.clear();
     if (ParseCommandLine(argc,argv,"-writeInterval", clarg))
       interval = atoi(clarg.c_str());
-    ///+ Parse and check boolean `-writeOutput`, write output in the first place, default `false`. 
-    write_output = false;
-    if (CheckCommandLine(argc,argv,"-writeOutput"))
-      write_output = true;
-
-		     
-    ///+ Parse `-increaseXi`, increase LGPxi from a start year. \sa increase_xi xi_start. 
+ 		     
+    ///+ `-increaseXi`, increase LGPxi from a start year. \sa increase_xi xi_start. 
     clarg.clear();
     if (ParseCommandLine(argc,argv,"-increaseXi", clarg)){
       increase_xi = true;
       xi_start = atoi(clarg.c_str());
     }
 
-    ///+ Parse `-hw`, the start of heartwood build up, default `15` years.
+    ///+ `-hw`, the start of heartwood build up, default `15` years.
     clarg.clear();
     hw_start = 15;
     if (ParseCommandLine(argc,argv,"-hw", clarg))
       hw_start = atoi(clarg.c_str());
 
+    ///+ `-bracketVerbose`, boolean set allocation of photosynthates verbose mode, default `false`.
+    ///\sa bracket_verbose
+    bracket_verbose = false;
+    if (CheckCommandLine(argc,argv,"-bracketVerbose"))
+      bracket_verbose = true;
 
-    //Initialize ran3
-    //clarg.clear();
-    //if (ParseCommandLine(argc,argv,"-seed", clarg)){
-    //  int s = atoi(clarg.c_str());
-    //  initRan3(s);
-    //  }
-
-    ///Parse forest generation
-    ///+ Parse `-generateLocations`, if present the argument is the number of trees.
-    ///\pre defaults `generate_locations == false`,
-    ///\post `generate_locations == true`.
-    ///\sa no_trees, generate_locations 
+    ///
+    ///\paragraph cl6 Parse arguments for forest generation.
+    ///
+    ///+ `-generateLocations`, if present the argument is the number of trees.
+    ///\attention Either `-generateLocations` or `-treeLocations` must be present
+    ///\sa no_trees, generate_locations
     generate_locations = false;
     clarg.clear();
     if (ParseCommandLine(argc,argv,"-generateLocations", clarg)) {
@@ -349,7 +349,7 @@ namespace LignumForest{
     }
     else {
       clarg.clear();
-      ///+ Parse `-treeLocations`, use file for tree locations, default `Treelocations.txt`.
+      ///+ `-treeLocations`, use file for tree locations, default `Treelocations.txt`.
       ///\pre `generate_locations == false`;
       if (ParseCommandLine(argc,argv,"-treeLocations", clarg)) 
 	location_file = clarg;
@@ -357,29 +357,25 @@ namespace LignumForest{
 	location_file = "Treelocations.txt";
     }
 
-    ///+ Parse `-treeDist`, set tree distance. \sa tree_distance.
+    ///+ `-treeDist`, set tree distance. \sa tree_distance.
     tree_distance = 0.0;
     clarg.clear();
     if (ParseCommandLine(argc,argv,"-treeDist", clarg))
       tree_distance = atof(clarg.c_str());
 
-    ///+ Parse `-targetTree`, set the target tree to be analysed.\sa `target_tree`
+    ///+ `-targetTree`, set the target tree to be analysed.\sa target_tree
+    ///\deprecated Using HDF5 files instead
     target_tree = 0;
     clarg.clear();
     if (ParseCommandLine(argc,argv,"-targetTree", clarg))
       target_tree = (unsigned int)atoi(clarg.c_str());
-
-    ///+ Parse boolean `-bracketVerbose`, set allocation of photosynthates verbose mode, default `false`.
-    bracket_verbose = false;
-    if (CheckCommandLine(argc,argv,"-bracketVerbose"))
-      bracket_verbose = true;
-
-    ///+ Parse boolean `-noBordeForest`, use  homogenous border forest, default `true`. \sa evaluate_border_forest.
+  
+    ///+ `-noBordeForest`, use  homogenous border forest, default `true`. \sa evaluate_border_forest.
     evaluate_border_forest = true;
     if (CheckCommandLine(argc,argv,"-noBorderForest"))
       evaluate_border_forest = false;
 
-    ///+ Parse `-seed`, seed for ran3() random number generator, default `-123321`. \sa ran3_seed. 
+    ///+ `-seed`, seed for ran3() random number generator, default `-123321`. \sa LignumForest::ran3_seed. 
     LignumForest::ran3_seed = -123231;
     int s_ini;
     if (ParseCommandLine(argc,argv,"-seed", clarg)){
@@ -388,54 +384,50 @@ namespace LignumForest{
 	LignumForest::ran3_seed = -abs(s_ini);
       }
     }
-    ///+ Parse `-kBorderConifer`, extinction coefficient for homogenous conifer border forest, default 0.14. \sa k_border_conifer.
+    ///+ `-kBorderConifer`, extinction coefficient for homogenous conifer border forest, default 0.14.
+    ///\sa k_border_conifer.
     k_border_conifer = 0.14;
     clarg.clear();
     if (ParseCommandLine(argc,argv,"-kBorderConifer", clarg))
       k_border_conifer = atof(clarg.c_str());
 
-    ///+ Parse parameters to adjust tree growth. Needs to be documented.
-    ///\sa H_0_ini, H_var_ini, n_buds_ini_min, n_buds_ini_max, p0_var, seg_len_var,
-    ///\sa parwise_self, rel_bud, eero, g_fun_var, ba_variation, LignumForest::is_adhoc,
-    ///\sa LignumForest::is_bud_view_function, LignumForest::space0, LignumForest::space1, LignumForest::space2,
-    ///LignumForest::space2_distance,
-    ///\sa growthloop_is_EBH, growthloop_is_EBH1, growthloop_EBH1_value
+    ///
+    ///\paragraph cl7 Parse parameters for experiments to adjust tree growth.
+    ///
+    ///+ `-H_0_ini`
     LignumForest::H_0_ini = 0.3;
     clarg.clear();
     if (ParseCommandLine(argc,argv,"-H_0_ini", clarg))
       LignumForest::H_0_ini = atof(clarg.c_str());
-
+    ///+ `-H_var_ini`
     LignumForest::H_var_ini = 0.0;
     clarg.clear();
     if (ParseCommandLine(argc,argv,"-H_var_ini", clarg))
       LignumForest::H_var_ini = atof(clarg.c_str());
-
+    ///+ `-n_buds_ini_min`
     LignumForest::n_buds_ini_min = 4;
     clarg.clear();
     if (ParseCommandLine(argc,argv,"-n_buds_ini_min", clarg))
       LignumForest::n_buds_ini_min  = atoi(clarg.c_str());
-
+    ///+ `-n_buds_ini_max`
+    ///\sa H_0_ini, H_var_ini, n_buds_ini_min, n_buds_ini_max
     LignumForest::n_buds_ini_max = 4;
     clarg.clear();
     if (ParseCommandLine(argc,argv,"-n_buds_ini_max", clarg))
       LignumForest::n_buds_ini_max = atoi(clarg.c_str());
-
+    
+    ///+ `-p0Var` \sa p0_var
     p0_var = 0.0;
     clarg.clear();
     if (ParseCommandLine(argc,argv,"-p0Var", clarg))
       p0_var = atof(clarg.c_str());
-
+    ///+ `-segLenVar`, \sa seg_len_var
     seg_len_var = 0.0;
     clarg.clear();
     if (ParseCommandLine(argc,argv,"-segLenVar", clarg))
       seg_len_var = atof(clarg.c_str());
     seg_len_var /= 100.0;            //per cent -> [0,1]
-
-    pairwise_self = false;
-    if (CheckCommandLine(argc,argv,"-pairwiseSelf")) {
-      pairwise_self = true;
-    }
-
+    ///+ `-budVariation` \sa LignumForest::rel_bud LignumForest::bud_variation
     LignumForest::rel_bud = 0.0;
     LignumForest::bud_variation = false;
     clarg.clear();
@@ -443,12 +435,12 @@ namespace LignumForest{
       LignumForest::bud_variation = true;
       LignumForest::rel_bud = atof(clarg.c_str())/100.0;
     }
-
+    ///+ `-eero`, Eero Nikinmaa model \sa eero
     eero = false;
     if (CheckCommandLine(argc,argv,"-eero")) {
       eero = true;
     }
-
+    ///+ `-gFunVar` \sa g_fun_varies, g_fun_var
     g_fun_var = 0.0;
     g_fun_varies = false;
     clarg.clear();
@@ -456,46 +448,67 @@ namespace LignumForest{
       g_fun_var = atof(clarg.c_str())*PI_VALUE/100.0;
       g_fun_varies = true;
     }
-
+    ///+ `-branchAngleVar`
+    ///\sa random_branch_angle ba_variation
     random_branch_angle = false;
     if (ParseCommandLine(argc,argv,"-branchAngleVar", clarg)) {
       random_branch_angle = true;
       ba_variation = atof(clarg.c_str())*PI_VALUE/100.0;
     }
-
+    ///+ `-adHoc` \sa LignumForest::is_adhoc
     LignumForest::is_adhoc = false;
     if(CheckCommandLine(argc,argv,"-adHoc")) {
       LignumForest::is_adhoc = true;
     }
-
+    ///+ `-budViewFunction`
+    ///\sa LignumForest::is_bud_view_function
     LignumForest::is_bud_view_function = false;
     if(CheckCommandLine(argc,argv,"-budViewFunction")) {
       LignumForest::is_bud_view_function = true;
     }
-
+    ///+ `-heightFun`
+    ///\sa GrowthLoop::growthloop_is_heightFun 
+    growthloop_is_heightFun = false;
+    if(CheckCommandLine(argc,argv,"-heightFun")) {
+      growthloop_is_heightFun = true;
+    }
+    
     LignumForest::space0 = false;
     LignumForest::space1 = false;
     LignumForest::space2 = false;
+    
+    ///
+    ///\paragraph cl8 Parse space occupancy modelling.
+    ///
+    ///+ `-space0`
     if(CheckCommandLine(argc,argv,"-space0")) {
       LignumForest::space0 = true;
     }
+    ///+ `-space1`
     if(CheckCommandLine(argc,argv,"-space1")) {
       LignumForest::space1 = true;
     }
+    ///+ `-space2`
     if(CheckCommandLine(argc,argv,"-space2")) {
       LignumForest::space2 = true;
       clarg.clear();
+      ///+ `-space2Distance`
+      ///\sa LignumForest::space0  LignumForest::space1  LignumForest::space2  LignumForest::space2_distance
       if (ParseCommandLine(argc,argv,"-space2Distance",clarg)) {
 	LignumForest::space2_distance = atof(clarg.c_str());
       }
     }
 
-    //These are parameters are set (e.g. SetValue(tree, SPis_EBH, value);) in initializeTrees()
+    ///\paragraph cl9 Parse EBH model.
+    ///
+    ///+ `-EBH`
     growthloop_is_EBH = false;
     if(CheckCommandLine(argc,argv,"-EBH")) {
       growthloop_is_EBH = true;
     }
-
+    ///+ `-EBH1`
+    ///\sa growthloop_is_EBH growth_loop_is_EBH1 growthloop_EBH1_value
+    ///\note Parameters are set in GrowthLoop::initializeTrees()
     growthloop_is_EBH1 = false;
     growthloop_EBH1_value = 0.0;
     if (ParseCommandLine(argc,argv,"-EBH1",clarg)) {
@@ -504,7 +517,10 @@ namespace LignumForest{
       growthloop_is_EBH = true;
     }
 
-    ///+ Parse `ebh.fun` function file.
+    ///+ Write `ebh.fun` function file.
+    ///\pre growthloop_is_EBH == *true* and growthloop_is_EBH1 == *true*
+    ///\sa growthloop_is_EBH  growthloop_is_EBH1
+    ///\attention File name `ebh.fun` is hard coded 
     ///\snippet{lineno} GrowthLoopI.h ebhfun
     ///\internal
     //[ebhfun]
@@ -520,11 +536,10 @@ namespace LignumForest{
       fout << "6.0 " <<  growthloop_EBH1_value << endl;
       fout.close();
     }
-
     //[ebhfun]
     ///\endinternal
 
-
+    ///+ `-EBHREDUCTION` \sa growthloop_is_EBH_reduction EBH_reduction_parameter
     growthloop_is_EBH_reduction = false;
     EBH_reduction_parameter = 1.0;
     clarg.clear();
@@ -532,19 +547,22 @@ namespace LignumForest{
       growthloop_is_EBH_reduction = true;
       EBH_reduction_parameter = atof(clarg.c_str());
     }
-
+    ///+ `-EBHFINAL` \sa ebh_final_value
     ebh_final_value = 0.5;
     clarg.clear();
     if(ParseCommandLine(argc,argv,"-EBHFINAL", clarg)) {
       ebh_final_value = atof(clarg.c_str());
     }
 
+    ///+ `-EBHInput` \sa LignumForest::ebh_mode
     LignumForest::ebh_mode = 0;
     clarg.clear();
     if(ParseCommandLine(argc,argv,"-EBHInput", clarg)) {
       LignumForest::ebh_mode  = atoi(clarg.c_str());
     }
 
+    ///\paragraph cl10 Parse radiation use efficiency 
+    ///+ -RUE, radiation use efficiency \sa growthloop_is_radiation_use_efficiency radiation_use_efficiency_parameter 
     growthloop_is_radiation_use_efficiency = false;
     radiation_use_efficiency_parameter = 0.0;
     clarg.clear();
@@ -553,12 +571,14 @@ namespace LignumForest{
       radiation_use_efficiency_parameter = atof(clarg.c_str());
     }
 
-    growthloop_is_heightFun = false;
-    if(CheckCommandLine(argc,argv,"-heightFun")) {
-      growthloop_is_heightFun = true;
+    ///
+    ///\paragraph cl11 Parse architure change year
+    clarg.clear();
+    ///+ -architectureChange Architecture change year \sa Pine::is_architecture_change Pine::architecture_change_year
+    if (ParseCommandLine(argc,argv,"-architectureChange",clarg)){
+	Pine::is_architecture_change = true;
+	Pine::architecture_change_year = atoi(clarg.c_str());
     }
-
-
     if (verbose){
       cout << "parseCommandLine end" <<endl;
       printVariables();

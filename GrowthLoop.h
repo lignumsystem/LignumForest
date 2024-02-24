@@ -532,9 +532,9 @@ namespace LignumForest{
     Sensitivity<TS,BUD> sensitivity; ///< For printing out sensitivity analysis results
     bool generate_locations; ///< If tree positions are set by the program. \sa setTreeLocations
     string location_file; ///< Tree positions are read from here. \sa setTreeLocation
-    ifstream location_stream; ///< SEEMS SUPERFLUOUS!
+    ifstream location_stream; ///< \note SEEMS SUPERFLUOUS!
     int no_trees; ///< Number of trees in the forest
-    bool noWoodVoxel; ///< SUPERFLUOUS!
+    bool noWoodVoxel; ///< \note SUPERFLUOUS!
     bool wood_voxel; ///< If woody parts are dumped into voxels \sa setVoxelSpaceAndBorderForest
     int year; ///< Year in simulation (start = 0)
     unsigned int target_tree; ///< Information of this tree is printed out. \sa output
@@ -543,7 +543,7 @@ namespace LignumForest{
     StandDescriptor<TREE> center_stand; ///< To deal with center part of stand \sa setTreeLocations
     ofstream* cstand_output; ///< Stream for center stand output
     bool evaluate_border_forest; ///< If border forest in radiation calculations? \sa calculateRadiation
-    LGMdouble k_border_conifer;///< Extinction coeffient for border forest conifers \sa calculateRadiation
+    LGMdouble k_border_conifer;///< Extinction coeffient for border forest conifers \sa calculateRadiation BorderForest::getBorderForestExtinction
     /// \brief To keep track of trees that do not grow in height
     ///
     /// If a tree does not grow for a while it is considered dead.
