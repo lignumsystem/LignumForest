@@ -4,16 +4,16 @@
 #include <Lignum.h>
 using namespace Lignum;
 
-
-//BorderForest realizes the effect of forest outside the stand on radiation
-//calculation. At the moment "green box" with Lambert Beer extinction
-//in it is assumed.
-
-//The corners of the stand are left (= minx, miny) and right (maxx, maxy), they
-//correspond to lower left and upper right of voxelspace but are not necessarily
-//the same since borders of the stand and borders of the voxelspace may not
-//be the same.
-namespace LignumForest{ 
+namespace LignumForest{
+  ///\brief Border forest extinction
+  ///BorderForest realizes the effect of forest outside the stand on radiation
+  ////calculation. At the moment "green box" with Lambert Beer extinction
+  ///in it is assumed.
+  ///
+  ///The corners of the stand are left (= minx, miny) and right (maxx, maxy), they
+  ///correspond to lower left and upper right of voxelspace but are not necessarily
+  ///the same since borders of the stand and borders of the voxelspace may not
+  ///be the same.
   class BorderForest{
   public:
     BorderForest() : k_e(0.14){}
@@ -31,14 +31,22 @@ namespace LignumForest{
     LGMdouble getKExt() {return k_e;}
     Point& getCornerL() {return corner_l;}
     Point& getConrerR() {return corner_r;}
+    ///\brief Extinction of homogenous conifer border forest
+    ///\param start   Start point of the light beam
+    ///\param dir  Direction of the light beam, \note |dir| == 1
+    ///\param k_conifer The K value for homogenousus conifer border forest 
+    ///\retval tau The extinction caused by the border stand
+    ///Calculate the  point where  the light beam  exits the  voxel space
+    ///(there  must be  one). NearByShading  then returns  the extinction
+    ///coeffcient. \sa NearByShading
     LGMdouble getBorderForestExtinction(const Point& start, 
 					const PositionVector& dir, LGMdouble k_conifer);
   private:
-    LGMdouble k_e;
-    LGMdouble H;
-    LGMdouble Hcb;
-    LGMdouble LAI;
-    Point corner_l, corner_r;   //corners of the stand that is bordered
+    LGMdouble k_e; ///< Conifer K value 
+    LGMdouble H; ///< Crown height 
+    LGMdouble Hcb; ///< Crown base height
+    LGMdouble LAI; ///< Leaf area index
+    Point corner_l, corner_r;  ///<corners of the stand that is bordered
   };
 }//End namespace LignumForest
 #endif

@@ -2,14 +2,6 @@
 #include <Nearby.h>
 namespace LignumForest{
 
-  ///\brief Calculate extinction of homogenous conifer border forest
-  ///\param p0   Start point of the light beam
-  ///\param dir  Direction of the light beam, |dir| == 1 (!!!)
-  ///\param k_conifer The K value for homogenousus conifer border forest 
-  ///\return tau The extinction caused by the border stand
-  ///Calculate the  point where  the light beam  exits the  voxel space
-  ///(there  must be  one). NearByShading  then returns  the extinction
-  ///coeffcient. \sa NearByShading
   double BorderForest::getBorderForestExtinction(const Point& p0, const PositionVector& dir,
 						 LGMdouble k_conifer)
   {
@@ -73,8 +65,23 @@ namespace LignumForest{
     sort(v.begin(),v.end());
     //Take  the first nonnegative  t, i.e.  the shortest  distance the
     //beam can travel in the voxel space before crossing some wall
+    //vector<double>::iterator it = find_if(v.begin(),v.end(),
+    //                                      bind2nd(greater_equal<double>(),0.0));
+    ///\par Shortest distance to exit voxel space
+    ///Find the shortest distance before light beam crosses voxel space boundary.
+    ///Using `bind` instead of `bind2nd`. The use of `bind` may not be obvious.
+    ///The `bind` creates function object with some number of parameters.
+    ///The *placeholders* denote how the actual parameters map to formal parameters
+    ///in the function call. For example
+    ///\code{.cpp}
+    ///  f = bind(greater_equal<double>(),std::placeholders::_1,0.0)
+    ///  f(5.0)
+    ///  greater_equal<double>()(5.0,0.0)
+    ///\endcode
+    ///The latter two calls are equivalent.
+    ///\deprecated bind2nd is obsolete in STL library and will be removed in C++17
     vector<double>::iterator it = find_if(v.begin(),v.end(),
-					  bind2nd(greater_equal<double>(),0.0));
+					  bind(greater_equal<double>(),std::placeholders::_1,0.0));
     double tdist = R_HUGE;
     if (it == v.end()){
       cerr << "No Exit point from voxel space (All t < 0). Error!!!" << endl;
