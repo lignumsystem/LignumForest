@@ -21,7 +21,7 @@ some program changes and checks are needed.
   - [x] -voxelCalculation <br>
        *No -voxelCalculation in `lignum-forest`, removed from command line. VoxelSpace always in use. See -pairwiseSelf*. 
   - [ ] -modeChange
-  - [ ] -architectureChange
+  - [x] -architectureChange
   - [x] -numParts
   - [x] -hw 
   - [x] -kBorderConifer
