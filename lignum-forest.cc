@@ -108,9 +108,12 @@ int main(int argc, char** argv)
   gloop.parseCommandLine(argc,argv);
   gloop.resolveCommandLineAttributes();
   gloop.printVariables();
-  gloop.initializeFunctions();   //Reads in some functions from files
+  ///Read and install functions
+  gloop.initializeFunctions();
+  //Generate tree locations either on the fly or from a file
   gloop.setTreeLocations();
-  gloop.createTrees();  //to locations set above
+  //Create trees to locations set above
+  gloop.createTrees();  
   gloop.printTreeLocations(0);
   //InitializeTrees reads in/sets a number of parameters and functions for each tree
   gloop.initializeTrees();
