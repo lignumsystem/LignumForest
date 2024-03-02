@@ -167,6 +167,12 @@ namespace LignumForest{
     ///\brief Command line check
     void checkCommandLine(int argc, char** argv)const;
     ///\brief Command line parser.
+    ///Parse command line arguments.
+    ///\param argc Number arguments
+    ///\param argv Command line arguments
+    ///\attention Some hard coded file names as default values.
+    ///\sa GrowthLoop::checkCommandLine
+    ///\sa CheckCommandLine ParseCommandLine
     void parseCommandLine(int argc, char** argv);
     ///\brief Currently checks `eero` from command line
     ///\post If `eero` = *true* then `bud_variation` = *false*
@@ -185,12 +191,13 @@ namespace LignumForest{
     /// Create trees in predefined locations. Create also L-systems, data vectors and vector of file streams.
     /// Position of a tree in a tree vector defines its position in all othe vectors
     /// \pre Tree locations have been generated
+    /// \attention Hard coded file names for ScotsPineTree constructor 
+    /// \note The command line option `-generateLocations <num>` will override all other forest generation options 
     /// \sa setTreeLocations
     /// \sa locations Tree positions
     /// \sa vtree vlsystem Vector of trees and their respective L-systems
     /// \sa no_h h_prev wsapwood wfoliage wroot ws_after_senescence Data vectors
     /// \sa vdatafile Tree output file streams
-    /// \note The command line option `-generateLocations <num>` will override all other forest generation options 
     void createTrees();
     /// \brief Resize data structures for HDF5 file.
     ///
@@ -205,14 +212,37 @@ namespace LignumForest{
     /// \sa TREE_DATA_COLUMN_NAMES STAND_DATA_COLUMN_NAMES
     /// \sa hdf5_tree_data hdf5_stand_data hdf5_center_stand_data
     void resizeTreeDataMatrix();
+    /// \brief Intialize trees
+    ///
+    /// Check the options for various models that have effect on growth and act accordingly.
+    /// + Mandatory tree initialization with Lignum::InitializeTree
+    /// + Optional EBH model set-up
+    /// + Optional randon variation in branching angle
+    /// + Global L-system LignumForest::bud_view_f bud view function set-up
+    /// + Optional random variation in photosynthetic parameter
+    /// + Optional Eero Nikinaa model with random LUE, SLA and foliage mortality adjustment
+    /// + Optional random variation in Gravelius order function
+    ///
+    /// The models above affect new segment lengths implemented in LignumForest::SetScotsPineSegmentLength.
+    /// The mandatory tree initialization implies deterministic simple Basic model.
+    /// All other models have random component.
+    /// \attention Hard coded files *ebh.fun* and *eero.fun* required for EBH and Nikinmaa models respectively
+    /// \sa Lignum::InitializeTree LignumForest::SetScotsPineSegmentLength
     void initializeTrees();
     void initializeVoxelSpace();
-    /// \brief Read ParametricCurve files
-    /// \pre ParametricCurve files must exists
-    /// \todo Divide ParametricCurve files to mandatory (throw exception) and optional (warning to standard error)
-    /// \todo Replace hard-coded file names with parameterised
-    /// \remark If `verbose` output the health of parametric curves is echoed with ParametricCurve::ok
-    /// \remark The existence of a file is tested with `ìfstream`. In the C++ 17 STL
+    /// \brief Read and install functions 
+    /// 
+    /// Read and install the following functions from files:
+    /// + "K.fun": The extinction \f$ e = K(\alpha), \alpha \in \left[ 0,\pi / 2 \right] \f$
+    /// as a function of inclination (Okerblom and Smolander). 
+    /// + "stemsha.fun": The number of trees per ha as function of age, i.e. the enforced thinnings in the forest.
+    /// + "density.fun": Density of border forest. **Attention** This file does not exist in LignumForest (and not in CrownDensity either).
+    ///
+    /// These functions are data members in LignumForest::GrowthLoop.
+    /// \sa K stems_ha fdensity_ha
+    /// \attention The file names are hard coded
+    /// \remark If GrowthLoop::verbose output the health of parametric curves is echoed with ParametricCurve::ok
+    /// \todo The existence of a file is tested with `ìfstream`. In the C++ 17 STL
     /// one can clean up implementation with std::filesystem::exists
     void initializeFunctions();
     /// \brief Initialize L-systems and Tree root masses
@@ -222,10 +252,15 @@ namespace LignumForest{
     /// \attention Currently hard coded without specific parametrization
     /// \note The implementation is the same as in CrownDensity
     void increaseXi(int& year);
-    ///Generate random tree locations, or read them from a file
-    ///Establish also stand corners with this information
-    ///They are set in StandDescriptor and BorderForest
+    ///\brief Create tree locations
+    ///
+    ///Generate random tree locations or read them from a file.
+    ///Establish also stand, center stand and border forest corners with this information.
+    ///They are set in StandDescriptor and BorderForest.
     ///\sa GenerateLocations
+    ///\sa GrowthLoop::stand GrowthLoop::center_stand GrowthLoop::border_forest
+    ///\sa GrowthLoop::locations
+    ///\sa StandDescriptor BorderForest
     void setTreeLocations();
     void photosynthesis(TREE& t);
     void respiration(TREE& t);
@@ -243,7 +278,7 @@ namespace LignumForest{
     /// Collect data for each tree for a single year to `tdafter` dictionary (STL data type *map*).
     /// Add a row for each tree in 3D matrix `hdf5_tree_data`.  
     /// Collect forest stand and center stand level aggregate data into 2D arrays `sdafter` and `csdafter` respectively from the forest stand.  
-    /// Intial data is collected before growth loop filling the first (0th) year.
+    /// Initial data is collected before growth loop filling the first (0th) year.
     /// In this case the method should be called parameter `year`=iter+1.
     /// \param year Simulation year (i.e. iteration)
     /// \param collect_stand If *true* collect forest stand and center stand level aggregate data
@@ -526,7 +561,7 @@ namespace LignumForest{
     /// \sa EvaluateRadiationForCfTreeSegmentInVoxelSpace
     ParametricCurve K;
     ParametricCurve stems_ha;///< Density of the forest as a function of age if it is forced
-    ParametricCurve fdensity_ha;///< Density of border forest as a f. of age if forced
+    ParametricCurve fdensity_ha;///< Density of border forest as a functions of age if forced
     ParametricCurve fip_mode;///< Function fip after growth mode change
     ParametricCurve fgo_mode;///< Function fgo after growth mode change
     Sensitivity<TS,BUD> sensitivity; ///< For printing out sensitivity analysis results
@@ -572,14 +607,16 @@ namespace LignumForest{
     /// axis thickness scaling from the base of the stem to the axis tips. (-eero
     /// stems from Eero Nikinmaa who proposed this) \sa initializeTrees
     bool eero;
-
-    /// \brief Variability in the function: shoot growth = f(branching order)
+    ///\brief Shoot growth random variablity on/off
+    ///\sa g_fun_var for actual function
+    bool g_fun_varies;
+    /// \brief Shoot growth random variability 
     ///
+    /// Random variability in shoot growth: \f$ L= f(\mathit{go}) \f$
     /// Shoot growth normally depends on the branching order of the growing shoot.
     /// This function is explained in Sievanen et al. 2018 Eq. 4. This option
     /// varies the function randomly between trees. \sa initializeTrees
-    bool g_fun_varies;
-    double g_fun_var;  ///< Amount of random variation in f(branching order) \sa g_fun_varies
+    double g_fun_var;  
     bool random_branch_angle; ///< Branching angle varies in trees. \sa initializeTrees
     double ba_variation;  ///< Amount of variation in braching angle. \sa random_branch_angle
     //=================== 30.9.2021
