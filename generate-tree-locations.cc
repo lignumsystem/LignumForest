@@ -21,20 +21,20 @@ namespace LignumForest{
     vector<double> xVal(nTrees);
     vector<double> yVal(nTrees);
 
-    ///First: generate all coordinates 
+    ///\par First: generate all coordinates 
     for(int i = 0; i < nTrees; i++)   {
       xVal[i] = corner1X + xDist * ran3( &LignumForest::ran3_seed );
       yVal[i] = corner1Y + yDist * ran3( &LignumForest::ran3_seed );
     }
 
 
-    ///Second (hard core): delete one tree from each pair of trees nearer than
+    ///\par Second (hard core): delete one tree from each pair of trees nearer than
     ///a minimum distance. 
     vector<bool> iDeleted(nTrees);
     for(int i = 0; i < nTrees; i++)
       iDeleted[i] = false;
   
-    ///Third: pairwise comparison (almost), if a  problem (nTrees > 1.0e+04), 
+    ///\par Third: pairwise comparison (almost), if a  problem (nTrees > 1.0e+04), 
     ///redesign the  generation of the  coordinates so that they  will be
     ///inserted into the vector only if the distance is acceptable.
     for(int i = 0; i < nTrees - 1; i++){
@@ -55,13 +55,13 @@ namespace LignumForest{
 	}//for (int j
     }//for (int i 
   
-    ///Fourth: after deletion copy the x- and y- coordinates of not deleted
+    ///\par Fourth: after deletion copy the x- and y- coordinates of not deleted
     ///trees to items 0 ,.., new-value-of-nTrees of xVal and yVal
     for(int i = 0; i < nTrees; i++)
       if(!iDeleted[i])        {
 	v.insert(v.end(),pair<double,double>(xVal[i],yVal[i]));
       }
-    ///Finally: return number of positions actually created (the first argument)
+    ///\par Finally: return number of positions actually created (the first argument)
     nTrees = v.size();
   }
 }//End namespace LignumForest
