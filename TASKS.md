@@ -9,7 +9,11 @@ some program changes and checks are needed.
 - [x] Merge CrownDensity command line with LignumForest command line.<br>
       *Command line of the `run-lignum-forest.sh` copied from `run-crowndens-basic-model.sh`.
 	  LignumForest specific arguments present (for example -generateTrees, -treeDist)*
-- [ ] Implement required changes by the new command line in the main loop.<br>
+- [ ] GrowthLoop::initializeTrees requires following checks
+   - [ ] LignumForest::branch_angle set to 45 degrees. Branch angle also set in L-system.
+   - [ ] LignumForest::bud_view_f set (also?) here
+   - [ ] 
+- [ ] Implementation required changes by the new command line in the main loop.<br>
 	  Check and implement the following command line options: 
   - [x] -iter
   - [x] -metafile
@@ -17,6 +21,8 @@ some program changes and checks are needed.
   - [x] -voxelCalculation <br>
        *No -voxelCalculation in `lignum-forest`, removed from command line. VoxelSpace always in use. See -pairwiseSelf*. 
   - [ ] -modeChange
+	    - [ ] Wild card search for MetaFile*.txt
+		- [ ] Wild card search for Parameter*.txt
   - [x] -architectureChange 
        *Command line argument implemented, global variables triggering L-system architecure change set. 
   - [x] -numParts
@@ -47,7 +53,7 @@ LignumWb to Paraview and/or Blender or perhaps even relatively
 straightforward at best.
 
 - [ ] Study how to create segment cylinders and leaf polygons in CGAL.
-      These are probably repreented as polygon meshes or some other 
+      These are probably represented as polygon meshes or some other 
 	  low level geometric primitives supported by CGAL.
 
 The manual page [CGAL 5.6 - IO Streams]( https://doc.cgal.org/latest/Stream_support/index.html)
