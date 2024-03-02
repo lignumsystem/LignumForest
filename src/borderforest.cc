@@ -67,19 +67,31 @@ namespace LignumForest{
     //beam can travel in the voxel space before crossing some wall
     //vector<double>::iterator it = find_if(v.begin(),v.end(),
     //                                      bind2nd(greater_equal<double>(),0.0));
-    ///\par Shortest distance to exit voxel space
-    ///Find the shortest distance before light beam crosses voxel space boundary.
-    ///Using `bind` instead of `bind2nd`. The use of `bind` may not be obvious.
-    ///The `bind` creates function object with some number of parameters.
-    ///The *placeholders* denote how the actual parameters map to formal parameters
-    ///in the function call. For example
+    ///\par Using `bind` to determine shortest distance to exit voxel space
+    ///The ray is represented as \f$d_0+t*\mathit{dir}\f$. Take the smallest \f$t_i\f$ of the six possible,
+    ///i.e. find the shortest distance before light beam crosses voxel space boundary.
+    ///Replaced  `std::bind2nd` with `std::bind`.
     ///\code{.cpp}
-    ///  f = bind(greater_equal<double>(),std::placeholders::_1,0.0)
-    ///  f(5.0)
+    /// //Old version with bind2nd
+    /// vector<double>::iterator it = find_if(v.begin(),v.end(),
+    ///                                       bind2nd(greater_equal<double>(),0.0));
+    /// //New version with bind
+    /// vector<double>::iterator it = find_if(v.begin(),v.end(),
+    ///                                       bind(greater_equal<double>(),std::placeholders::_1,0.0));
+    ///\endcode
+    ///The use of `bind` may not be obvious.
+    ///The `bind` creates function object with some number of parameters.
+    ///The *std::placeholders* denote how the actual parameters map to formal parameters
+    ///in a function call. For example:
+    ///\code{.cpp}
+    ///  fbind = bind(greater_equal<double>(),std::placeholders::_1,0.0)
+    ///  fbind2nd = bind2nd(greater_equal<double>(),0.0));
+    ///  fbind(5.0)
+    ///  fbind2nd(5.0)
     ///  greater_equal<double>()(5.0,0.0)
     ///\endcode
-    ///The latter two calls are equivalent.
-    ///\deprecated bind2nd is obsolete in STL library and will be removed in C++17
+    ///The three function calls are equivalent.
+    ///\deprecated std::bind2nd is obsolete in STL library and will be removed in C++17
     vector<double>::iterator it = find_if(v.begin(),v.end(),
 					  bind(greater_equal<double>(),std::placeholders::_1,0.0));
     double tdist = R_HUGE;
@@ -103,10 +115,19 @@ namespace LignumForest{
 // 			       GetValue(forest_descriptor,LGAcbase),
 // 			       GetValue(forest_descriptor,LGALAIc),
 // 			       GetValue(forest_descriptor,LGALAIb));
-
-    LGMdouble k_deciduous = 0.0;     //This time
+    
+    ///\par Deciduous trees ignored
+    ///For the LignumForest the forest stand is assumed to be purely Scots pine.
+    ///Decidous extinction *k_deciduous* and LAI are assumed to be 0.
+    ///\internal
+    ///\snippet{lineno} borderforest.cc DEXT
+    // [DEXT]
+    LGMdouble k_deciduous = 0.0;     
+    //LAI of deciduous for the time being = 0
     double tau = NearbyShading(Point(exit),dir,
-			       H, Hcb, LAI, 0.0, k_conifer, k_deciduous);     //LAI of deciduous for the time being = 0
+			       H, Hcb, LAI, 0.0, k_conifer, k_deciduous);     
+    // [DEXT]
+    /// \endinternal
  
     return tau;
   }
