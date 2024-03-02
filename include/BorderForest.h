@@ -32,13 +32,16 @@ namespace LignumForest{
     Point& getCornerL() {return corner_l;}
     Point& getConrerR() {return corner_r;}
     ///\brief Extinction of homogenous conifer border forest
-    ///\param start   Start point of the light beam
-    ///\param dir  Direction of the light beam, \note |dir| == 1
-    ///\param k_conifer The K value for homogenousus conifer border forest 
-    ///\retval tau The extinction caused by the border stand
+    ///
     ///Calculate the  point where  the light beam  exits the  voxel space
-    ///(there  must be  one). NearByShading  then returns  the extinction
-    ///coeffcient. \sa NearByShading
+    ///(there  must be  one). ::NearbyShading  then returns  the extinction
+    ///coeffcient.
+    ///\pre  \f$ \mid \overrightarrow{dir} \mid = 1 \f$
+    ///\param start   Start point of the light beam
+    ///\param dir  Direction of the light beam, 
+    ///\param k_conifer The K value for homogenousus conifer border forest 
+    ///\retval tau The extinction caused by the border stand.
+    ///\sa NearbyShading
     LGMdouble getBorderForestExtinction(const Point& start, 
 					const PositionVector& dir, LGMdouble k_conifer);
   private:
