@@ -12,7 +12,6 @@ some program changes and checks are needed.
 - [ ] GrowthLoop::initializeTrees requires following checks
    - [ ] LignumForest::branch_angle set to 45 degrees. Branch angle also set in L-system.
    - [ ] LignumForest::bud_view_f set (also?) here
-   - [ ] 
 - [ ] Implementation required changes by the new command line in the main loop.<br>
 	  Check and implement the following command line options: 
   - [x] -iter
