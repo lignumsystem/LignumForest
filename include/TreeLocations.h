@@ -15,7 +15,8 @@ namespace LignumForest{
   /// where x,y is the center of gap of raius r
   typedef pair<pair<double,double>,double> ForestGap;
 
-  /// /// Generate tree locations as Nonstationary Poisson process: Stoyan, Kendall & Mecke, p. 52 -54
+  /// \brief Generate tree locations
+  /// Generate tree loacations as Nonstationary Poisson process: Stoyan, Kendall & Mecke, p. 52 -54
   /// \param[in,out] nTrees Number of trees as target number in a forest plot and number of trees actually generated.
   /// \param corner1X Lower left corner X
   /// \param corner1Y Lower left corner Y
