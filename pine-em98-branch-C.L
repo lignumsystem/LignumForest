@@ -216,7 +216,7 @@ B(data,omega,l,phys_age):
         //set new branch to exisiting branch physiological age
         if (nbuds == 0)
            produce B(data,omega,l,phys_age);
-        else if ((is_architecture_change == true) && (phys_age >= architecture_change_year)){
+        else if ((Pine::is_architecture_change == true) && (phys_age >= Pine::architecture_change_year)){
            //GROWTH ARCHITECTURE CHANGE IN BRANCHES: always only two new branches at the same plane to the opposite sides
            //NOTE: this can go forever unless growth conditions and functions set the segment length to 0
            PineBudData mother_bud_data(data);
