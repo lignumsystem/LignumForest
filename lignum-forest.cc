@@ -117,11 +117,11 @@ int main(int argc, char** argv)
   gloop.printTreeLocations(0);
   //InitializeTrees reads in/sets a number of parameters and functions for each tree
   gloop.initializeTrees();
-  //Resize the 3D and 2D data arrays for HDF5 file to right dimensions
+  ///Resize the 3D and 2D data arrays for HDF5 file to right dimensions.
   //Simulation years and number of trees are known
   gloop.resizeTreeDataMatrix();
   gloop.initializeVoxelSpace();
-  //Sets initial values of some variables in trees
+  ///Sets initial values of some variables in trees
   gloop.initializeGrowthLoop();
   // Evaluate stand variables before collectDataAfterGrowth
   gloop.evaluateStandVariables();
@@ -182,7 +182,9 @@ int main(int argc, char** argv)
     // Evaluate stand variables also after growth
     gloop.evaluateStandVariables();
     // collectDataAfterGrowth collects data for HDF5 file. The 0th Year dimension
-    // contains initial data
+    // contains initial data. The year+1 requires because year is not yet updated
+    // to denote the end of the growth
+    // and the year=0 is reserved of the initial data. 
     gloop.collectDataAfterGrowth(year+1);
     //Save trees as xml
     CreateTreeXMLDataSet(gloop,hdf5_trees,TXMLGROUP,gloop.getWriteInterval());

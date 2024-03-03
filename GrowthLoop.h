@@ -229,6 +229,11 @@ namespace LignumForest{
     /// \attention Hard coded files *ebh.fun* and *eero.fun* required for EBH and Nikinmaa models respectively
     /// \sa Lignum::InitializeTree LignumForest::SetScotsPineSegmentLength
     void initializeTrees();
+    /// \brief Create voxel space
+    ///
+    ///Read voxel space file for voxel space dimensions and create voxel space.
+    ///\pre Voxel space file must exist
+    ///\sa GrowthLoop::voxelfile 
     void initializeVoxelSpace();
     /// \brief Read and install functions 
     /// 
@@ -245,7 +250,16 @@ namespace LignumForest{
     /// \todo The existence of a file is tested with `ìfstream`. In the C++ 17 STL
     /// one can clean up implementation with std::filesystem::exists
     void initializeFunctions();
-    /// \brief Initialize L-systems and Tree root masses
+    /// \brief Initialize growth loop
+    ///
+    ///Growth loop initialization
+    ///+ L-systems
+    ///+ Tree root masses
+    ///+ LGAsf for new segments
+    ///
+    ///LGAsf depends on segment length (P. Kaitaniemi)
+    ///\sa LignumForest::SetScotsPineSegmentSf
+    ///\deprecated *GrowthLoop::stand_output* and *GrowthLoop::cstand_output* obsolete, using HDF5 files.
     void initializeGrowthLoop();
     /// \brief Increase the value of Lignum::LGPxi in trees after given year
     /// \param year The start year to increase Lignum::LGPxi
@@ -275,14 +289,17 @@ namespace LignumForest{
     void collectDataBeforeGrowth(TREE& t,unsigned int i);
     /// \brief Collect tree data after growth and update data for HDF5 file.
     ///
+    /// Initial data is collected before growth loop filling the first (0th) year.
+    /// In this case the method should be called parameter `year`=iter+1.<br>
     /// Collect data for each tree for a single year to `tdafter` dictionary (STL data type *map*).
     /// Add a row for each tree in 3D matrix `hdf5_tree_data`.  
     /// Collect forest stand and center stand level aggregate data into 2D arrays `sdafter` and `csdafter` respectively from the forest stand.  
-    /// Initial data is collected before growth loop filling the first (0th) year.
-    /// In this case the method should be called parameter `year`=iter+1.
+    /// \pre The `year` must denote the end of growth, i.e. the beginning of the next year.
     /// \param year Simulation year (i.e. iteration)
     /// \param collect_stand If *true* collect forest stand and center stand level aggregate data
     /// \post Each tree maintains its position (row) in 3D hdf5_tree_data denoted by TreeId number.
+    /// \attention Global variables Pine::L_H (tree height) and LignumForest::global_hcb (height of crown base) are set for the next iteration.
+    /// \sa Pine::L_H LignumForest::global_hcb
     /// \sa GrowthLoop::collectDataBeforeGrowth StandDescriptor::evaluateStandVariables GrowthLoop::resizeTreeDataMatrix
     /// \sa hdf5_tree_data  hdf5_stand_data hdf5_center_stand_data Data for HDF5 file
     /// \sa wsapwood wfoliage wroot ws_after_senescence Collect biomasses  
@@ -421,6 +438,9 @@ namespace LignumForest{
     /// -# treeAging
     /// -# collectSapwoodMass
     void photosynthesisAndRespiration();
+    ///\brief Collect stand and center stand data
+    ///Evaluate stand and center stand descriptive metrics or characteristics.
+    ///\sa GrowthLoop::stand GrowthLoop:center_stand
     void evaluateStandVariables();
     void createNewSegments();
     /// \brief Allocation of net photosynthates to growth.

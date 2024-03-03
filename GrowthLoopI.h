@@ -1182,6 +1182,7 @@ namespace LignumForest{
     if (verbose)
       cout << "Initialized " << vtree.size() << " trees" <<endl;
 
+    ///Obselete part, using HDF5 files.
     //Find suitable place for this: (maybe all output related things together)
     stand_output = new ofstream(stand_file.c_str(), ios_base::trunc);
     *stand_output << "year density DbaseAv DbaseMi DbaseMa DbhAv DbhMi DbhMa HAv HMi HMa "
@@ -1274,10 +1275,8 @@ namespace LignumForest{
   template<class TREE, class TS, class BUD, class LSYSTEM>
   void GrowthLoop<TREE,TS,BUD,LSYSTEM>::collectDataAfterGrowth(const int year,bool collect_stand)
   {
-    ///\note Global variables `L_H` (tree height) and `LignumForest::global_hcb` (height of crown base) are set here for next iteration.
-    ///\sa L_H LignumForest::global_hcb
     for (unsigned int tree_num = 0; tree_num < vtree.size(); tree_num++){
-      map<string,double> tdafter;//collect decriptive data first into this dictionary 
+      map<string,double> tdafter;//collect descriptive data or metrics first into this dictionary 
       summing bs; // Branch summaries for mean branch.
       DCLData dcl; //Crown base: Diameter and height.
       TREE& t = *vtree[tree_num];
@@ -1294,12 +1293,12 @@ namespace LignumForest{
       tdafter["TreeNseg"]=static_cast<double>(AccumulateDown(t,nsegment,CountTreeSegments<TS,BUD>()));
       tdafter["TreeCrownVol"] = cv(t);
       tdafter["TreeH"] = GetValue(t,LGAH);
-      L_H = tdafter["TreeH"];
+      Pine::L_H = tdafter["TreeH"]; //global L_H
       tdafter["TreeDBase"] = GetValue(t,LGADbase);
       tdafter["TreeDbh"] = GetValue(t,LGADbh);
       tdafter["TreeDCrownBase"] = dcl.DCrownBase();
       tdafter["TreeHCrownBase"] = dcl.HCrownBase();
-      LignumForest::global_hcb = dcl.HCrownBase();
+      LignumForest::global_hcb = dcl.HCrownBase(); //Global hcb
       tdafter["TreeAsBase"] = GetValue(t,LGAAsbase);
       tdafter["TreeAsDbh"] = GetValue(t,LGAAsDbh);
       tdafter["TreeAsCrownBase"] = dcl.ASwCrownBase();
@@ -2293,7 +2292,6 @@ namespace LignumForest{
     }
   }
   
-  /// Evaluate stand variables of stand and center_stand
   template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::evaluateStandVariables() {
     stand.evaluateStandVariables(vtree, locations);
