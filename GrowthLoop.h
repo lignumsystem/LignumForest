@@ -437,7 +437,9 @@ namespace LignumForest{
     /// -# collectDataBeforeGrowth
     /// -# treeAging
     /// -# collectSapwoodMass
-    void photosynthesisAndRespiration();
+    /// \todo Try to separate data collection and tree aging to separate tasks
+    /// in the main growth loop.
+    void photosynthesisRespirationTreeAging();
     ///\brief Collect stand and center stand data
     ///Evaluate stand and center stand descriptive metrics or characteristics.
     ///\sa GrowthLoop::stand GrowthLoop:center_stand
@@ -453,6 +455,7 @@ namespace LignumForest{
     void allocationAndGrowth(const ParametricCurve& fip_mode, const ParametricCurve& fgo_mode);
     int getNumberOfTrees() {return no_trees;}
     void setYear(const int& y) {year = y;}
+    ///Save the previous year tree heights
     void setHPrev(){
       for (unsigned int i = 0; i < (unsigned int)no_trees; i++)
 	h_prev[(int)i] = GetValue(*vtree[i],LGAH);

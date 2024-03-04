@@ -10,14 +10,12 @@
 ///
 //The following addtogroup seems to help doxygen to understand L-files
 //to some extent!
-///\addtogroup mainglobals
-///@{
+
 namespace Pine{
 
-  extern int mode;  ///<Declared in L-system. \sa pine-em98.L
+  extern int mode;  ///<Declared in L-system. 
 
 }
-///@}
 
 using namespace Pine;
 
@@ -1226,8 +1224,6 @@ namespace LignumForest{
     }
   }
 
-
-
   template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::photosynthesis(TREE& t)
   {
@@ -1552,7 +1548,6 @@ namespace LignumForest{
 
 
       /// \internal
-      /// \remark This is for Pipe model calculations:
       /// Initialize calculation of thickness growth induced by adding new shoots.
       /// \sa SetSapwoodDemandAtJunction
       /// \snippet{lineno} GrowthLoopI.h PipeModel
@@ -1560,6 +1555,7 @@ namespace LignumForest{
       double alku = 1.0;    //= Gravelius order of main axis
       PropagateUp(*t,alku,SetSapwoodDemandAtJunction());
       // [PipeModel]
+      /// \remark This is for Pipe model calculations:
       /// \endinternal
       if(!allocation(*t,bracket_verbose,fip_mode,fgo_mode)){
 	cout << "Allocation failed, P - M < 0" <<endl;
@@ -2135,22 +2131,25 @@ namespace LignumForest{
 
   //end of run-voxel
 
-  /// \todo Try to move collectDataBeforeGrowth and treeAging visible into the main growth loop. 
   template<class TREE, class TS,class BUD, class LSYSTEM>
-  void GrowthLoop<TREE, TS,BUD,LSYSTEM>::photosynthesisAndRespiration()
+  void GrowthLoop<TREE, TS,BUD,LSYSTEM>::photosynthesisRespirationTreeAging()
   {
 
     for (unsigned int k = 0; k < (unsigned int)no_trees; k++){
       TREE* t = vtree[k];
       photosynthesis(*t);
       respiration(*t);
+      ///\par Collect data before growth
+      ///
+      ///Collect foliage mass and sapwood mass data before new growth.
       collectDataBeforeGrowth(*t,k);
       treeAging(*t);
-      ///collectSapwoodMass:    
+      ///\par Collect sapwood mass
+      ///
       ///Collect  sapwood after  senescence from  all  segments.  Collect
       ///again after  new growth excluding new  segments.  The difference
       ///of  the two  will tell how much sapwood was needed  in diameter
-      ///growth
+      ///growth.
       ws_after_senescence[k] = collectSapwoodMass(*t);
     }
   }
