@@ -5,13 +5,23 @@ Before simulating Scots pine stand with LignumForest
 some program changes and checks are needed.
 
 ## Task list
+### Command line
 - [x] Added script `run-lignum-forest.sh` to be used. **Note** the `lignum-forest` binary.
 - [x] Merge CrownDensity command line with LignumForest command line.<br>
       *Command line of the `run-lignum-forest.sh` copied from `run-crowndens-basic-model.sh`.
 	  LignumForest specific arguments present (for example -generateTrees, -treeDist)*
-- [ ] GrowthLoop::initializeTrees requires following checks
-   - [ ] LignumForest::branch_angle set to 45 degrees. Branch angle also set in L-system.
-   - [ ] LignumForest::bud_view_f set (also?) here
+
+---
+### LignumForest main growth loop 
+- [ ] Check the main growth loop (lignu-forest.cc \ref lignumforest) is what is required, especially:<br>
+  - [ ] LignumForest::GrowthLoop::createNewSegments() is what is required. It has more that just creating segments. OK?
+  - [ ] LignumForest::GrowthLoop::allocationAndGrowth is what is required, It has (behing boolean flags) more than pipe model. OK?
+- [ ] Check LignumForest::GrowthLoop::initializeTrees() is what is required, especially:<br>
+   - [ ] LignumForest::branch_angle set to 45 degrees. Branch angle also set in L-system. OK?
+   - [ ] LignumForest::bud_view_f set (also?) here. OK?
+
+---
+### Synchronizing with CrownDensity 
 - [ ] Implementation required changes by the new command line in the main loop.<br>
 	  Check and implement the following command line options: 
   - [x] -iter
