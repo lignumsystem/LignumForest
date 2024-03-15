@@ -8,6 +8,8 @@
 #include <sstream>
 #include <utility>
 #include <mathsym.h>
+#include <glob.h>
+#include <deque>
 #include <Point.h>
 #include <PositionVector.h>
 #include <TMatrix3D.h>
@@ -143,19 +145,22 @@ namespace LignumForest{
       lambdav.push_back(0.0);
     }
     ~GrowthLoop();
-    ///\brief Initialize based on command line
+    ///\brief Initialization based on command line
     ///
-    /// Parse command line, initialize trees and functions, voxel space and growth loop.
     /// \attention Not implemented
-    ///\param argc Numebr of command line arguments 
-    ///\param argv Command line arguments
-    /// \todo Collect parsing command line, initializing functions, creating and initializing trees and voxel space
-    /// as well as initialising growth loop to this method.
-    ///\sa The sequence of parseCommandLine resolveCommandLineAttributes initializeFunctions
-    ///\sa setTreeLocations createTrees initializeTrees initalizeVoxelSpace resizeTreeDataMatrix
-    ///\sa initializeGrowthLoop in main loop      
+    /// \sa The sequence of parseCommandLine resolveCommandLineAttributes initializeFunctions
+    /// \sa setTreeLocations createTrees initializeTrees initalizeVoxelSpace resizeTreeDataMatrix
+    /// \sa initializeGrowthLoop in main loop      
     void initialize(int argc, char** argv);
-    ///One time step
+    ///\brief Insert MetFiles in use into their queue
+    ///\param regexp The regular expression to list MetaFiles in the working directory
+    ///\post The queue of MetaFiles is sorted
+    void insertMetaFiles(const string& regexp);
+    ///\brief Retrieve the next MetaFile in the queue
+    ///\retval s The first MetaFile in the queue
+    ///\post The first MetaFile *s* is removed from the queue
+    string popMetaFile(); 
+    ///\brief Take given number of growth steps
     ///\param year Number of growth steps
     void timeStep(int year);
     ///After Growth: clean up, write output
@@ -381,6 +386,7 @@ namespace LignumForest{
     /// \pre Tree age mod interval = 0 and !fipfile.empty()
     /// \sa fipfile
     void writeFip(TREE& t,int interval)const;
+    /// \brief Remove dead branches from trees
     void prune();
     void printVariables()const;
     /// \brief Collect data if èero` = *true* to *eero.dat*
@@ -461,7 +467,7 @@ namespace LignumForest{
 	h_prev[(int)i] = GetValue(*vtree[i],LGAH);
     }
     /// \brief Harvest: remove percentage of trees from the forest stand 
-    /// \param percentage Percentage of shortest trees (number of trees) to be removed
+    /// \param percentage Percentage of shortest trees to be removed, i.e. harvesting from below.
     /// \post The tree vector `vtree` and associated data vectors updated
     /// \note Other criteria like several harvest times and harvesting based on basal area may follow
     /// \sa removeTreesAllOver
@@ -551,7 +557,8 @@ namespace LignumForest{
     ///
     /// Class MainAxisVolume Defined in stl-lignum/TreeFunctor.h
     MainAxisVolume<TS,BUD> mav;
-    string metafile; ///< File of names of actual parameter files etc. \sa checkCommandLine
+    string metafile; ///< Regular expression for MetaFiles \sa metafile_q
+    deque<string> metafile_q; ///<Metafiles possibly many in use insorted order. 
     string voxelfile;///< File of parameters for the VoxelSpace \sa checkCommandLine
     string xmlfile; ///< XML file where the tree can be saved and restored from \sa parseCommandline
     string datafile;///< Text file to save tree data each time step \sa parseCommandline
@@ -601,7 +608,8 @@ namespace LignumForest{
     StandDescriptor<TREE> center_stand; ///< To deal with center part of stand \sa setTreeLocations
     ofstream* cstand_output; ///< Stream for center stand output
     bool evaluate_border_forest; ///< If border forest in radiation calculations? \sa calculateRadiation
-    LGMdouble k_border_conifer;///< Extinction coeffient for border forest conifers \sa calculateRadiation BorderForest::getBorderForestExtinction
+    LGMdouble k_border_conifer;///< Extinction coeffient for border forest conifers
+                               ///<\sa calculateRadiation BorderForest::getBorderForestExtinction
     /// \brief To keep track of trees that do not grow in height
     ///
     /// If a tree does not grow for a while it is considered dead.

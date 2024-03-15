@@ -1,6 +1,7 @@
 #ifndef GROWTHLOOPI_H
 #define GROWTHLOOPI_H
 #include <string>
+#include <glob.h>
 #include <LignumForestGlobals.h>
 ///\file  GrowthLoopI.h
 ///\brief GrowthLoop implementation.
@@ -81,8 +82,32 @@ namespace LignumForest{
       delete stand_output;
     }
   }
+  
+  template<class TREE, class TS, class BUD, class LSYSTEM>
+  void GrowthLoop<TREE,TS,BUD,LSYSTEM>::insertMetaFiles(const string& regexp)
+  {
+    glob_t glob_result;
+    glob(regexp.c_str(),GLOB_TILDE,NULL,&glob_result);
+    for (unsigned int i=0; i < glob_result.gl_pathc; ++i){
+      string fname = glob_result.gl_pathv[i];
+      metafile_q.push_back(fname);
+    }
+    sort(metafile_q.begin(),metafile_q.end(),greater<string>());
+  }
 
-  /// **Usage**
+  ///\brief The next MetaFile in the queue
+  ///\return The first MetaFile in the queue
+  ///\post The first MetaFile is removed from the queue
+  template<class TREE, class TS, class BUD, class LSYSTEM>
+  string GrowthLoop<TREE,TS,BUD,LSYSTEM>::popMetaFile()
+  {
+    string s = metafile_q.front();
+    metafile_q.pop_front();
+    return s;
+  }
+  
+  ///\brief Print the command line **Usage** on standard out
+  ///\attention Keep it up to date after implementing a new command line option
   /// \snippet{lineno} GrowthLoopI.h Usagex
   // [Usagex]
   template<class TREE, class TS, class BUD, class LSYSTEM>
@@ -104,7 +129,9 @@ namespace LignumForest{
     cout << "[-heightFun] [-architecureChange <year>]" << endl;
     cout << "------------------------------------------------------------------------------------------------" << endl;
     cout << "-iter Number of years to simulate" << endl;
-    cout << "-metafile File (usually called Metafile,txt) containg file locations for Tree parameters, Firmament configuration and Tree functions" << endl;
+    cout << "-metafile <regexp> Regular expression for MetaFiles." << endl 
+	 << "Files (traditionally called Metafile*.txt) containg file locations for Tree parameters," <<endl
+	 << "Firmament configuration and Tree functions" << endl;
     cout << "-hdf5 HDF5 file for simulation results. Trees as XML strings are in the HDF5 file with TREEXML_PREFIX prefix. See -writeInterval" << endl;
     cout << "-writeInterval <number> Save trees in XML format in every `number` of years" << endl;   
     cout << "-generateLocations <num>  In this case <num> trees will be generated to random locations. If this" << endl;
@@ -178,7 +205,7 @@ namespace LignumForest{
     }
     ///+ Mandatory argument -metafile
     else if (CheckCommandLine(argc,argv,"-metafile") == false){
-      cout << "Mandatory -metafile <MetaFile.txt> option missing" << endl;
+      cout << "Mandatory -metafile <regexp> option missing" << endl;
       exit(0);
     }
     ///+ Mandatory argument -voxelspace
@@ -226,10 +253,12 @@ namespace LignumForest{
     if (ParseCommandLine(argc,argv,"-iter", clarg)){
       iterations = atoi(clarg.c_str());
     }
-    ///+ `-metafile`, file containing actual parameter files etc. \sa metafile
+    ///+ `-metafile`, Regular expression for MetaFiles containing actual parameter files etc.
+    ///\sa metafile metafile_q
     clarg.clear();
     if (ParseCommandLine(argc,argv,"-metafile", clarg)){
       metafile = clarg;
+      insertMetaFiles(metafile);
     }
     ///+ `-voxelspace`, voxel space definition \sa voxelfile
     clarg.clear();
@@ -783,7 +812,8 @@ namespace LignumForest{
     ///+ Set Lignum::TreeQinMax
     ///+ Set Lignum::LGPlen_random, randon variation in segment length
     ///+ Set PineTree::SPis_EBH  0.0 (off).
-    InitializeTree<TS,BUD> init(metafile,vrb);
+    string f = popMetaFile();
+    InitializeTree<TS,BUD> init(f,vrb);
     for (unsigned int i=0; i < vtree.size(); i++){
       ///\internal
       ///\snippet{lineno} GrowthLoopI.h TINIT
