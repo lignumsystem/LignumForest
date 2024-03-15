@@ -183,7 +183,7 @@ int main(int argc, char** argv)
     ///\par The steps from the current state to a new state in the forest plot 
     ///+ Update foliage in voxel space and recalculate borderforest
     ///+ Calculate radiation climate for trees
-    ///+ Calculate photosynthesis and respiration \sa 
+    ///+ Calculate photosynthesis and respiration
     ///+ Create new segments
     ///+ Growth allocation
     ///+ Prune dead branches from trees
