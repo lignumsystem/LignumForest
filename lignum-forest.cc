@@ -1,6 +1,6 @@
 /// \file lignum-forest.cc 
 /// \brief The main program for the LignumForest.
-
+///
 ///Main program growth loop generates now only HDF5 files for result analysis.<br>
 ///Growth loop steps
 ///+ Initialize global variables
@@ -12,17 +12,22 @@
 ///\page cmakefileforest Compile LignumForest
 ///CMakeLists.txt to compile LignumForest. There are several L-system files to experiment
 ///with tree architecture. Check LSYSTEMFILE and LSYSTEMSRC variables in CMakeLists.txt
-///before compilation.
-///\note The binary is called `lignum-forest`
-///\note The Qt `qmake` build tool is obsolete (see the README file for details).
+///before compilation. With CMake all the compilation work is done in a designated
+///compilation directory. 
+///\note The binary after compilation is called `lignum-forest`
+///\attention Remamber to type `make install` in the compilation directory
+///to copy `lignum-forest` to *LignumForest* working direcgtory.
+///\deprecated The Qt `qmake` build tool is obsolete (see the README.md file for details).
 ///
 ///\include CMakeLists.txt
 ///\page runscriptforest Run LignumForest 
 ///Use the following `run-lignum-forest.sh` script to run `lignum-forest` with the latest
 ///CrownDensity (i.e. `crowndens`) parameters and function set. The command line for `lignum-forest` must be
 ///checked to be synchronised with `crowndens` before any serious simulations, most notably
-///for growth mode and architectural change years. These two are important results (lessons learned)
-///from successful `crowndens` simulations.
+///for growth mode and architectural change years.
+///\note The *-metafile* option accepts regular expressions. Protect the regular expression with quotes.
+///\note Remember to update the option *-hdf5* file name.
+///\note In compilation `make install` is required to copy `lignum-forest` to LignumForest working directory. 
 ///
 ///\include run-lignum-forest.sh
 ///
