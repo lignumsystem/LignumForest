@@ -148,13 +148,16 @@ namespace LignumForest{
     ///\brief Initialization based on command line
     ///
     /// \attention Not implemented
-    /// \sa The sequence of parseCommandLine resolveCommandLineAttributes initializeFunctions
-    /// \sa setTreeLocations createTrees initializeTrees initalizeVoxelSpace resizeTreeDataMatrix
-    /// \sa initializeGrowthLoop in main loop      
+    /// \sa The sequence of parseCommandLine resolveCommandLineAttributes initializTrees
+    /// \sa initializeGrowthLoop in the LignumForest::main program      
     void initialize(int argc, char** argv);
-    ///\brief Insert MetFiles in use into their queue
+    ///\brief Insert MetFiles in use into their GrowthLoop::metafile_q queue
     ///\param regexp The regular expression to list MetaFiles in the working directory
-    ///\post The queue of MetaFiles is sorted
+    ///\post The queue of MetaFiles is sorted in ascending order.
+    ///\note The user must name MetFiles so that the files are used in right order,
+    ///      for example using simple numbering: MetaFile1.txt, MetaFile2.txt,...,MetaFileN.txt.
+    ///\note Protect the *regexp* with quotes in shell script or in commmand line,
+    ///      for example: -metafile 'Metafile*.txt'.
     void insertMetaFiles(const string& regexp);
     ///\brief Retrieve the next MetaFile in the queue
     ///\retval s The first MetaFile in the queue

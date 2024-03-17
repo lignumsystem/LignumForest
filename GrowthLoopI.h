@@ -92,9 +92,9 @@ namespace LignumForest{
       string fname = glob_result.gl_pathv[i];
       metafile_q.push_back(fname);
     }
-    sort(metafile_q.begin(),metafile_q.end(),greater<string>());
+    sort(metafile_q.begin(),metafile_q.end(),less<string>());
   }
-
+  
   ///\brief The next MetaFile in the queue
   ///\return The first MetaFile in the queue
   ///\post The first MetaFile is removed from the queue
