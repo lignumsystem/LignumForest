@@ -23,14 +23,14 @@ some program changes and checks are needed.
 ### Synchronizing with CrownDensity 
 - [ ] Implementation required changes by the new command line in the main loop.<br>
 	  Check and implement the following command line options: 
+  - [ ] Jari: Implement checking and setting growth mode change and checking and triggering  architecture change year in the main loop.
   - [x] -iter
   - [x] -metafile
   - [x] -voxelspace
   - [x] -voxelCalculation <br>
        *No -voxelCalculation in `lignum-forest`, removed from command line. VoxelSpace always in use. See -pairwiseSelf*. 
-  - [ ] -modeChange
-	    - [ ] Wild card search for MetaFile*.txt
-		- [ ] Wild card search for Parameter*.txt
+  - [x] -modeChange
+	    - [x] Wild card search for MetaFile*.txt
   - [x] -architectureChange 
        *Command line argument implemented, global variables triggering L-system architecure change set. 
   - [x] -numParts
@@ -47,7 +47,7 @@ some program changes and checks are needed.
       *Using explicitely LignumForest::SetScotsPineSegmentLength*
 - [x] Check the Meta files, parameter and function files in CrownDensity
       that they are the ones that produce a satisfactory tree development
-- [ ] Change Meta files, parameter and function files to ones 
+- [x] Change Meta files, parameter and function files to ones 
       used in CrownDensity. Especially -modeChange requires rereading MetaFiles.
 - [x] Transfer global variables used from CrownDensity to LignumForest
       and use LignumForest namespace. <br>
