@@ -126,7 +126,7 @@ namespace LignumForest{
     cout << "[-space0] [-space1] [-space2] [-adHoc]" << endl;
     cout << "[-budViewFunction] [-EBH] -EBH1 <value>]" << endl;
     cout << "[-space2Distance <Value>] [-EBHREDUCTION <value>] [-EBHFINAL <value>] [-EBHInput <int>] [-RUE <value>]" << endl;
-    cout << "[-heightFun] [-architecureChange <year>]" << endl;
+    cout << "[-architecureChange <year>]" << endl;
     cout << "------------------------------------------------------------------------------------------------" << endl;
     cout << "-iter Number of years to simulate" << endl;
     cout << "-metafile <regexp> Regular expression for MetaFiles." << endl 
@@ -181,7 +181,6 @@ namespace LignumForest{
     cout << "-RUE <value>       The radiation use effeciency (rue) varies as a function of TreeSegments initial radiation" << endl;
     cout << "                   conditions. Photosynthetic production of TreeSegment = rue * LGApr * Qabs. <value> = degree of" << endl;
     cout << "                   increase of rue as a function of shadiness (0 < <value> < 2)." << endl;
-    cout << "-heightFun         If length of stem apical shoot is derived from relative crown length (params. LGPe1, LGPe2)." << endl;
     cout << "-architectureChange Change the braching pattern in L-system." <<endl; 
     cout << endl;
   }
@@ -497,12 +496,6 @@ namespace LignumForest{
     LignumForest::is_bud_view_function = false;
     if(CheckCommandLine(argc,argv,"-budViewFunction")) {
       LignumForest::is_bud_view_function = true;
-    }
-    ///+ `-heightFun`
-    ///\sa GrowthLoop::growthloop_is_heightFun 
-    growthloop_is_heightFun = false;
-    if(CheckCommandLine(argc,argv,"-heightFun")) {
-      growthloop_is_heightFun = true;
     }
     ///.
     LignumForest::space0 = false;
@@ -1556,26 +1549,10 @@ namespace LignumForest{
     list<unsigned int> dead_trees;
     dead_trees.clear();
   
-    //Create new buds by making derive with mode == 1 (global variable)
-    mode = 1;
-
     for (unsigned int k = 0; k < (unsigned int)no_trees; k++){
       cout << "Allocation loop with k: " << k << " No trees " << no_trees <<endl; 
       TREE* t = vtree[k];
       LSYSTEM* l = vlsystem[k];
-
-
-      // if(growthloop_is_heightFun) {
-      //   if(L_age == 0) {
-      // 	dDb = 0.003;    // 3 mm --> length growth about 50*0.003 = 0.15
-      // 	Db_previous = GetValue(*t, LGADbase);
-      //   } else {
-      // 	Db_current = GetValue(*t, LGADbase);
-      // 	dDb = Db_current - Db_previous;
-      // 	Db_previous = Db_current;
-      //   }
-      // }
-
 
       /// \internal
       /// Initialize calculation of thickness growth induced by adding new shoots.
@@ -1598,30 +1575,12 @@ namespace LignumForest{
 	no_h[(int)k] += 1;
 	if(no_h[(int)k] >= 3){
 	  dead_trees.push_back(k);
+	  cout << "Pushed " << k << " to dead trees, was stagnant" <<endl;
 	}
 	continue;
       }
 
-      //============================================================================
-      // If -heightFun
-      //
-      //=============================================================================
-      if(growthloop_is_heightFun && L_age > 10) {
-	//Here length of leader at tree level, if height function
-	Axis<TS,BUD>& stem =  GetAxis(*t);
-	TreeSegment<TS,BUD>* last =
-	  GetLastTreeSegment(stem);
-	double e1 = GetValue(*t,LGPe1);
-	double e2 = GetValue(*t,LGPe2);
-	// cout << " e1 e2 " << e1 << " " << e2 << endl;
-	// cout << " Hc H dDb " << L_H << " " << LignumForest::global_hcb << " " << dDb << endl;
-	double Lnew = (e1 + e2*LignumForest::global_hcb/L_H) * dDb;
-        if(Lnew < 0.1)           //safeguarding against losing top
-	  Lnew = 0.1;
-	SetValue(*last, LGAL, Lnew);
-      }
-
-      //Calculate  the  LGAsf  for   newly  created  segments,  sf  in  P
+      //Calculate  LGAsf  for   newly  created  segments,  sf  in  P
       //Kaitaniemi data depens on segment length
       ForEach(*t,SetScotsPineSegmentSf());
 
@@ -1631,17 +1590,9 @@ namespace LignumForest{
       //Now the lengths of the segments are such that G = P - M. Adjust the diameters
       // of old segments on the basis sapwood demand from above and those of new
       // segments on the basis of their length.
-      if(growthloop_is_heightFun) {
-	Db_previous = GetValue(*t,LGADbase);
-      }
       DiameterGrowthData dgdata;
       AccumulateDown(*t,dgdata,PartialSapwoodAreaDown(GetFunction(*t,SPSD)),
 		     ScotsPineDiameterGrowth2(LGMGROWTH));
-      if(growthloop_is_heightFun) {
-	Db_current = GetValue(*t,LGADbase);
-	dDb = Db_current - Db_previous;
-      }
-
       //Root growth
       double wfnew = 0.0;
       Accumulate(*t,wfnew,CollectNewFoliageMass<TS,BUD>());
@@ -1688,7 +1639,9 @@ namespace LignumForest{
 	ForEach(*t, sbvf);
       }
 
-      //Create new buds by making derive with mode == 1 (set above)
+      //Create new buds by making derive with mode == 1 (global variable)
+      mode = 1;
+
       LignumForest::branch_angle = t->getBranchAngle();        //this global variable goes to pine-em98.L
       l->derive();
       l->lstringToLignum(*t,1,PBDATA);
