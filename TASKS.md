@@ -13,7 +13,7 @@ some program changes and checks are needed.
 
 ---
 ### LignumForest main growth loop 
-- [ ] Risto/Jari: Check the main growth loop (lignu-forest.cc \ref lignumforest) is what is required, especially:<br>
+- [x] Risto/Jari: Check the main growth loop (lignu-forest.cc \ref lignumforest) is what is required, especially:<br>
   - [x] LignumForest::GrowthLoop::createNewSegments() is what is required. It has more that just creating segments. OK?
   - [x] LignumForest::GrowthLoop::allocationAndGrowth is what is required, It has (behing boolean flags) more than pipe model. OK?
 - [ ] Jari: Check LignumForest::GrowthLoop::initializeTrees() is what is required, especially:<br>
