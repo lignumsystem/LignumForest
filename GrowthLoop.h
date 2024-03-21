@@ -326,21 +326,25 @@ namespace LignumForest{
     void treeAging(TREE& t);
     double collectSapwoodMass(TREE& t);
     void setSapwoodDemandAtJunction(TREE& t);
-    /// Allocation of photosynthates to growth.
-    /// The Allocation of photosynthates P after respiration costs M,  that is,
-    /// finding value of lambda parameter that makes demand, P-M, to match available
-    /// resources G with the aid of iteration:
-    ///    P - M = G(lambda)
-    /// that can be use in growth.
+    /// \brief Allocation of photosynthates to growth.
     ///
-    /// \return true if lambda s.t. P-M-G(lambda)=0, false if  P - M < 0 or iteration cannot find solution
-    /// \remark If false the tree `t` is considered dead and will be removed from tree vector 
+    /// The allocation of photosynthates \f$P\f$ after respiration costs \f$M\f$.
+    /// Find value of the \f$ \lambda  \f$ parameter that makes available resources, \f$P-M\f$, to match
+    /// demand of growth, \f$G\f$, with the aid of iteration, i.e. \f$P - M = G(\lambda)\f$.
+    ///
+    /// \retval true if \f$\exists \lambda\f$  s.t. \f$P-M-G(\lambda) = 0\f$
+    /// \retval false otherwise
     /// \tparam TREE Lignum tree
     /// \param t Lignum tree 
     /// \param verbose Verbose output
     /// \param fip_mode Function fip(ip) after growth mode change
     /// \param fgo_mode Function fgo(go) after growth mode change
+    /// \exception TreeGrowthAllocatorException  Exception caught if \f$P < M \f$
+    /// \exception BisectionBracketException Exception caught if no \f$ \lambda \f$ s.t. \f$ P-M-G(\lambda) < 0\f$
+    /// \exception BisectionMaxIterationException  Exception caught if  \f$ P-M-G(\lambda) = 0\f$
+    ///                                             not found after cxxadt::MAX_ITER iterations
     /// \sa vtree
+    /// \remark If the return value is *false* the tree `t` is considered dead and will be removed from tree vector.
     bool allocation(TREE& t,bool verbose,const ParametricCurve& fip_mode, const ParametricCurve& fgo_mode);
     /// \brief Set radiation use efficiency (rue) in new segments
     /// Set the radiation use efficiency (rue) of new segments (age = 0) on the basis of shadiness

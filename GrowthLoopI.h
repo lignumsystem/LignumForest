@@ -1505,31 +1505,33 @@ namespace LignumForest{
 						    const ParametricCurve& fgo_mode)
 
   {
-    /// \remark Allocate    net    photosynthesis:   
-    ///Testing the implementation where the sapwood area is passed down
-    ///as such  between segments that are  in the same  axis.  Only the
-    ///segments  of higher gravelius  order require  less sapwood  in a
-    ///branching point. \sa PartialSapwoodAreaDown
-
-    DiameterGrowthData data;
-    LGMGrowthAllocator2<TS,BUD,LignumForest::SetScotsPineSegmentLength,
-			LignumForest::PartialSapwoodAreaDown,LignumForest::ScotsPineDiameterGrowth2,DiameterGrowthData>
-      G(t,data,PartialSapwoodAreaDown(GetFunction(t,SPSD))); 
- 
-    treeP = G.getP();
-    treeM = G.getM();
-
-    if(treeP - treeM < 0.0)
-      return false;
-
+    
     try{
-      Bisection(0.0,10.0,G,0.01,verbose); //10 grams (C) accuracy
+      /// \par The growth function G
+      ///
+      ///The growth function \f$G\f$ is hard coded in GrowthLoop::allocation.
+      ///Using LignumForest::PartialSapwoodAreaDown where the sapwood area
+      ///is passed down as such  between segments that are  in the same  axis.
+      ///Only the segments  of higher gravelius order require  less sapwood  in a branching point.
+      ///
+      ///Bisection given initial values for \f$ \lambda \f$ (0 and 10) iterates its value
+      ///trying to find \f$ P - M - G(\lambda) = 0 \f$ with given accuracy (0.01).
+      ///\internal
+      ///\snippet{lineno} GrowthLoopI.h GFUNCTION
+      // [GFUNCTION]
+      DiameterGrowthData data;
+      LGMGrowthAllocator2<TS,BUD,LignumForest::SetScotsPineSegmentLength,
+			  LignumForest::PartialSapwoodAreaDown,LignumForest::ScotsPineDiameterGrowth2,DiameterGrowthData>
+	G(t,data,PartialSapwoodAreaDown(GetFunction(t,SPSD)));
+      Bisection(0.0,10.0,G,0.01,verbose); 
       double tree_id = GetValue(t,TreeId);
       lambdav[tree_id] = G.getL();
+      // [GFUNCTION]
+      ///\sa LignumForest::PartialSapwoodAreaDown
+      ///\endinternal
     }
-    //G will throw an exception if P < M
-    catch(TreeGrowthAllocatorException e){
-      cout << "P < M " << e.getP() << " " << e.getM() <<endl;
+    catch (TreeGrowthAllocatorException e){
+      cout << "P < M " << e.getP() << " " << e.getM() << endl;
       return false;
     }
     catch(BisectionBracketException e){
@@ -1537,7 +1539,12 @@ namespace LignumForest{
       cout << e.getA() << " "  << e.getB() << " " << e.getBl() <<endl;
       return false;
     }
-
+    catch(BisectionMaxIterationException e){
+      cout << "Bisection Max iterations " << e.getMaxIter() << " exceeded "<< endl;
+      cout << e.getFa() << " " << e.getFc() << " " << e.getFb() <<endl;
+      return false;
+    }
+    //Allocation with Bisection is fine 
     return true;
   }
 
