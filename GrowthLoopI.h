@@ -95,7 +95,7 @@ namespace LignumForest{
     sort(metafile_q.begin(),metafile_q.end(),less<string>());
   }
   
-  ///\brief The next MetaFile in the queue
+  ///\brief Retrieve MetaFile in the queue
   ///\return The first MetaFile in the queue
   ///\post The first MetaFile is removed from the queue
   template<class TREE, class TS, class BUD, class LSYSTEM>
@@ -607,6 +607,13 @@ namespace LignumForest{
 	Pine::is_architecture_change = true;
 	Pine::architecture_change_year = atoi(clarg.c_str());
     }
+    ///---
+    ///\par Parse growth mode change year
+    clarg.clear();
+    if (ParseCommandLine(argc,argv,"-modeChange",clarg)){
+      LignumForest::is_mode_change=true;
+      LignumForest::mode_change_year=atoi(clarg.c_str());
+    }
     if (verbose){
       cout << "parseCommandLine end" <<endl;
       printVariables();
@@ -665,7 +672,7 @@ namespace LignumForest{
   /// + Initialize wspawood, wfoliage, wroot, ws_after_senescence to zero
   /// \note Hard coded functions in the Tree constructor that should exist in the  directory
   /// \deprecated *to_file*  deprecated, using HDF5 files instead
-  /// \todo Remove open output file stream to so called "target tree" (data for all trees for every year in HDF5 file)
+  /// \todo Remove open output file stream to so called *target tree* (data for all trees for every year in HDF5 file)
   template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::createTrees()
   {
@@ -865,7 +872,7 @@ namespace LignumForest{
     ///The global bud view function LignumForest::bud_view_f  use is controlled by the global variable
     ///LignumForest::is_bud_view_function. If LignumForest::is_bud_view_function == false
     ///then the  LignumForest::bud_view_f is ignored.
-    ///\note Bud view function file is specifed in the constructor of the tree.
+    ///\note Bud view function file is specified in the constructor of the tree.
     ///\internal
     ///\snippet{lineno} GrowthLoopI.h BVFunc
     // [BVFunc]
@@ -1225,7 +1232,15 @@ namespace LignumForest{
       for (unsigned int i = 0; i < (unsigned int)no_trees; i++) {
 	TREE* t = vtree[i];
 	///\par Increase the value of LGPxi
-	///Increase the share of heartwood in new segments.
+	///Increase the share of heartwood \f$\xi\f$ in new segments in \p year:
+	///\f[
+	///\xi = \left\{
+	///  \begin{array}{ll}
+	///   \xi+0.1/25.0 &: \xi \leq 0.85 \\
+	///   0.85 &: \mathit{otherwise}
+	///  \end{array}
+	///  \right.
+	///\f]
 	///The share of heartwood increases as the tree matures, grows older
 	///until LGPxi has reached its maximum value.
 	///\internal
@@ -1247,6 +1262,18 @@ namespace LignumForest{
     }
   }
 
+  template<class TREE, class TS,class BUD, class LSYSTEM>
+  void GrowthLoop<TREE, TS,BUD,LSYSTEM>::growthModeChange(int year)
+  {
+    if (LignumForest::is_mode_change && (year == LignumForest::mode_change_year)){
+      string f = popMetaFile();
+      LGMVERBOSE verb = verbose ? VERBOSE : QUIET;
+      InitializeTree<TS,BUD> init(f,verb);
+      for (unsigned int i=0; i < vtree.size(); i++){
+	init.initialize(*vtree[i]);
+      }
+    }
+  }
   template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::photosynthesis(TREE& t)
   {

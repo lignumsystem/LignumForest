@@ -66,7 +66,7 @@ namespace LignumForest{
     ///
     /// Each tree will be its own dataset in its age group. Trees are (must be) collected
     /// during the growth loop.
-    /// \pre The HDF5 file `hdf5_file` must be open
+    /// \pre The HDF5 file \p hdf5_file must be open
     /// \param gl The GrowLoop
     /// \param hdf5_file The HDF5 file where the XML strings will be stored
     /// \param group_name The name of the root group (dataset) for the XML strings
@@ -74,16 +74,16 @@ namespace LignumForest{
     /// \return 0 Always returns zero. 
     /// \note The dataset naming for the trees will be */dataset_name/`age`/Tree_`tree_id`*,
     /// where the `age` is the age of the tree and `tree_id` the ID of the tree.
-    /// \post  The HDF5 file `hdf5_file` remains open
-    /// \attention The `hdf5_file` must be closed after the growth loop before program exit.
+    /// \post  The HDF5 file \p hdf5_file remains open
+    /// \attention The \p hdf5_file must be closed after the growth loop before program exit.
     /// \todo Improve the use of the return value to use return values from HDF5 functions
     friend int CreateTreeXMLDataSet(const GrowthLoop<TREE,TS,BUD,LSYSTEM>& gl, LGMHDF5File& hdf5_file,const string& group_name,
 				    const int interval);
-    /// \brief Update `ws_after_senescence` vector
+    /// \brief Update `GrowthLoop::ws_after_senescence` vector
     /// \param gl GrowthLoop
     /// \param ws Sapwood mass
-    /// \param pos position in the `ws_after_senescence` vector
-    /// \sa ws_after_senescence vector
+    /// \param pos position in the `GriwthLoop::ws_after_senescence` vector
+    /// \sa GrowthLoop::ws_after_senescence vector
     friend void UpdateSapwoodAfterSenescence(GrowthLoop<TREE,TS,BUD,LSYSTEM>& gl,double ws,unsigned int pos)
     {
       gl.ws_after_senescence[pos]=ws;
@@ -91,10 +91,10 @@ namespace LignumForest{
   public:
     ///\brief Initialize variables.
     ///
-    ///No tree. The `location_file` is set to "TreeLocations.txt" for predefined tree locations.   
-    ///`hw_start` is set to 15.   
-    ///`cv` is set to 0.30.      
-    ///\sa hw_start cv
+    ///No trees. The GrowthLoop::location_file is set to "TreeLocations.txt" for predefined tree locations.   
+    ///GrowthLoop::hw_start` is set to 15.   
+    ///GrowthLoop::c` is set to 0.30.      
+    ///\sa H´GrowthLoop::hw_start GrothLoop::cv
     GrowthLoop()
       :vs(NULL),verbose(false),iterations(0),start_voxel_calculation(0),
        num_parts(1.0), interval(0),init_density(0),nsegment(0.0),
@@ -118,8 +118,7 @@ namespace LignumForest{
     ///`no_tree is set 1 .  
     ///`wsapwood`, `wfoliage`, `wroot`, ws_after_senescence` and `lambdav` vectors are length 1 inital value 0.0.
     ///\sa hw_start cv
-    ///\attention Meant only to collect HDF5 tree data. No growth.
-    ///\remark Used in CrownDensity project to collect HDF5 data with existing methods.
+    ///\attention Used only in CrownDensity project to collect and HDF5 data. 
     GrowthLoop(TREE* t, LSYSTEM* l)
       :vs(NULL),verbose(false),iterations(0),start_voxel_calculation(0),
        num_parts(1.0), interval(0),init_density(0),nsegment(0.0),
@@ -152,16 +151,16 @@ namespace LignumForest{
     /// \sa initializeGrowthLoop in the LignumForest::main program      
     void initialize(int argc, char** argv);
     ///\brief Insert MetFiles in use into their GrowthLoop::metafile_q queue
-    ///\param regexp The regular expression to list MetaFiles in the working directory
+    ///\param regexp The regular expression to list MetaFiles (in the working directory)
     ///\post The queue of MetaFiles is sorted in ascending order.
-    ///\note The user must name MetFiles so that the files are used in right order,
-    ///      for example using simple numbering: MetaFile1.txt, MetaFile2.txt,...,MetaFileN.txt.
-    ///\note Protect the *regexp* with quotes in shell script or in commmand line,
+    ///\attention The user must name MetaFiles so that the files are used in right order,
+    ///           for example by using simple numbering: MetaFile1.txt, MetaFile2.txt,...,MetaFileN.txt.
+    ///\note Protect the \p regexp with quotes in shell script or in commmand line,
     ///      for example: -metafile 'Metafile*.txt'.
     void insertMetaFiles(const string& regexp);
     ///\brief Retrieve the next MetaFile in the queue
     ///\retval s The first MetaFile in the queue
-    ///\post The first MetaFile *s* is removed from the queue
+    ///\post The first MetaFile \p s is removed from the queue
     string popMetaFile(); 
     ///\brief Take given number of growth steps
     ///\param year Number of growth steps
@@ -267,13 +266,25 @@ namespace LignumForest{
     ///
     ///LGAsf depends on segment length (P. Kaitaniemi)
     ///\sa LignumForest::SetScotsPineSegmentSf
-    ///\deprecated *GrowthLoop::stand_output* and *GrowthLoop::cstand_output* obsolete, using HDF5 files.
+    ///\deprecated *GrowthLoop::stand_output* and *GrowthLoop::cstand_output*, using HDF5 files.
     void initializeGrowthLoop();
-    /// \brief Increase the value of Lignum::LGPxi in trees after given year
-    /// \param year The start year to increase Lignum::LGPxi
-    /// \attention Currently hard coded without specific parametrization
-    /// \note The implementation is the same as in CrownDensity
+    ///\brief Increase the value of Lignum::LGPxi in trees after given \p year.
+    ///\pre GrowthLoop::increase_xi == *true* and \p year >= GrowthLoop::xi_start
+    ///\param year The start year to increase Lignum::LGPxixs
+    ///\attention Currently hard coded without specific parametrization
+    ///\note The implementation is the same as in CrownDensity
     void increaseXi(int& year);
+    ///\brief Check for growth mode change
+    ///
+    ///Check the \p year for growth  mode change and intialize tree for parameters and functions.
+    ///Using Lignum::InitializeTree::initialize() for simplicity.
+    ///\pre Lignum::is_mode_change == *true* and LignumForest::mode_change_year == \p year
+    ///\pre The \p year >= 1 
+    ///\param year Current simulation year
+    ///\post If growth mode change year the first MetaFile in the GrowthLoop::metafile_q used and removed from the queue 
+    ///\sa \link ParseFunctions Known functions \endlink
+    ///\sa \link NewParamsAndFuncs Steps to take to add new parameters and functions \endlink
+    void growthModeChange(int year);
     ///\brief Create tree locations
     ///
     ///Generate random tree locations or read them from a file.
@@ -284,7 +295,11 @@ namespace LignumForest{
     ///\sa GrowthLoop::locations
     ///\sa StandDescriptor BorderForest
     void setTreeLocations();
+    ///\brief Photosynthesis of a single tree
+    ///\param t The tree
     void photosynthesis(TREE& t);
+    ///\brief Respiration od a single tree
+    ///\param t The tree
     void respiration(TREE& t);
     /// \brief Collect data before growth.
     ///
@@ -298,11 +313,11 @@ namespace LignumForest{
     /// \brief Collect tree data after growth and update data for HDF5 file.
     ///
     /// Initial data is collected before growth loop filling the first (0th) year.
-    /// In this case the method should be called parameter `year`=iter+1.<br>
+    /// In this case the method should be called parameter \p year = iter+1.<br>
     /// Collect data for each tree for a single year to `tdafter` dictionary (STL data type *map*).
     /// Add a row for each tree in 3D matrix `hdf5_tree_data`.  
     /// Collect forest stand and center stand level aggregate data into 2D arrays `sdafter` and `csdafter` respectively from the forest stand.  
-    /// \pre The `year` must denote the end of growth, i.e. the beginning of the next year.
+    /// \pre The \p year must denote the end of growth, i.e. the beginning of the next year.
     /// \param year Simulation year (i.e. iteration)
     /// \param collect_stand If *true* collect forest stand and center stand level aggregate data
     /// \post Each tree maintains its position (row) in 3D hdf5_tree_data denoted by TreeId number.
@@ -316,7 +331,7 @@ namespace LignumForest{
     /// \brief Collect sapwood after senescence.
     ///
     /// Collect sapwood mass to `ws_after_senescence` vector.
-    /// \pre treeAging must have been called 
+    /// \pre GrowthLoop::treeAging must have been called 
     /// \param t The Lignum tree
     /// \param i position of the tree in `vtree` vector
     /// \sa collectSapwoodMass
@@ -344,7 +359,7 @@ namespace LignumForest{
     /// \exception BisectionMaxIterationException  Exception caught if  \f$ P-M-G(\lambda) = 0\f$
     ///                                             not found after cxxadt::MAX_ITER iterations
     /// \sa vtree
-    /// \remark If the return value is *false* the tree `t` is considered dead and will be removed from tree vector.
+    /// \remark If the return value is *false* the tree \p t is considered dead and will be removed from tree vector.
     bool allocation(TREE& t,bool verbose,const ParametricCurve& fip_mode, const ParametricCurve& fgo_mode);
     /// \brief Set radiation use efficiency (rue) in new segments
     /// Set the radiation use efficiency (rue) of new segments (age = 0) on the basis of shadiness
