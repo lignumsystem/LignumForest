@@ -5,25 +5,27 @@ Before simulating Scots pine stand with LignumForest
 some program changes and checks are needed.
 
 ## Task list
+>[!NOTE]
+>It seems all items are no checked. LignumForest can be tested in sorvi server.
+
 ### Command line
 - [x] Added script `run-lignum-forest.sh` to be used. **Note** the `lignum-forest` binary.
 - [x] Merge CrownDensity command line with LignumForest command line.<br>
       *Command line of the `run-lignum-forest.sh` copied from `run-crowndens-basic-model.sh`.
 	  LignumForest specific arguments present (for example -generateTrees, -treeDist)*
-
 ---
 ### LignumForest main growth loop 
 - [x] Risto/Jari: Check the main growth loop (lignu-forest.cc \ref lignumforest) is what is required, especially:<br>
   - [x] LignumForest::GrowthLoop::createNewSegments() is what is required. It has more that just creating segments. OK?
   - [x] LignumForest::GrowthLoop::allocationAndGrowth is what is required, It has (behing boolean flags) more than pipe model. OK?
-- [ ] Jari: Check LignumForest::GrowthLoop::initializeTrees() is what is required, especially:<br>
-   - [ ] LignumForest::branch_angle set to 45 degrees. Branch angle also set in L-system. OK?
-   - [ ] LignumForest::bud_view_f set (also?) here. OK?
+- [x] Jari: Check LignumForest::GrowthLoop::initializeTrees() is what is required, especially:<br>
+   - [x] LignumForest::branch_angle set to 45 degrees. Branch angle also set in L-system. OK?
+   - [x] LignumForest::bud_view_f set (also?) here. OK?
 ---
 ### Synchronizing with CrownDensity 
-- [ ] Implementation required changes by the new command line in the main loop.<br>
+- [x] Implementation required changes by the new command line in the main loop.<br>
 	  Check and implement the following command line options: 
-  - [ ] Jari: Implement checking and setting growth mode change and checking and triggering  architecture change year in the main loop.
+  - [x] Jari: Implement checking and setting growth mode change and checking and triggering  architecture change year in the main loop.
   - [x] -iter
   - [x] -metafile
   - [x] -voxelspace
@@ -31,6 +33,7 @@ some program changes and checks are needed.
        *No -voxelCalculation in `lignum-forest`, removed from command line. VoxelSpace always in use. See -pairwiseSelf*. 
   - [x] -modeChange
 	    - [x] Wild card search for MetaFile*.txt
+		- [x] GrowthLoop::growthModeChange in the main loop
   - [x] -architectureChange 
        *Command line argument implemented, global variables triggering L-system architecure change set. 
   - [x] -numParts
