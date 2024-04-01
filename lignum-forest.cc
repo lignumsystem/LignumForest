@@ -171,14 +171,21 @@ int main(int argc, char** argv)
     ///\addtogroup lignumforest
     ///@{
     ///\par Save data
-    ///+ Pass growth year to L system and to *gloop*.
+    ///+ Pass growth \p year to L system and to *gloop*.
     ///+ Save previous year tree height for each tree.
+    ///+ Save the current \p year in LignumForest::GrowthLoop.
+    ///+ Increase \f$\xi\f$, parameter for the share of heartwood in new segments.
+    ///+ Growth mode change check.
+    ///\sa Lignum::LGPxi.
     ///\internal
     ///\snippet{lineno} lignum-forest.cc IGLOOP
     // [IGLOOP]
-    Pine::L_age = (double)year;     //This is for L-system 
+    //Pine::L_age is for L-system 
+    Pine::L_age = (double)year;     
     gloop.setHPrev();
     gloop.setYear(year);
+    gloop.increaseXi(year);
+    gloop.growthModeChange(year);
     // [IGLOOP]
     ///@}
     ///\endinternal
@@ -188,16 +195,16 @@ int main(int argc, char** argv)
     ///\par The steps from the current state to a new state in the forest plot 
     ///+ Update foliage in voxel space and recalculate borderforest
     ///+ Calculate radiation climate for trees
-    ///+ Calculate photosynthesis and respiration
+    ///+ Calculate photosynthesis and respiration as well as aging of tree compartments. 
     ///+ Create new segments
     ///+ Growth allocation
     ///+ Prune dead branches from trees
+    ///\sa GrowthLoop::photosynthesisRespirationTreeAging().
     ///\internal
     ///\snippet{lineno} lignum-forest.cc NEWSEG
     // [NEWSEG]
     gloop.setVoxelSpaceAndBorderForest();
     gloop.calculateRadiation();
-    gloop.increaseXi(year);
     //Currently data collection in photosynthesisRespirationTreeAging
     //before new growth and tree aging
     gloop.photosynthesisRespirationTreeAging();
