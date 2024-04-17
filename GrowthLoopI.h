@@ -1274,6 +1274,7 @@ namespace LignumForest{
       }
     }
   }
+  
   template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::photosynthesis(TREE& t)
   {

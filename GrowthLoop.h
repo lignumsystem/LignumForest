@@ -233,6 +233,7 @@ namespace LignumForest{
     /// The models above affect new segment lengths implemented in LignumForest::SetScotsPineSegmentLength.
     /// The mandatory tree initialization implies deterministic simple Basic model.
     /// All other models have random component.
+    /// \post The first file in GrowthLoop::metafile_q is used and removed.
     /// \attention Hard coded files *ebh.fun* and *eero.fun* required for EBH and Nikinmaa models respectively
     /// \sa Lignum::InitializeTree LignumForest::SetScotsPineSegmentLength
     void initializeTrees();
