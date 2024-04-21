@@ -2074,15 +2074,20 @@ namespace LignumForest{
       l->prune(*t);
     }
   }
-  //===================================================================
+
+    //===================================================================
   // Prepare for radiation calculations:
   // Set BoundingBox and VoxelSpace for trees in the stand.
   // Dump also the foliage (except the first tree) into voxels and
   // set BorderForest
   //===================================================================
+  /// \addtogroup D_radandgrowth
+  ///  @{
   template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::setVoxelSpaceAndBorderForest()
   {
+ /// @}
+
     BoundingBox bb;
     FindCfBoundingBox<TS,BUD> fb;
     for (unsigned int k = 0; k < (unsigned int)no_trees; k++) {
@@ -2115,7 +2120,7 @@ namespace LignumForest{
     border_forest.setHcb(stand.getMinCrownLimit());
     border_forest.setLAI(stand.getLAI());
   }
-
+ 
   template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::calculateRadiation()
   {
