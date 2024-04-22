@@ -430,21 +430,26 @@ namespace LignumForest{
     int getIterations()const{return iterations;}
     int getIterations() {return iterations;}
     int getWriteInterval()const{return interval;}
-    ///3D Data array[year][tree][data_cols] for each year for each tree 
+    ///\brief 3D Data array[year][tree][data_cols] for each year for each tree 
     TMatrix3D<double>& getHDF5TreeData(){return hdf5_tree_data;}
-    ///2D data array[year][data_cols] for stand level aggregate data
+    ///\brief 2D data array[year][data_cols] for stand level aggregate data
     TMatrix2D<double>& getHDF5StandData(){return hdf5_stand_data;}
-    ///2D data array[year][data_cols] aggregate data for the center part of the stand
+    ///\brief 2D data array[year][data_cols] aggregate data for the center part of the stand
     TMatrix2D<double>& getHDF5CenterStandData(){return hdf5_center_stand_data;}
-    ///Tree parameter values used in simulation
+    ///\brief Tree parameter values used in simulation
     TMatrix2D<double> getHDF5TreeParameterData();
-    ///Find function definition known to a tree 
+    ///\brief Find function definition known to a tree 
     ///\pre Tree vector must have trees
     ///\return TMatrix2D<double>(N,2) of (x,f(x)) values (N rows, 2 columns)
     ///\sa cxxadt::ParametricCurve LGMF vtree
     TMatrix2D<double> getHDF5TreeFunctionData(const LGMF fn_enum);
+    /// \brief Prepare for radiation calculations
+    ///
+    /// + Set BoundingBox and VoxelSpace for trees in the stand
+    /// + Dump also the foliage (except the first tree) into voxels
+    /// + Set BorderForest
     void setVoxelSpaceAndBorderForest();
-    ///Calculates radiation for the trees 
+    ///\brief Calculates radiation for the trees 
     ///-# If *pairwise_self* pairwise for a tree itself
     ///-# Through voxelspace 
     ///-# Account for border forest

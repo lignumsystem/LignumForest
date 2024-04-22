@@ -2075,41 +2075,60 @@ namespace LignumForest{
     }
   }
 
-    //===================================================================
-  // Prepare for radiation calculations:
-  // Set BoundingBox and VoxelSpace for trees in the stand.
-  // Dump also the foliage (except the first tree) into voxels and
-  // set BorderForest
-  //===================================================================
-  /// \addtogroup D_radandgrowth
-  ///  @{
+
   template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::setVoxelSpaceAndBorderForest()
   {
- /// @}
-
+    ///\defgroup A_prepare Preparing radiation calculation
+    ///\ingroup D_radandgrowth
+    ///@{
+    ///\par Make ready
+    ///+ VoxelSpace
+    ///+ Insert trees
+    ///+ etc.
+    ///@}
+    //
+    ///\defgroup A_resize_voxelspace VoxelSpace
+    ///\addtogroup A_prepare
+    ///@{
+    ///\par Resize VoxelSpace
+    ///+ Find the VoxelSpace bounding box
+    ///+ Resize VoxelSpace
+    ///\internal
+    ///\snippet{lineno} GrowthLoopI.h BoundingBox
+    // [BoundingBox]
     BoundingBox bb;
     FindCfBoundingBox<TS,BUD> fb;
     for (unsigned int k = 0; k < (unsigned int)no_trees; k++) {
       bb = Accumulate(*vtree[k], bb, fb);
     }
-
     Point ll = bb.getMin();
     Point ur = bb.getMax();
-
     vs->resize(ll, ur);
     vs->reset();
-
-    //All tree are dumped to the voxelspace
+    // [BoundingBox]
+    ///\endinternal
+    ///@}
+    //
+    ///\defgroup B_insert_trees Insert trees
+    ///\addtogroup A_prepare
+    ///@{
+    ///\par Insert trees into VoxelSpace
+    ///+ Insert trees
+    ///+ Update VoxelSpace summary values
+    ///\internal
+    ///\snippet{lineno} GrowthLoopI.h DumpTrees
+    // [DumpTrees]
     for (unsigned int k = 0; k < (unsigned int)no_trees; k++) {
       DumpCfTree(*vs, *vtree[k], num_parts, wood_voxel);
     }
-
     //After dumping all trees to VoxelSpace it is necessary to evaluate
     //sum quantities (e.g. STAR_mean)
     vs->updateBoxValues();
-
-
+    // [DumpTrees]
+    ///\endinternal
+    ///@}
+    //
     //The border forest top is set according to voxelspace
     // (i.e. bounding box)
     // so that the dimesions match. The dimensions of top height of the stand could
