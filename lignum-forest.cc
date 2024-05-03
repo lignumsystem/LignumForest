@@ -84,7 +84,7 @@ namespace LignumForest{
 }
 
 int main(int argc, char** argv)
-{  
+{ 
   /// \defgroup  lignumforest The LignumForest main program
   ///@{
   /// \par The main growth loop 
@@ -118,7 +118,9 @@ int main(int argc, char** argv)
   //Generate tree locations either on the fly or from a file
   gloop.setTreeLocations();
   //Create trees to locations set above
-  gloop.createTrees();  
+  cout << "CREATE TREES" <<endl;
+  gloop.createTrees();
+  cout << "CREATE TREES DONE" << endl;
   gloop.printTreeLocations(0);
   //InitializeTrees reads in/sets a number of parameters and functions for each tree
   gloop.initializeTrees();
@@ -159,9 +161,10 @@ int main(int argc, char** argv)
   ///@}
   /// \endinternal
   ///
+  cout << "INIT DONE" << endl;
   for(int year = 0; year < gloop.getIterations(); year++) {
     cout << "GROWTH LOOP YEAR " << year <<endl;
-    if(gloop.getNumberOfTrees() < 5) {
+    if(gloop.getNumberOfTrees() < 1) {
       cout << "Number of trees left " << gloop.getNumberOfTrees() << " Stop." << endl;
       //Do not stop abruptly, continue to the end of loop and then write data
       //HDF5 output assumes there is at least one tree left 
@@ -209,7 +212,6 @@ int main(int argc, char** argv)
     //before new growth and tree aging
     gloop.photosynthesisRespirationTreeAging();
     gloop.createNewSegments();
-    
     // REMOVE THESE WHEN YOU REMOVE fgomode,fipmode FROM LGMGrowthAllocator2 !!!!!!!!!!!!!!!!!!
     ParametricCurve fip_mode = GetFunction(*(gloop.getTreeVector())[0], LGMIP);
     ParametricCurve fgo_mode = GetFunction(*(gloop.getTreeVector())[0], SPFGO);
