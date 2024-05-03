@@ -29,8 +29,11 @@ namespace Pine{
   extern const double l1;
   ///\brief Number of buds as a function of foliage mass
   extern ParametricCurve fnbuds;
+  ///\brief Adjust number of buds
+  ///Adjust the number of buds returned by \p fnbuds with relative light
   extern ParametricCurve fnbudslight;
   ///\brief Number of buds as function of relative light
+  ///\note Used the reset number of buds to zero in L system if f(ip) = 0.
   extern ParametricCurve fipbud;
   ///\brief Set architecture change on/off
   extern bool is_architecture_change;

@@ -16,13 +16,23 @@ using namespace PineTree;
 #include <lengine.h>
 
 #include <LignumForestGlobals.h>
+using namespace Pine;
 using namespace LignumForest;
+
 
 
 
 //Start the namespace (compiles to "namespace Pine{")
 //The matching "close" statement closes the namespace 
 open Pine;
+
+//Functions used in L system
+ParametricCurve fnbuds("fnbuds.fun");
+//Adjust the number of buds, more light more buds, less light less buds
+//NOTE currently not used
+ParametricCurve fnbudslight("fnbudslight.fun");
+//Fip for buds, the death zone.
+ParametricCurve fipbud("fip-bud.fun");
 
 //Defines the lsystem rewriting process. 
 #include <lsys.h>
@@ -35,7 +45,6 @@ open Pine;
 
 //Global variables, defined in
 //Number of buds as the function of foliage mass
-
 
 
 const double PI = 3.1415926535897932384;
@@ -65,11 +74,6 @@ const double rollmain8  =(360.0/8.0)*PI/180.0;
 //explicit call to l[i].endEach() after each l[i].derive() in pine-forest.cc that resets the mode.
 int mode = 0; //0 = new segment, 1 = new buds
 
-
-//Adjust the number of buds, more light more buds, less light less buds
-//ParametricCurve fnbudslight("fnbudslight.fun");
-//Fipi for buds, the death zone
-//ParametricCurve fipbud("fip-bud.fun");
 module F(double);
 //With this implementation side branches start physiological aging, i.e. increments of physiological age.
 //When physiological age reaches mode_change_year the side branches create only two new side branches
@@ -130,7 +134,7 @@ B(data,omega,l,phys_age):
     //nbuds = static_cast<int>(max(nbuds+fnbudslight(data.ip),0.0));
     //cout << "ip " << data.ip << " fip(ip) " << fip(data.ip) 
     //     << " FM " << data.fm << " fnbuds.fun " << nbuds <<endl; 
-
+    //NOTE: fibud can reset number of buds to zero
     if(fipbud(data.ip) == 0.0) nbuds = 0;
 //    if (nbuds == 1 || nbuds == 2){
 //      if (fipbud(data.ip) < 0.6){
