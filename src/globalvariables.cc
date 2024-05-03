@@ -6,9 +6,9 @@ namespace Pine{
   double L_age = 0.0;
   double L_H = 0.0;
   const double l1 = 0.9;
-  ParametricCurve fnbuds;
-  ParametricCurve fnbudslight;
-  ParametricCurve fipbud;
+  //ParametricCurve fnbuds;
+  //ParametricCurve fnbudslight;
+  //ParametricCurve fipbud;
   bool is_architecture_change = false;
   int architecture_change_year = INT_MAX;
 }
