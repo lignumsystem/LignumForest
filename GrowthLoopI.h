@@ -1544,7 +1544,7 @@ namespace LignumForest{
       LGMGrowthAllocator2<TS,BUD,LignumForest::SetScotsPineSegmentLength,
 			  LignumForest::PartialSapwoodAreaDown,LignumForest::ScotsPineDiameterGrowth2,DiameterGrowthData>
 	G(t,data,PartialSapwoodAreaDown(GetFunction(t,SPSD)));
-      Bisection(0.0,10.0,G,0.01,verbose); 
+      Bisection(0.0,100.0,G,0.01,verbose); 
       double tree_id = GetValue(t,TreeId);
       lambdav[tree_id] = G.getL();
       // [GFUNCTION]
@@ -2179,16 +2179,13 @@ namespace LignumForest{
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::createNewSegments()
   {
     mode = 0;    //For  L-system
-     
     for (unsigned int k = 0; k < (unsigned int)no_trees; k++){
       TREE* t = vtree[k];
       LSYSTEM* l = vlsystem[k];
-
       //This derive() creates the new segments, whose lengths will be iterated
       // (in allocationAndGrowth())
       l->derive();
       l->lstringToLignum(*t,1,PBDATA);
-
       //Pass the  qin to newly  created segments and to  the terminating
       //buds. Also set LGAip (qin/TreeQinMax) for the terminating buds
       double qin = 0.0;
@@ -2203,7 +2200,6 @@ namespace LignumForest{
       PropagateUp(*t,o0,SetScotsPineSegmentApical());
 
       TreePhysiologyVigourIndex(*t);
-
       //QinMax
       SetValue(*t,TreeQinMax,GetFirmament(*t).diffuseBallSensor());
 
@@ -2229,13 +2225,12 @@ namespace LignumForest{
 
 	ForEach(*t, dto);
       }
-
       //==============================================================================
       // Extended Borchert-Honda calculation if it is in use
       //==============================================================================
 
       if(GetValue(*t, SPis_EBH) > 0.0) {
-
+	cout << "ENTER EBH " <<endl;
 	ParametricCurve lambda_fun = GetFunction(*t,SPEBHF);
 	if(growthloop_is_EBH_reduction) {
 	  //After age 20 EBH values for all orders change gradually from the nominal value to ebh_final_value 
@@ -2272,7 +2267,6 @@ namespace LignumForest{
 	    lambda_fun = ParametricCurve(lfo);
 	  }
 	}
-
       
 	EBH_basipetal_info EBHbI0, EBHbI1;
 	EBHbI1 = AccumulateDown(*t, EBHbI0, EBH_basipetal(lambda_fun, LignumForest::ebh_mode) );
@@ -2287,7 +2281,6 @@ namespace LignumForest{
 
 	ForEach(*t, NormalizeEBHResource(m1.my_resource) );
       }
-    
     }
   }
 
