@@ -2208,6 +2208,7 @@ namespace LignumForest{
       LSYSTEM* l = vlsystem[k];
       //This derive() creates the new segments, whose lengths will be iterated
       // (in allocationAndGrowth())
+      mode = 0;
       l->derive();
       l->lstringToLignum(*t,1,PBDATA);
       //Pass the  qin to newly  created segments and to  the terminating
