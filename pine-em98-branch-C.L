@@ -92,6 +92,7 @@ derivation length: 9;
 Start:
 {
   PineBudData data(ALIVE,0.0,1.0,1.0,1.0);
+  mode = 0;
   produce F(0.30) SB() Down(1.0) Pitch(pitch) B(data,2,Pine::l1,1.0) EB() 
                   SB() Roll(rollmain4) Down(1.0) Pitch(pitch)  B(data,2,1.0,1.0) EB()
 	          SB() Roll(2.0*rollmain4) Down(1.0) Pitch(pitch) B(data,2,1.0,1.0) EB()
@@ -103,9 +104,10 @@ StartEach:
 {
 }
 
+//Removed mode = (mode+1) % 2 
 EndEach:
 {
-  mode = (mode+1) % 2;
+  
 } 
 
 B(data,omega,l,phys_age):

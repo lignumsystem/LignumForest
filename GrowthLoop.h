@@ -478,6 +478,13 @@ namespace LignumForest{
     ///Evaluate stand and center stand descriptive metrics or characteristics.
     ///\sa GrowthLoop::stand GrowthLoop:center_stand
     void evaluateStandVariables();
+    /// \brief Create new segments.
+    /// Create new segments and optionally evaluate:
+    /// + Space colonization model for growth space
+    /// + EBH model for resource allocation
+    /// \important Pine::mode is set to 0 to select right condition in L-system
+    /// \note The sizes of these new segments will be iterated later in GrowthLoop::allocationAndGrowth()
+    /// \post Pine::mode=0
     void createNewSegments();
     /// \brief Allocation of net photosynthates to growth.
     ///
@@ -486,6 +493,9 @@ namespace LignumForest{
     /// and from the vectors of collected data.
     /// \sa vtree vlsystem locations
     /// \sa wsapwood wfoliage wroot ws_after_senescence vdatafile
+    /// \deprecated \p fip_mode \p fgo_mode
+    /// \important  \p Pine::mode is set to 1 to create new buds after GrowthLoop::allocation()
+    /// \post Pine::mode = 1 
     void allocationAndGrowth(const ParametricCurve& fip_mode, const ParametricCurve& fgo_mode);
     int getNumberOfTrees() {return no_trees;}
     void setYear(const int& y) {year = y;}

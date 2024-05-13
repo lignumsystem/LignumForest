@@ -1583,7 +1583,9 @@ namespace LignumForest{
   {
     list<unsigned int> dead_trees;
     dead_trees.clear();
-  
+    //Create new buds by making derive with mode == 1 (global variable in L system)
+    Pine::mode = 1;
+    
     for (unsigned int k = 0; k < (unsigned int)no_trees; k++){
       cout << "Allocation loop with k: " << k << " No trees " << no_trees <<endl; 
       TREE* t = vtree[k];
@@ -1600,7 +1602,8 @@ namespace LignumForest{
       /// \remark This is for Pipe model calculations:
       /// \endinternal
       if(!allocation(*t,bracket_verbose,fip_mode,fgo_mode)){
-	cout << "Allocation failed, P - M < 0" <<endl;
+	cout << "In GrowthLoop<TREE, TS,BUD,LSYSTEM>::allocationAndGrowth():" <<endl;
+	cout << "   GrowthLoop<TREE, TS,BUD,LSYSTEM>:allocation failed()" <<endl;
 	dead_trees.push_back(k);       //iteration failed, this tree is dead
 	cout << "Pushed " << k << " to dead trees" <<endl;
 	continue;
@@ -1673,10 +1676,6 @@ namespace LignumForest{
 	SetBudViewFunctor sbvf(&vs1, cone_height, cone_half_angle, no_points_on_rim);
 	ForEach(*t, sbvf);
       }
-
-      //Create new buds by making derive with mode == 1 (global variable)
-      mode = 1;
-
       LignumForest::branch_angle = t->getBranchAngle();        //this global variable goes to pine-em98.L
       l->derive();
       l->lstringToLignum(*t,1,PBDATA);
@@ -2196,19 +2195,16 @@ namespace LignumForest{
     }
   }
 
-
-  /// Create new segments and set some variables
-  /// \note The sizes of these new segments will be iterated later
   template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::createNewSegments()
   {
-    mode = 0;    //For  L-system
+    Pine::mode = 0;    //For  L-system
+    
     for (unsigned int k = 0; k < (unsigned int)no_trees; k++){
       TREE* t = vtree[k];
       LSYSTEM* l = vlsystem[k];
       //This derive() creates the new segments, whose lengths will be iterated
       // (in allocationAndGrowth())
-      mode = 0;
       l->derive();
       l->lstringToLignum(*t,1,PBDATA);
       //Pass the  qin to newly  created segments and to  the terminating
