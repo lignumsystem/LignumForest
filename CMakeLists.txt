@@ -98,6 +98,7 @@ set(SOURCE_FILES lignum-forest.cc
   src/metabolism.cc
   src/borderforest.cc
   src/space.cc
+  src/CreateHDF5Files.cc
 )
 
 # Rebuild L system compiler with custom command for 'l2c'
