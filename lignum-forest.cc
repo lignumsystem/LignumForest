@@ -46,6 +46,7 @@
 //Lignum implementation
 #include <Lignum.h>
 #include <LignumForestGlobals.h>
+#include <CreateHDF5Files.h>
 #include <GrowthLoop.h> 
 //Implementation of the Scotspine tree segment and bud
 #include <ScotsPine.h>
@@ -62,26 +63,13 @@
 #include <OpenGLUnix.h>
 #include <LGMVisualization.h>
 #endif
-///Includes L-system, turtle graphics etc.
-#include <lengine.h>
-
-///L-system for pine and for pine, see also pine9bp.L in lsys.
-namespace Pine{
-#include <LSystem.h>
-}
-
-
+//Includes L-system, turtle graphics, GrowthLoop typedefs
+#include <GLoopDefs.h>
 
 using namespace Pine;
 using namespace LignumForest;
-using namespace LignumForest;
 
-namespace LignumForest{
-  /// \typedef GrowthLoop<ScotsPineTree,ScotsPineSegment,ScotsPineBud, Pine::LSystem<ScotsPineSegment,ScotsPineBud,PBNAME,PineBudData> > ScotsPineForest
-  /// ScotsPineForest (i.e. GrowthLoop template instance) captures the growth loop of a forest stand.
-  typedef GrowthLoop<ScotsPineTree,ScotsPineSegment,ScotsPineBud,
-		     Pine::LSystem<ScotsPineSegment,ScotsPineBud,PBNAME,PineBudData> > ScotsPineForest;
-}
+
 
 int main(int argc, char** argv)
 { 
@@ -143,19 +131,14 @@ int main(int argc, char** argv)
   ///@{
   /// \par Setting up HDF5 files
   /// + Create HDF5 file for forest  stand data
-  /// + Create HDF5 for XML trees
-  /// + Create HDF5 groups for prameters and tree functions
+  /// + Create HDF5 file for XML trees
   /// + Create HDF5 group for XML trees
   /// \internal
   /// \snippet{lineno} lignum-forest.cc HDF5INIT
   // [HDF5INIT]
   string hdf5fname;
   ParseCommandLine(argc,argv,"-hdf5", hdf5fname);
-  LGMHDF5File hdf5_file(hdf5fname);
   LGMHDF5File hdf5_trees(TREEXML_PREFIX+hdf5fname);
-  hdf5_file.createGroup(PGROUP);
-  hdf5_file.createGroup(TFGROUP);
-  hdf5_file.createGroup(AFGROUP);
   hdf5_trees.createGroup(TXMLGROUP);
   // [HDF5INIT]
   ///@}
@@ -272,46 +255,19 @@ int main(int argc, char** argv)
   ///+ Parameters used
   ///+ Functions known in a tree
   ///+ All functions in the run directory
+  ///+ Firmamment
+  ///+ Initial voxel space
   ///+ Command line
   ///+ Save HDF5 files
   ///\internal
   ///\snippet{lineno} lignum-forest.cc HDF5FILECREATE
   // [HDF5FILECREATE]
-  //Tree by tree data
-  TMatrix3D<double>& hdf5_data = gloop.getHDF5TreeData();
-  hdf5_file.createDataSet(TREE_DATA_DATASET_NAME,hdf5_data.rows(),hdf5_data.cols(),hdf5_data.zdim(),hdf5_data);
-  hdf5_file.createColumnNames(TREE_DATA_DATASET_NAME,TREE_DATA_COLUMN_ATTRIBUTE_NAME,TREE_DATA_COLUMN_NAMES);
-  //Stand data
-  TMatrix2D<double>& hdf5_stand_data = gloop.getHDF5StandData();
-  hdf5_file.createDataSet(STAND_DATA_DATASET_NAME,hdf5_stand_data.rows(),hdf5_stand_data.cols(),hdf5_stand_data);
-  hdf5_file.createColumnNames(STAND_DATA_DATASET_NAME,STAND_DATA_COLUMN_ATTRIBUTE_NAME,STAND_DATA_COLUMN_NAMES);
-  //Center stand data
-  TMatrix2D<double>& hdf5_center_stand_data = gloop.getHDF5CenterStandData();
-  hdf5_file.createDataSet(CENTER_STAND_DATA_DATASET_NAME,hdf5_center_stand_data.rows(),hdf5_center_stand_data.cols(),
-			  hdf5_center_stand_data);
-  hdf5_file.createColumnNames(CENTER_STAND_DATA_DATASET_NAME,STAND_DATA_COLUMN_ATTRIBUTE_NAME,STAND_DATA_COLUMN_NAMES);
-  //Parameter data
-  TMatrix2D<double> hdf5_tree_param_data = gloop.getHDF5TreeParameterData();
-  hdf5_file.createDataSet(PGROUP+TREE_PARAMETER_DATASET_NAME,hdf5_tree_param_data.rows(),hdf5_tree_param_data.cols(),
-			  hdf5_tree_param_data);
-  hdf5_file.createColumnNames(PGROUP+TREE_PARAMETER_DATASET_NAME,TREE_PARAMETER_ATTRIBUTE_NAME,TREE_PARAMETER_NAMES);
-  //Tree functions
-  for (unsigned int i=0; i < FN_V.size();i++){ 
-    TMatrix2D<double> hdf5_tree_fn_data = gloop.getHDF5TreeFunctionData(FN_V[i]);
-    hdf5_file.createDataSet(TFGROUP+FNA_STR[i],hdf5_tree_fn_data.rows(),hdf5_tree_fn_data.cols(),hdf5_tree_fn_data);
-    hdf5_file.createColumnNames(TFGROUP+FNA_STR[i],TREE_FN_ATTRIBUTE_NAME,TREE_FN_COLUMN_NAMES);
-  }
-  //All functions
-  hdf5_file.createFnDataSetsFromDir("*.fun",AFGROUP,TREE_FN_ATTRIBUTE_NAME,TREE_FN_COLUMN_NAMES);
-  vector<string> c_vec;
-  std::copy( argv, argv+argc,back_inserter(c_vec));
-  ostringstream cline;
-  copy(c_vec.begin(),c_vec.end(),ostream_iterator<string>(cline, " "));
-  hdf5_file.createDataSet(COMMAND_LINE_DATASET_NAME,cline.str());
-  hdf5_file.close();
+  LignumForest::CreateHDF5File hdf5datafile(hdf5fname);
+  hdf5datafile.createDataSets(gloop,argv,argc);
+  hdf5datafile.close();
   // [HDF5FILECREATE]
   ///@}
   ///\endinternal
-  cout << "DATA SAVED AND SIMULATION DONE" <<endl;
+  cout << "HDF5 DATA SAVED AND SIMULATION DONE" <<endl;
   return 0;
 }
