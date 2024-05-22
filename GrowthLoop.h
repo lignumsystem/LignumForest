@@ -443,6 +443,8 @@ namespace LignumForest{
     ///\return TMatrix2D<double>(N,2) of (x,f(x)) values (N rows, 2 columns)
     ///\sa cxxadt::ParametricCurve LGMF vtree
     TMatrix2D<double> getHDF5TreeFunctionData(const LGMF fn_enum);
+    ///\brief Return the name of the VoxelSpace file in use 
+    string getVoxelFile()const{return voxelfile;}
     /// \brief Prepare for radiation calculations
     ///
     /// + Set BoundingBox and VoxelSpace for trees in the stand

@@ -1,8 +1,8 @@
 #include <CreateHDF5Files.h>
 ///\file CreateHDF5Files.cc
 namespace LignumForest{
-  CreateHDF5File::CreateHDF5File(const string& hdf5fname)
-    :hdf5_file(hdf5fname)
+  CreateHDF5File::CreateHDF5File(const string& hdf5fname,const string& vsfilename)
+    :hdf5_file(hdf5fname),vsfile(vsfilename)
   {;
     //Create dataset groups
     createGroups();

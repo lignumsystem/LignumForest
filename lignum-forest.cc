@@ -262,7 +262,7 @@ int main(int argc, char** argv)
   ///\internal
   ///\snippet{lineno} lignum-forest.cc HDF5FILECREATE
   // [HDF5FILECREATE]
-  LignumForest::CreateHDF5File hdf5datafile(hdf5fname);
+  LignumForest::CreateHDF5File hdf5datafile(hdf5fname,gloop.getVoxelFile());
   hdf5datafile.createDataSets(gloop,argv,argc);
   hdf5datafile.close();
   // [HDF5FILECREATE]

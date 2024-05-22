@@ -46,7 +46,8 @@ namespace LignumForest{
   public:
     /// Create and initialize HDF5 file with its groups.
     /// \param hdf5fname HDF5 file name
-    CreateHDF5File(const string& hdf5fname);
+    /// \param vsfname Voxel space file name
+    CreateHDF5File(const string& hdf5fname,const string& vsfname);
     /// Close HDF5 file in destructor
     ~CreateHDF5File();
     /// Create datasets from simulation session
@@ -58,6 +59,7 @@ namespace LignumForest{
   private:
     void createGroups();
     LGMHDF5File hdf5_file;
+    string vsfile;
   };
 
   template <class T>
@@ -104,7 +106,7 @@ namespace LignumForest{
     //The Firmament used
     hdf5_file.createFileDataSetsFromDir("{Firmament,Firmament[0-9]}.txt",LignumForest::FIRMAMENTGROUP);
     //The initial Voxel space used
-    hdf5_file.createFileDataSetsFromDir("{VoxelSpace,VoxelSpace[0-9]}.txt",LignumForest::VOXELSPACEGROUP);
+    hdf5_file.createFileDataSetsFromDir(vsfile,LignumForest::VOXELSPACEGROUP);
     //Command line
     vector<string> c_vec;
     std::copy( argv, argv+argc,back_inserter(c_vec));
