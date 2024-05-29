@@ -1,8 +1,8 @@
 #include <CreateHDF5Files.h>
 ///\file CreateHDF5Files.cc
 namespace LignumForest{
-  CreateHDF5File::CreateHDF5File(const string& hdf5fname)
-    :hdf5_file(hdf5fname)
+  CreateHDF5File::CreateHDF5File(const string& hdf5fname,const string& vsfilename)
+    :hdf5_file(hdf5fname),vsfile(vsfilename)
   {;
     //Create dataset groups
     createGroups();
@@ -31,11 +31,39 @@ namespace LignumForest{
     hdf5_file.createGroup(LignumForest::VOXELSPACEGROUP);
   }
 
+  void CreateHDF5File::createConfigurationDataSets(int argc, char** argv)
+  {
+    //String MetaFile datasets for configuration files used
+    //Metafiles
+    hdf5_file.createFileDataSetsFromDir("{MetaFile,MetaFile[0-9]}.txt",LignumForest::ALLMETAFILEGROUP);
+    //Tree parameters
+    //All functions from files in a simulation directory as 2D dataset
+    hdf5_file.createFnDataSetsFromDir("*.fun",LignumForest::AFGROUP,LignumForest::TREE_FN_ATTRIBUTE_NAME,LignumForest::TREE_FN_COLUMN_NAMES);
+    //All Tree parameters in a simulation directory  as 2D dataset
+    hdf5_file.createParameterDataSetsFromDir("{Tree,Tree[0-9]}.txt",LignumForest::PFILEGROUP,LignumForest::TREE_PARAMETER_FILE_ATTRIBUTE_NAME,
+					     LignumForest::TREE_PARAMETER_COLUMN_NAMES);
+    ///String datasets for parameters, functions, Firmament, initial voxel space
+    hdf5_file.createFileDataSetsFromDir("{Tree,Tree[0-9]}.txt",LignumForest::ALLPARAMFILEGROUP);
+    //All functions
+    hdf5_file.createFileDataSetsFromDir("*.fun",LignumForest::ALLFNFILEGROUP);
+    //The Firmament used
+    hdf5_file.createFileDataSetsFromDir("{Firmament,Firmament[0-9]}.txt",LignumForest::FIRMAMENTGROUP);
+    //The initial Voxel space used
+    hdf5_file.createFileDataSetsFromDir(vsfile,LignumForest::VOXELSPACEGROUP);
+    //Command line
+    vector<string> c_vec;
+    std::copy( argv, argv+argc,back_inserter(c_vec));
+    ostringstream cline;
+    copy(c_vec.begin(),c_vec.end(),ostream_iterator<string>(cline, " "));
+    hdf5_file.createDataSet(LignumForest::COMMAND_LINE_DATASET_NAME,cline.str());
+  }
+  
   void CreateHDF5File::close()
   {
     hdf5_file.close();
   }
-
+  
+  
   ///Function to create HDF5 groups and datasets (not part of the class CreateHDF5File).
   void CreateLignumHDF5File(const string& hdf5fname, const TMatrix3D<double>& hdf5_data, TMatrix2D<double> hdf5_tree_param_data, int argc, char** argv)
   {

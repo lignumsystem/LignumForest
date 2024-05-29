@@ -94,7 +94,7 @@ int main(int argc, char** argv)
   /// + Create and initialize trees to defined locations
   /// + Initialize voxel space
   /// + Resize data matrices
-  /// + Collect data from initial state
+  /// + Collect data from initial forest stand state
   /// \internal
   /// \snippet{lineno} lignum-forest.cc InitForest
   // [InitForest]
@@ -133,6 +133,12 @@ int main(int argc, char** argv)
   /// + Create HDF5 file for forest  stand data
   /// + Create HDF5 file for XML trees
   /// + Create HDF5 group for XML trees
+  /// + Create HDF5 datasets for simulation configuration
+  ///   + MetaFiles
+  ///   + Parameters
+  ///   + Functions
+  ///   + Firmament
+  ///   + Initial VoxelSpace
   /// \internal
   /// \snippet{lineno} lignum-forest.cc HDF5INIT
   // [HDF5INIT]
@@ -140,6 +146,8 @@ int main(int argc, char** argv)
   ParseCommandLine(argc,argv,"-hdf5", hdf5fname);
   LGMHDF5File hdf5_trees(TREEXML_PREFIX+hdf5fname);
   hdf5_trees.createGroup(TXMLGROUP);
+  LignumForest::CreateHDF5File hdf5datafile(hdf5fname,gloop.getVoxelFile());
+  hdf5datafile.createConfigurationDataSets(argc,argv);
   // [HDF5INIT]
   ///@}
   /// \endinternal
@@ -252,18 +260,11 @@ int main(int argc, char** argv)
   ///+ Year by year, tree by tree data
   ///+ Aggregate stand data
   ///+ Aggregate center stand data
-  ///+ Parameters used
-  ///+ Functions known in a tree
-  ///+ All functions in the run directory
-  ///+ Firmamment
-  ///+ Initial voxel space
-  ///+ Command line
   ///+ Save HDF5 files
   ///\internal
   ///\snippet{lineno} lignum-forest.cc HDF5FILECREATE
-  // [HDF5FILECREATE]
-  LignumForest::CreateHDF5File hdf5datafile(hdf5fname);
-  hdf5datafile.createDataSets(gloop,argv,argc);
+  // [HDF5FILECREATE]  
+  hdf5datafile.createDataSets(gloop);
   hdf5datafile.close();
   // [HDF5FILECREATE]
   ///@}
