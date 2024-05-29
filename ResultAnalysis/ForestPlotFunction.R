@@ -1,4 +1,5 @@
-
+library(rhdf5)
+library(ineq)
 #########        ForestPlot function prints out graphs from Lignum simulation of a forest stand
 #########        Call: ForestPlot(infile, aplot, pick)
 #########        infile: name of input HDF5 file (if not in the current directory include path). The file
@@ -118,8 +119,22 @@ points(y,100*d$ForestTreeData[8,smallest,], type="l",lwd=2,col="red")    #median
 aplot1 <- aplot/1e4          #area in ha
 plot(y,d$StandData[3,]/aplot1, type="l", ylim=c(0,1.1*d$StandData[3,1]/aplot1),lty=1, lwd=2, xlab="time (y)", ylab="No. trees / ha", main="Stand density")
 points(ksto$year,ksto$N,type="l",lwd=3,col="darkgreen")
-
-
+##Vuokila/Ivessalo
+ftdata<-read.table("Ilvessalo.txt",header=TRUE,sep='')
+t1 <- d$StandData[1,]
+sdensity <- d$StandData[3,]/aplot1
+plot(t1,sdensity,type="l",lty=1, lwd=2, xlab="Time (y)", ylab="No. trees / ha",ylim=c(0,17000),
+     main="Stand density\n(Vuokila/Ilvessalo)")
+t2<-ftdata$Year
+mt<-ftdata$MT
+vt<-ftdata$VT
+ct<-ftdata$CT
+lines(t2,mt,col='green',lty=1,lwd=2)
+lines(t2,vt,col='red',lty=1,lwd=2)
+lines(t2,ct,col='brown',lty=1,lwd=2)
+legend('bottomleft',inset=0.05,c("Lignum","MT(ksto-mt.dat)","VT","CT"),col=c('black','green','red','brown'),lty=1,
+        title="Forest type")
+    
 #Self thinning plot
 aplot1 <- aplot/1e4          #area in ha
 plot(log(d$StandData[5,]),log(d$StandData[3,]/aplot1), xlim=c(log(0.001),log(0.5)),ylim=c(log(100),log(20000)),type="l", lty=1, lwd=2, xlab="log(mean base diameter)", ylab="log(No. trees / ha)", main="Self-thinning curve")
