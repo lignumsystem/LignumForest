@@ -87,12 +87,15 @@ namespace LignumForest{
   void GrowthLoop<TREE,TS,BUD,LSYSTEM>::insertMetaFiles(const string& regexp)
   {
     glob_t glob_result;
-    glob(regexp.c_str(),GLOB_TILDE,NULL,&glob_result);
+    glob(regexp.c_str(),GLOB_TILDE|GLOB_BRACE,NULL,&glob_result);
     for (unsigned int i=0; i < glob_result.gl_pathc; ++i){
       string fname = glob_result.gl_pathv[i];
+      cout << "METAFILE: " << fname <<endl;
       metafile_q.push_back(fname);
     }
     sort(metafile_q.begin(),metafile_q.end(),less<string>());
+    for (unsigned int i=0; i < metafile_q.size();i++){
+    }
   }
   
   ///\brief Retrieve MetaFile in the queue
