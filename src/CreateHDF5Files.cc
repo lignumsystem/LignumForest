@@ -107,7 +107,7 @@ namespace LignumForest{
     //The Firmament used
     hdf5_file.createFileDataSetsFromDir("{Firmament,Firmament[0-9]}.txt",LignumForest::FIRMAMENTGROUP);
     //The Voxel space used
-    hdf5_file.createFileDataSetsFromDir("{VoxelSpace,VoxelSpace[0-9]}.txt",LignumForest::VOXELSPACEGROUP);
+    hdf5_file.createFileDataSetsFromDir("VoxelSpace*.txt",LignumForest::VOXELSPACEGROUP);
     //Command line
     vector<string> c_vec;
     std::copy( argv, argv+argc,back_inserter(c_vec));
