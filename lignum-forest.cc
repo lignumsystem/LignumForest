@@ -110,23 +110,7 @@ int main(int argc, char** argv)
   gloop.createTrees();
   cout << "CREATE TREES DONE" << endl;
   gloop.printTreeLocations(0);
-  //InitializeTrees reads in/sets a number of parameters and functions for each tree
-  gloop.initializeTrees();
-  //Resize the 3D and 2D data arrays for HDF5 file to right dimensions.
-  //Simulation years and number of trees are known
-  gloop.resizeTreeDataMatrix();
-  gloop.initializeVoxelSpace();
-  //Sets initial values of some variables in trees
-  gloop.initializeGrowthLoop();
-  // Evaluate stand variables before collectDataAfterGrowth
-  gloop.evaluateStandVariables();
-  //The 0th Year dimension is used for intial data 
-  gloop.collectDataAfterGrowth(0);
-  // [InitForest]
-  ///@}
-  /// \endinternal
-  ///
-  /// \defgroup B_hdf5setup Set-up HDF5 files
+   /// \defgroup B_hdf5setup Set-up HDF5 files
   /// \addtogroup lignumforest
   ///@{
   /// \par Setting up HDF5 files
@@ -146,9 +130,25 @@ int main(int argc, char** argv)
   ParseCommandLine(argc,argv,"-hdf5", hdf5fname);
   LGMHDF5File hdf5_trees(TREEXML_PREFIX+hdf5fname);
   hdf5_trees.createGroup(TXMLGROUP);
-  LignumForest::CreateHDF5File hdf5datafile(hdf5fname,gloop.getVoxelFile());
+  LignumForest::CreateHDF5File hdf5datafile(hdf5fname,gloop.getVoxelFile(),gloop.getMetaFiles());
   hdf5datafile.createConfigurationDataSets(argc,argv);
   // [HDF5INIT]
+  ///@}
+  /// \endinternal
+  ///
+  //InitializeTrees reads in/sets a number of parameters and functions for each tree
+  gloop.initializeTrees();
+  //Resize the 3D and 2D data arrays for HDF5 file to right dimensions.
+  //Simulation years and number of trees are known
+  gloop.resizeTreeDataMatrix();
+  gloop.initializeVoxelSpace();
+  //Sets initial values of some variables in trees
+  gloop.initializeGrowthLoop();
+  // Evaluate stand variables before collectDataAfterGrowth
+  gloop.evaluateStandVariables();
+  //The 0th Year dimension is used for intial data 
+  gloop.collectDataAfterGrowth(0);
+  // [InitForest]
   ///@}
   /// \endinternal
   ///
