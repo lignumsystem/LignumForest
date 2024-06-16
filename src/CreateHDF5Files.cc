@@ -1,9 +1,10 @@
 #include <CreateHDF5Files.h>
 ///\file CreateHDF5Files.cc
 namespace LignumForest{
-  CreateHDF5File::CreateHDF5File(const string& hdf5fname,const string& vsfilename)
-    :hdf5_file(hdf5fname),vsfile(vsfilename)
-  {;
+  CreateHDF5File::CreateHDF5File(const string& hdf5fname,const string& vsfilename,
+				 const deque<string>& metafile_q)
+    :hdf5_file(hdf5fname),vsfile(vsfilename),metafile_queue(metafile_q)
+  {
     //Create dataset groups
     createGroups();
   }
@@ -35,7 +36,11 @@ namespace LignumForest{
   {
     //String MetaFile datasets for configuration files used
     //Metafiles
-    hdf5_file.createFileDataSetsFromDir("{MetaFile,MetaFile[0-9]}.txt",LignumForest::ALLMETAFILEGROUP);
+    for (unsigned int i = 0; i < metafile_queue.size(); i++){
+      string fname = metafile_queue[i];
+      cout << "INSERTING METAFILE " << fname << " TO HDF5 FILE" <<endl;
+      hdf5_file.createFileDataSetsFromDir(metafile_queue[i],LignumForest::ALLMETAFILEGROUP);
+    }
     //Tree parameters
     //All functions from files in a simulation directory as 2D dataset
     hdf5_file.createFnDataSetsFromDir("*.fun",LignumForest::AFGROUP,LignumForest::TREE_FN_ATTRIBUTE_NAME,LignumForest::TREE_FN_COLUMN_NAMES);

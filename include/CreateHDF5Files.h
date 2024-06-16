@@ -1,5 +1,6 @@
 #ifndef CREATEHDF5FILES_H
 #define CREATEHDF5FILES_H
+#include <deque>
 #include <LGMHDF5File.h>
 #include <TreeDataAfterGrowth.h>
 
@@ -47,7 +48,7 @@ namespace LignumForest{
     /// Create and initialize HDF5 file with its groups.
     /// \param hdf5fname HDF5 file name
     /// \param vsfname Voxel space file name
-    CreateHDF5File(const string& hdf5fname,const string& vsfname);
+    CreateHDF5File(const string& hdf5fname,const string& vsfname, const deque<string>& metafile_q);
     /// Close HDF5 file in destructor
     ~CreateHDF5File();
     /// Create datasets for simulation session configuration
@@ -62,6 +63,7 @@ namespace LignumForest{
     void createGroups();
     LGMHDF5File hdf5_file;
     string vsfile;
+    deque<string> metafile_queue;
   };
 
   template <class T>
