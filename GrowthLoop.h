@@ -161,7 +161,11 @@ namespace LignumForest{
     ///\brief Retrieve the next MetaFile in the queue
     ///\retval s The first MetaFile in the queue
     ///\post The first MetaFile \p s is removed from the queue
-    string popMetaFile(); 
+    string popMetaFile();
+    ///\brief return the MetaFiles in use
+    ///\pre MetaFiles can be retrieved before growth loop 
+    ///\retval metafile_q The queue of the MetaFile names
+    deque<string> getMetaFiles(){return metafile_q;}
     ///\brief Take given number of growth steps
     ///\param year Number of growth steps
     void timeStep(int year);
