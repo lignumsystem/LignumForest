@@ -16,4 +16,7 @@
 #SBATCH --mail-type=end          # send email when job ends
 #
 #REMEMBER to update command line, especially the output file name
-./lignum-forest -iter 80 -metafile '{MetaFile,MetaFileFip6}.txt' -voxelspace VoxelSpace.txt  -modeChange 10 -architectureChange 10 -numParts 2 -hw 10 -kBorderConifer 0.11 -writeInterval 20 -increaseXi 15 -generateLocations 770 -treeDist 0.3 -hdf5 June11-6-LignumForest.h5  -dumpSelf  -n_buds_ini_min 3 -n_buds_ini_max 3 -verbose
+#IMPORTANT MetaFiles are used in alphabetical order, use appropriate files names 
+#IMPORTANT Make sure the first MetaFile used defines all parameter and function files needed.
+#          The second one can define changes only.
+./lignum-forest -iter 80 -metafile '{MetaFileAOrigFip6,MetaFileFip6}.txt' -voxelspace VoxelSpace.txt  -modeChange 10 -architectureChange 10 -numParts 2 -hw 10 -kBorderConifer 0.11 -writeInterval 20 -increaseXi 15 -generateLocations 770 -treeDist 0.3 -hdf5 June16-1-LignumForest.h5  -dumpSelf  -n_buds_ini_min 3 -n_buds_ini_max 3 -verbose 
