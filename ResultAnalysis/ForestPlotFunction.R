@@ -73,7 +73,7 @@ y <- d$StandData[1,]
 ymax = max(y, na.rm=TRUE)
 
 #Height
-plot(y,d$StandData[11,], type="l", ylim=c(0,30), lwd=2, xlab="time (y)", ylab="Tree height, nin, mean, max (m)", main="Mean, min and max stand height") #mean
+plot(y,d$StandData[11,], type="l", ylim=c(0,40), lwd=2, xlab="time (y)", ylab="Tree height, nin, mean, max (m)", main="Mean, min and max stand height") #mean
 
 
 points(y,d$StandData[12,], type="l", lwd=2, lty=2)   #min
@@ -96,7 +96,7 @@ mh <- median(d$ForestTreeData[7,,ymax],na.rm=TRUE)
 med <- which(h<1.002*mh&h>0.98*mh)[1]
 
 #Base diameter
-plot(y,100*d$StandData[5,], type="l", lwd=2, ylim=c(0,30),xlab="time (y)", ylab="Base diam, nin, mean, max (cm)", main="Mean, min and max diameter at base in the stand",) #mean
+plot(y,100*d$StandData[5,], type="l", lwd=2, ylim=c(0,40),xlab="time (y)", ylab="Base diam, nin, mean, max (cm)", main="Mean, min and max diameter at base in the stand",) #mean
 points(y,100*d$StandData[6,], type="l",lwd=2, lty=2)   #min
 points(y,100*d$StandData[7,], type="l",lwd=2, lty=2)   #max
 #dkanto = 2 + 1,25d (Laasasenaho 1975, Folia Forestalia 233)
@@ -180,7 +180,7 @@ Ntrees <- d$StandData[3,1]
 
 
 #Tree heights
-plot(y,d$ForestTreeData[7,1,], ylim=c(0,30), type="l", main=paste("Individual tree heights\nevery ",as.character(pick),"th tree",sep=""), ylab="Tree height (m)",xlab="time (y)")
+plot(y,d$ForestTreeData[7,1,], ylim=c(0,40), type="l", main=paste("Individual tree heights\nevery ",as.character(pick),"th tree",sep=""), ylab="Tree height (m)",xlab="time (y)")
 points(y,d$ForestTreeData[11,1,],type="l",lty=2)
 for(i in 2:min(Ntrees/pick)) {
 	points(y,d$ForestTreeData[7,i*pick,], type="l")
