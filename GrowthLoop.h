@@ -151,12 +151,15 @@ namespace LignumForest{
     /// \sa initializeGrowthLoop in the LignumForest::main program      
     void initialize(int argc, char** argv);
     ///\brief Insert MetFiles in use into their GrowthLoop::metafile_q queue
-    ///\param regexp The regular expression to list MetaFiles (in the working directory)
-    ///\post The queue of MetaFiles is sorted in ascending order.
-    ///\attention The user must name MetaFiles so that the files are used in right order,
+    ///\param globexpr The glob expression to list MetaFiles (in the working directory)
+    ///\post The queue of MetaFiles is sorted in alphabetical order.
+    ///\attention The user must name MetaFiles so that the files are used in alphabetical order,
     ///           for example by using simple numbering: MetaFile1.txt, MetaFile2.txt,...,MetaFileN.txt.
-    ///\note Protect the \p regexp with quotes in shell script or in commmand line,
+    ///\note Protect the \p globexpr with quotes in shell script or in commmand line,
     ///      for example: -metafile 'Metafile*.txt'.
+    ///\note The \p globexpr is a Unix glob expression and pattern matching is implemented with C library *glob* function.
+    ///      Most notably curly braces can be used to express alternative matchings. For example, the
+    ///      glob expression *{MetaFile, MetaFile1}.txt* matches MetaFile.txt and MetaFile1.txt and nothing else.
     void insertMetaFiles(const string& regexp);
     ///\brief Retrieve the next MetaFile in the queue
     ///\retval s The first MetaFile in the queue

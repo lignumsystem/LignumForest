@@ -135,9 +135,12 @@ namespace LignumForest{
     cout << "[-architecureChange <year>]" << endl;
     cout << "------------------------------------------------------------------------------------------------" << endl;
     cout << "-iter Number of years to simulate" << endl;
-    cout << "-metafile <regexp> Regular expression for MetaFiles." << endl 
+    cout << "-metafile <globexpr> Glob expression (as for Unix command line) for MetaFiles." << endl 
 	 << "Files (traditionally called Metafile*.txt) containg file locations for Tree parameters," <<endl
-	 << "Firmament configuration and Tree functions" << endl;
+	 << "Firmament configuration and Tree functions." << endl;
+    cout << "Glob expression can define alternative matchings with curly braces, e.g. {MetaFile,MetaFile1}.txt"
+	 << "that match both MetaFile.txt and MetaFile1.txt." << endl;
+    cout << "Note that the MetaFiles defined are consumed in alphabetical order" <<endl;
     cout << "-hdf5 HDF5 file for simulation results. Trees as XML strings are in the HDF5 file with TREEXML_PREFIX prefix. See -writeInterval" << endl;
     cout << "-writeInterval <number> Save trees in XML format in every `number` of years" << endl;   
     cout << "-generateLocations <num>  In this case <num> trees will be generated to random locations. If this" << endl;
