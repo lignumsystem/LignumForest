@@ -159,7 +159,7 @@ namespace LignumForest{
     ///      for example: -metafile 'Metafile*.txt'.
     ///\note The \p globexpr is a Unix glob expression and pattern matching is implemented with C library *glob* function.
     ///      Most notably curly braces can be used to express alternative matchings. For example, the
-    ///      glob expression *{MetaFile, MetaFile1}.txt* matches MetaFile.txt and MetaFile1.txt and nothing else.
+    ///      glob expression <i> {MetaFile,MetaFile1}.txt </i> matches MetaFile.txt and MetaFile1.txt and nothing else.
     ///\post The queue of MetaFiles is sorted in alphabetical order.
     void insertMetaFiles(const string& globexpr);
     ///\brief Retrieve the next MetaFile in the queue
