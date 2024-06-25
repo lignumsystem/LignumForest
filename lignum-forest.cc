@@ -90,11 +90,10 @@ int main(int argc, char** argv)
   /// \addtogroup lignumforest
   ///@{
   /// \par Initializing forest stand 
+  /// + Parse and resolve command line
   /// + Initialize functions
-  /// + Create and initialize trees to defined locations
-  /// + Initialize voxel space
-  /// + Resize data matrices
-  /// + Collect data from initial forest stand state
+  /// + Create tree locations
+  /// + Create trees
   /// \internal
   /// \snippet{lineno} lignum-forest.cc InitForest
   // [InitForest]
@@ -110,7 +109,10 @@ int main(int argc, char** argv)
   gloop.createTrees();
   cout << "CREATE TREES DONE" << endl;
   gloop.printTreeLocations(0);
-   /// \defgroup B_hdf5setup Set-up HDF5 files
+  // [InitForest]
+  /// \endinternal
+  ///@}
+  /// \defgroup B_hdf5setup Set-up HDF5 files
   /// \addtogroup lignumforest
   ///@{
   /// \par Setting up HDF5 files
@@ -118,6 +120,7 @@ int main(int argc, char** argv)
   /// + Create HDF5 file for XML trees
   /// + Create HDF5 group for XML trees
   /// + Create HDF5 datasets for simulation configuration
+  ///   + Command line
   ///   + MetaFiles
   ///   + Parameters
   ///   + Functions
@@ -134,8 +137,19 @@ int main(int argc, char** argv)
   hdf5datafile.createConfigurationDataSets(argc,argv);
   // [HDF5INIT]
   ///@}
-  /// \endinternal
-  ///
+  ///\endinternal
+  ///\defgroup C_initgloop Initialize forest growth
+  ///\addtogroup lignumforest
+  ///@{
+  ///\par Forest growth initialization
+  /// + Initialize trees
+  /// + Resize HDF5 data arrays
+  /// + Initialize voxel space
+  /// + Evaluate stand variables
+  /// + Collect the initial forest data
+  ///\internal
+  ///\snippet{lineno} lignum-forest.cc InitForestGrowth
+  // [InitForestGrowth]
   //InitializeTrees reads in/sets a number of parameters and functions for each tree
   gloop.initializeTrees();
   //Resize the 3D and 2D data arrays for HDF5 file to right dimensions.
@@ -148,9 +162,9 @@ int main(int argc, char** argv)
   gloop.evaluateStandVariables();
   //The 0th Year dimension is used for intial data 
   gloop.collectDataAfterGrowth(0);
-  // [InitForest]
+  // [InitForestGrowth]
   ///@}
-  /// \endinternal
+  ///\endinternal
   ///
   cout << "INIT DONE" << endl;
   for(int year = 0; year < gloop.getIterations(); year++) {
@@ -161,10 +175,10 @@ int main(int argc, char** argv)
       //HDF5 output assumes there is at least one tree left 
       continue;
     }
-    ///\defgroup C_datatransfer Save data from previous year
+    ///\defgroup D_datatransfer Save data from previous year
     ///\addtogroup lignumforest
     ///@{
-    ///\par Save data
+    ///\par Save simulation data
     ///+ Pass growth \p year to L system and to *gloop*.
     ///+ Save previous year tree height for each tree.
     ///+ Save the current \p year in LignumForest::GrowthLoop.
@@ -183,7 +197,7 @@ int main(int argc, char** argv)
     // [IGLOOP]
     ///@}
     ///\endinternal
-    ///\defgroup D_radandgrowth Radiation regime and new segments
+    ///\defgroup E_radandgrowth Radiation regime and new segments
     ///\addtogroup lignumforest
     ///@{
     ///\par The steps from the current state to a new state in the forest plot 
@@ -213,7 +227,7 @@ int main(int argc, char** argv)
     // [NEWSEG]
     ///@}
     ///\endinternal
-    ///\defgroup E_ruegroup Radiation use efficiency
+    ///\defgroup F_ruegroup Radiation use efficiency
     ///\addtogroup lignumforest
     ///@{
     ///\par Set radiation use efficiency
@@ -226,7 +240,7 @@ int main(int argc, char** argv)
     // [RUE]
     ///@}
     ///\endinternal
-    ///\defgroup F_datacollect Data collection
+    ///\defgroup G_datacollect Data collection
     ///\addtogroup lignumforest
     ///@{
     ///\par Data collection steps after growth
@@ -253,7 +267,7 @@ int main(int argc, char** argv)
     cout << "NO TREES AFTER GROWTH LOOP" <<endl;
   }
   cout << "GROWTH DONE " << "NUMBER OF TREES " << gloop.getNumberOfTrees() << endl;
-  ///\defgroup G_hdf5data HDF5 data creation
+  ///\defgroup H_hdf5data HDF5 data creation
   ///\addtogroup lignumforest
   ///@{
   /// \par HDF5 data from growth loop data

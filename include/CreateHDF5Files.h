@@ -48,6 +48,7 @@ namespace LignumForest{
     /// Create and initialize HDF5 file with its groups.
     /// \param hdf5fname HDF5 file name
     /// \param vsfname Voxel space file name
+    /// \param metafile_q MetaFiles used in simulation
     CreateHDF5File(const string& hdf5fname,const string& vsfname, const deque<string>& metafile_q);
     /// Close HDF5 file in destructor
     ~CreateHDF5File();
@@ -61,9 +62,9 @@ namespace LignumForest{
     void close();
   private:
     void createGroups();
-    LGMHDF5File hdf5_file;
-    string vsfile;
-    deque<string> metafile_queue;
+    LGMHDF5File hdf5_file;///< HDF5 file for Lignum tree and simulations
+    string vsfile; ///< Name of the VoxelSpace
+    deque<string> metafile_queue; ///< Names for the MetaFiles used
   };
 
   template <class T>

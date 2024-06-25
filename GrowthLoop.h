@@ -152,7 +152,7 @@ namespace LignumForest{
     void initialize(int argc, char** argv);
     ///\brief Insert MetFiles in use into their GrowthLoop::metafile_q queue
     ///\param globexpr The glob expression to list MetaFiles (in the working directory)
-    ///\post The queue of MetaFiles is sorted in alphabetical order.
+    ///\pre The MetaFiles must be in the working directory
     ///\attention The user must name MetaFiles so that the files are used in alphabetical order,
     ///           for example by using simple numbering: MetaFile1.txt, MetaFile2.txt,...,MetaFileN.txt.
     ///\note Protect the \p globexpr with quotes in shell script or in commmand line,
@@ -160,7 +160,8 @@ namespace LignumForest{
     ///\note The \p globexpr is a Unix glob expression and pattern matching is implemented with C library *glob* function.
     ///      Most notably curly braces can be used to express alternative matchings. For example, the
     ///      glob expression *{MetaFile, MetaFile1}.txt* matches MetaFile.txt and MetaFile1.txt and nothing else.
-    void insertMetaFiles(const string& regexp);
+    ///\post The queue of MetaFiles is sorted in alphabetical order.
+    void insertMetaFiles(const string& globexpr);
     ///\brief Retrieve the next MetaFile in the queue
     ///\retval s The first MetaFile in the queue
     ///\post The first MetaFile \p s is removed from the queue
@@ -491,7 +492,7 @@ namespace LignumForest{
     /// Create new segments and optionally evaluate:
     /// + Space colonization model for growth space
     /// + EBH model for resource allocation
-    /// \important Pine::mode is set to 0 to select right condition in L-system
+    /// \note Pine::mode is set to 0 to select right condition in L-system
     /// \note The sizes of these new segments will be iterated later in GrowthLoop::allocationAndGrowth()
     /// \post Pine::mode=0
     void createNewSegments();
@@ -503,7 +504,7 @@ namespace LignumForest{
     /// \sa vtree vlsystem locations
     /// \sa wsapwood wfoliage wroot ws_after_senescence vdatafile
     /// \deprecated \p fip_mode \p fgo_mode
-    /// \important  \p Pine::mode is set to 1 to create new buds after GrowthLoop::allocation()
+    /// \note \p Pine::mode is set to 1 to create new buds after GrowthLoop::allocation()
     /// \post Pine::mode = 1 
     void allocationAndGrowth(const ParametricCurve& fip_mode, const ParametricCurve& fgo_mode);
     int getNumberOfTrees() {return no_trees;}
