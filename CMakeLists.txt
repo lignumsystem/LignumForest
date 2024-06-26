@@ -74,7 +74,6 @@ if(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin")
   message("LignumForest")
   message("------------")
   message("Apple macOS (Darwin) platform")
-  message("REMEMBER to type \"make install\" to install lignum-forest") 
   # The following lines find Qt4 headers and libraries, qmake must be in PATH
   #find_package(Qt4 COMPONENTS QtOpenGL QtXml QtGui QtCore REQUIRED)
   #find_package(OpenGL REQUIRED)
@@ -87,7 +86,6 @@ elseif(CMAKE_HOST_SYSTEM_NAME MATCHES "Linux")
   message("LignumForest")
   message("------------")
   message("Linux platform")
-  message("REMEMBER to type \"make install\" to install lignum-forest") 
   find_package(HDF5 COMPONENTS C CXX HL REQUIRED)
   find_package(Qt5 COMPONENTS Xml Core  REQUIRED)
 else()
@@ -159,6 +157,9 @@ else()
   message(${CMAKE_HOST_SYSTEM_NAME} " not supported")
   message(FATAL_ERROR "Exiting cmake")
 endif()
-
+add_custom_command(TARGET lignum-forest
+  POST_BUILD
+  COMMENT "REMEMBER to type \"make install\" to install lignum-forest\nto the working directory above."
+  )
 install(TARGETS lignum-forest DESTINATION "${CMAKE_CURRENT_LIST_DIR}")
 
