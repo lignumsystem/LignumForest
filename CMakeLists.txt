@@ -34,7 +34,7 @@
 cmake_minimum_required(VERSION 3.12)
 # cmake 3.23 for Xcode 13 recommends the policy CMP0114 (warning output)
 cmake_policy(SET CMP0114 NEW)
-project(lignum-forest DESCRIPTION "Indiviudal trees in heterogenous forest")
+project(LignumForest DESCRIPTION "Indiviudal trees in heterogenous Scots pine forest")
 
 # Lignum core projects as an ExternalProject. 'lignum-core' target is compiled first
 # Note: lignum-core  has to be configured with cmake first. See lignum-core/CMakeLists.txt
@@ -50,7 +50,7 @@ include(ExternalProject)
 #set(LSYSTEMSRC  pine-em98-branch-B.cpp)
 set(LSYSTEMFILE pine-em98-branch-C.L)
 set(LSYSTEMSRC  pine-em98-branch-C.cpp)
-ExternalProject_add(lignum-core
+ExternalProject_Add(lignum-core
 SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/..
 DOWNLOAD_COMMAND "")
 
@@ -62,6 +62,7 @@ include(../stl-lignum/lib/LGM.cmake)
 include(../stl-voxelspace/lib/voxel.cmake)
 include(../LEngine/lib/L.cmake)
 include(../LEngine/lib/l2c.cmake)
+
 if(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin")
   message("LignumForest")
   message("------------")
@@ -110,11 +111,11 @@ set(SOURCE_FILES lignum-forest.cc
 # Rebuild L system compiler with custom command for 'l2c'
 add_custom_command(
 OUTPUT ${CMAKE_CURRENT_LIST_DIR}/${LSYSTEMSRC}
-DEPENDS ${CMAKE_CURRENT_LIST_DIR}/${LSYSTEMFILE} l2c
+DEPENDS ${CMAKE_CURRENT_LIST_DIR}/${LSYSTEMFILE}
 COMMAND ${CMAKE_CURRENT_LIST_DIR}/../LEngine/bin/l2c ${CMAKE_CURRENT_LIST_DIR}/${LSYSTEMFILE}  ${CMAKE_CURRENT_LIST_DIR}/${LSYSTEMSRC}
 )
 
-# Main target, the executable 'lignum-forest'.
+# Main target, the executable 'lignum-forest'
 add_executable(lignum-forest ${SOURCE_FILES})
 target_include_directories(lignum-forest PUBLIC . include
 ${CMAKE_CURRENT_LIST_DIR}/
