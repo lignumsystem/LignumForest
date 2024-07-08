@@ -33,6 +33,11 @@
 #include <TreeDataAfterGrowth.h>
 
 namespace LignumForest{
+
+  ///Maximum value for *LGPxi* in tree segment when \f$ \xi \f$ increment is in effect
+  ///\sa GrowthLoop::increaseXi()
+  const double MAX_XII=0.85;
+  
   ///\class CollectP
   ///\brief Collect photosynthates from the tree
   ///Use with Accumulate algorithm in stl-lignum
@@ -105,7 +110,7 @@ namespace LignumForest{
        wstem(0.0),wbranches(0.0),stem_sw(0.0),treeP(0.0),treeM(0.0),
        cv(0.30),to_file(false),sensitivity_analysis(false),
        crown_limit_data(false),
-       writevoxels(false),increase_xi(false),
+       writevoxels(false),increase_xi(false),xi_increment(25.0),
        self_thinning(false), generate_locations(false), location_file("Treelocations.txt"),
        no_trees(0), stand_output(NULL),cstand_output(NULL),wood_voxel(true), evaluate_border_forest(true),seg_len_var(0.0),
        pairwise_self(false), eero(false),  g_fun_varies(false), g_fun_var(0.0),
@@ -627,11 +632,14 @@ namespace LignumForest{
     ///
     /// The effect of primary wood for sapwood proportion in new segments is described in
     /// Perttunen et al. 1996. Primary wood proportion = LGPXi LIGNUM parameter, see
-    /// stl-lignum/include/LGMSymbols.h \sa xi_start
+    /// stl-lignum/include/LGMSymbols.h \sa xi_start xi_increment
     bool increase_xi;
-    int xi_start; ///< Starting year of Xi increase \sa increase_xi
+    /// \brief The value of *LGPxi* will change by 0.1/xi_increment if `ìncrease_xi` is *true*.
+    /// Default value 25.0
+    /// From command line -xiIncrement <value>.\sa increase_xi xi_start
+    double xi_increment;
+    int xi_start; ///< Starting year of Xi increase. From command line -increaseXi <year>. \sa increase_xi xi_increment
     bool self_thinning;///< NOT IN USE CURRENTLY! If forced self thinning.
-
     /// \brief The function K appears in radiation interception calculation.
     ///
     /// The K function is defined in Perttunen et al. 1998, Eq. 8
@@ -644,7 +652,9 @@ namespace LignumForest{
     ParametricCurve fgo_mode;///< Function fgo after growth mode change
     Sensitivity<TS,BUD> sensitivity; ///< For printing out sensitivity analysis results
     bool generate_locations; ///< If tree positions are set by the program. \sa setTreeLocations
-    string location_file; ///< Tree positions are read from here. \sa setTreeLocation
+    ///Tree positions are read from here. \sa setTreeLocation
+    ///\note Hard-coded *TreeLocations.txt* file in the constructor.
+    string location_file; 
     ifstream location_stream; ///< \note SEEMS SUPERFLUOUS!
     int no_trees; ///< Number of trees in the forest
     bool noWoodVoxel; ///< \note SUPERFLUOUS!

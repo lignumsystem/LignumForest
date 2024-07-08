@@ -152,9 +152,10 @@ namespace LignumForest{
     cout << "-numParts <parts>         Segments can be dumped to voxels by parts (i.e. they may belong to different voxels," << endl;
     cout << "                          default = 1)" << endl;
     cout << "-hw <hw_start>            Starting year of formation of heartwood Default = 15 years" << endl;
-    cout << "-increaseXi               If parameter ksi (fraction of heartwood in new segments) increases, value = starting year (default = 15)"
+    cout << "-increaseXi <value>       If parameter ksi (fraction of heartwood in new segments) increases, <value> = starting year (default = 15)"
 	 << endl;
-    cout << "                          as increase = 0.004/year after year 15 up to value 0.85 (as in FPB 35: 964-975 2008 article)"
+    cout << "-xiIncrement <value>      The parameter xi increases by the rate of 0.1/<value>. Default is 0.1/25.0." <<endl;
+    cout << "                          This means increase = 0.004/year after year 15 up to value 0.85 (as in FPB 35: 964-975 2008 article)"
 	 << endl;
     cout << "-targetTree <num>         Any one of the trees can be identified as target tree (default = 0)" << endl;
     cout << "-writeOutput               Most of the things are written to their respctive file at -writeInterval interval (default false)" << endl;
@@ -357,6 +358,11 @@ namespace LignumForest{
     if (ParseCommandLine(argc,argv,"-increaseXi", clarg)){
       increase_xi = true;
       xi_start = atoi(clarg.c_str());
+    }
+    ///+ `-xiIncrement <value>, LGPxi increment as 0.1/<value>. Default 0.1/25.0.
+    clarg.clear();
+    if (ParseCommandLine(argc,argv,"-xiIncrement",clarg)){
+      xi_increment=atof(clarg.c_str());
     }
     ///+ `-hw`, the start of heartwood build up, default `15` years.
     clarg.clear();
@@ -1257,15 +1263,16 @@ namespace LignumForest{
 	///\snippet{lineno} GrowthLoopI.h XI
 	//[XI]
 	double xii = GetValue(*t, LGPxi);
+	double xii_previous = xii;
 	//LGPXi Increment
-	xii += 0.1/25.0;
+	xii += 0.1/xi_increment;
 	//Check for max value
-	if(xii > 0.85) xii=0.85;
+	if(xii > MAX_XII) xii=MAX_XII;
 	SetValue(*t,LGPxi, xii);
 	//[XI]
 	///\endinternal
 	if (verbose && first) {
-	  cout << "Increasing LGPxi from " << GetValue(*t,LGPxi) << " to " << xii <<endl;
+	  cout << "Increasing LGPxi from " << xii_previous << " to " << xii <<endl;
 	  first = false;
 	}
       }
