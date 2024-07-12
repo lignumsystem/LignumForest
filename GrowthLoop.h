@@ -615,7 +615,6 @@ namespace LignumForest{
     string voxelfile;///< File of parameters for the VoxelSpace \sa checkCommandLine
     string xmlfile; ///< XML file where the tree can be saved and restored from \sa parseCommandline
     string datafile;///< Text file to save tree data each time step \sa parseCommandline
-
     /// \brief File name for storing radiation condition information of shoots
     ///
     /// The radiation conditions of a shoot are determined with the aid of relative
@@ -623,6 +622,12 @@ namespace LignumForest{
     /// further, in terms of fip = f(relative incoming radiation). The fip function affects
     /// length of new shoot and has been defined in Perttunen et al. 1996. \sa writeFip
     string fipfile;
+    /// \brief Function passing sapwood down
+    ///
+    /// Read spawood down function from command line and use in LignumForest::ScotsPineTree constructor.
+    /// \note \e fsapwdownfile is is used internally only, no getter or setter methods exists to access it directly.
+    /// \sa GrowthLoop::parseCommandLine() GrowthLoop:createTrees()
+    string fsapwdownfile;
     bool to_file;///< If output to a file \sa createTrees   sa\ writeOutput
     bool sensitivity_analysis; ///< If sensitivity analysis is done. \sa parseCommandLine
     bool crown_limit_data; ///< If output about crown base. \sa parseCommandLine \sa writeCrownLimitData

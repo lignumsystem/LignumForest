@@ -133,6 +133,7 @@ namespace LignumForest{
     cout << "[-budViewFunction] [-EBH] -EBH1 <value>]" << endl;
     cout << "[-space2Distance <Value>] [-EBHREDUCTION <value>] [-EBHFINAL <value>] [-EBHInput <int>] [-RUE <value>]" << endl;
     cout << "[-architecureChange <year>]" << endl;
+    cout << "[-fsapwdown <file>]" << endl;
     cout << "------------------------------------------------------------------------------------------------" << endl;
     cout << "-iter Number of years to simulate" << endl;
     cout << "-metafile <globexpr> Glob expression (as for Unix command line) for MetaFiles." << endl 
@@ -192,7 +193,8 @@ namespace LignumForest{
     cout << "-RUE <value>       The radiation use effeciency (rue) varies as a function of TreeSegments initial radiation" << endl;
     cout << "                   conditions. Photosynthetic production of TreeSegment = rue * LGApr * Qabs. <value> = degree of" << endl;
     cout << "                   increase of rue as a function of shadiness (0 < <value> < 2)." << endl;
-    cout << "-architectureChange Change the braching pattern in L-system." <<endl; 
+    cout << "-architectureChange <year>  Change the braching pattern in L-system after <year> in simulation." <<endl;
+    cout << "-fsapwdown <file>  Part of the sapwood going down in a tree as a function of Gravelius order." <<endl;
     cout << endl;
   }
   // [Usagex]
@@ -231,6 +233,11 @@ namespace LignumForest{
     ///+ Mandatory argument -writeInterval
     else if (CheckCommandLine(argc,argv,"-writeInterval") == false){
       cout << "Mandatory -writeInterval <number> option missing" <<endl;
+      exit(0);
+    }
+    ///+ Mandatory argument -fsapwdown
+    else if (CheckCommandLine(argc,argv,"-fsapwdown") == false){
+      cout << "Mandatory -fsapwdown <file> option missing" <<endl;
       exit(0);
     }
     else if (verbose){
@@ -630,11 +637,19 @@ namespace LignumForest{
       LignumForest::is_mode_change=true;
       LignumForest::mode_change_year=atoi(clarg.c_str());
     }
+    ///---
+    ///\par Parse Sapwood down function
+    clarg.clear();
+    if (ParseCommandLine(argc,argv,"-fsapwdown",clarg)){
+      fsapwdownfile = clarg;
+      cout << "SAPWDOWN: " << fsapwdownfile <<endl;
+      exit(0);
+    }
     if (verbose){
       cout << "parseCommandLine end" <<endl;
       printVariables();
-    }   
-  }
+    } 
+  }//End parseCommandLine()
 
 
 
@@ -686,8 +701,9 @@ namespace LignumForest{
   /// + Create and set the tree ID (simply the position in the tree vector)
   /// + Initialize no_h and h_prev to zero
   /// + Initialize wspawood, wfoliage, wroot, ws_after_senescence to zero
-  /// \note Hard coded functions in the Tree constructor that should exist in the  directory
-  /// \deprecated *to_file*  deprecated, using HDF5 files instead
+  /// \note Hard coded functions in the Tree constructor should exist in the  working directory
+  /// \note fsapwdown file must be given in command line
+  /// \deprecated \e to_file  deprecated, using HDF5 files instead
   /// \todo Remove open output file stream to so called *target tree* (data for all trees for every year in HDF5 file)
   template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::createTrees()
@@ -702,7 +718,7 @@ namespace LignumForest{
       // [DFun]
       TREE* t = new TREE(Point(p.first,p.second,0.0),PositionVector(0,0,1),
 			 "sf.fun","fapical.fun","fgo.fun",
-			 "fsapwdown.fun","faf.fun","fna.fun", "fwd.fun",
+			 fsapwdownfile,"faf.fun","fna.fun", "fwd.fun",
 			 "flr.fun","ebh.fun","bvf.fun");
       // [DFun]
       ///\endinternal
