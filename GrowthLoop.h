@@ -108,11 +108,11 @@ namespace LignumForest{
        wfaftergrowth(0.0),wsaftergrowth(0.0),qintop1(0.0),cvol(0.0),
        axisvol(0.0),qabs(0.0),treeAf(0.0),ASeg0(0.0),wood(0.0),
        wstem(0.0),wbranches(0.0),stem_sw(0.0),treeP(0.0),treeM(0.0),
-       cv(0.30),to_file(false),sensitivity_analysis(false),
-       crown_limit_data(false),
+       cv(0.30),location_file("Treelocations.txt"),stand_output(NULL),cstand_output(NULL),
+       to_file(false),sensitivity_analysis(false),crown_limit_data(false),
        writevoxels(false),increase_xi(false),xi_increment(25.0),
-       self_thinning(false), generate_locations(false), location_file("Treelocations.txt"),
-       no_trees(0), stand_output(NULL),cstand_output(NULL),wood_voxel(true), evaluate_border_forest(true),seg_len_var(0.0),
+       self_thinning(false), generate_locations(false), 
+       no_trees(0), wood_voxel(true), evaluate_border_forest(true),seg_len_var(0.0),
        pairwise_self(false), eero(false),  g_fun_varies(false), g_fun_var(0.0),
        random_branch_angle(false), ba_variation(0.0), dDb(0.003) {}
     ///\brief Initialize with one tree
@@ -382,7 +382,7 @@ namespace LignumForest{
     void radiationUseEfficiency();
     /// \brief Output of simulation to files.
     ///
-    /// Write stand level data, target tree data, crown limit data, Fip data and the target tree xml file.
+    /// \deprecated Write stand level data, target tree data, crown limit data, Fip data and the target tree xml file.
     /// \sa writeOutput writeCrownLimitData writeTreeToXMLFile writeFip
     /// \deprecated HDF5 implementation is advancing. Remove this method when enough data collected. Consult and
     /// agree with Risto.
@@ -546,6 +546,7 @@ namespace LignumForest{
     ///< dimensions will be known after trees are generated.
     TMatrix2D<double> hdf5_stand_data; ///< 2D array[years][ndata_cols] for stand level data \sa stand
     TMatrix2D<double> hdf5_center_stand_data; ///< 2D array[years][ndata_cols] for center stand level data \sa center_stand
+    StandDescriptor<TREE> center_stand; ///< To deal with center part of stand \sa setTreeLocations
     ///
     /// \brief lambda = Iteration parameter of new growth
     /// Save lambda for each tree.
@@ -599,13 +600,11 @@ namespace LignumForest{
     double treeM; ///< Respiration of tree. \warning The same warning as for treeP \sa TreeP
     summing bs;///< Mean branch length
     DCLData dcl;///< Diameter and heigth at the crown base.
-
     /// \brief This functor class returns crown volume of a tree
     ///
     /// Class CrownVolume declared and defined in stl-lignum/TreeFunctor.h
     /// and stl-lignum/TreeFunctorI.h.
     CrownVolume<TS,BUD> cv;
-
     /// \brief This functor class returns stem volume of a tree
     ///
     /// Class MainAxisVolume Defined in stl-lignum/TreeFunctor.h
@@ -628,11 +627,16 @@ namespace LignumForest{
     /// \note \e fsapwdownfile is is used internally only, no getter or setter methods exists to access it directly.
     /// \sa GrowthLoop::parseCommandLine() GrowthLoop:createTrees()
     string fsapwdownfile;
-    bool to_file;///< If output to a file \sa createTrees   sa\ writeOutput
+    ///Tree positions can be read from a file. 
+    ///\note Hard-coded *TreeLocations.txt* file in the constructor.
+    ///\sa GrowthLoop::setTreeLocation()
+    string location_file;
+    ofstream* stand_output; ///< \depercated Stream for target tree output \sa output()
+    ofstream* cstand_output; ///< \deprecated Stream for center stand output
+    bool to_file;///< \deprecated If output to a file \sa createTrees   sa\ writeOutput()
     bool sensitivity_analysis; ///< If sensitivity analysis is done. \sa parseCommandLine
     bool crown_limit_data; ///< If output about crown base. \sa parseCommandLine \sa writeCrownLimitData
     bool writevoxels; ///< If output about the voxelspace \sa writeVoxels
-
     /// \brief If the primary wood proportion (denoted xi) in new shoots increases
     ///
     /// The effect of primary wood for sapwood proportion in new segments is described in
@@ -657,19 +661,13 @@ namespace LignumForest{
     ParametricCurve fgo_mode;///< Function fgo after growth mode change
     Sensitivity<TS,BUD> sensitivity; ///< For printing out sensitivity analysis results
     bool generate_locations; ///< If tree positions are set by the program. \sa setTreeLocations
-    ///Tree positions are read from here. \sa setTreeLocation
-    ///\note Hard-coded *TreeLocations.txt* file in the constructor.
-    string location_file; 
     ifstream location_stream; ///< \note SEEMS SUPERFLUOUS!
     int no_trees; ///< Number of trees in the forest
     bool noWoodVoxel; ///< \note SUPERFLUOUS!
     bool wood_voxel; ///< If woody parts are dumped into voxels \sa setVoxelSpaceAndBorderForest
     int year; ///< Year in simulation (start = 0)
     unsigned int target_tree; ///< Information of this tree is printed out. \sa output
-    bool write_output; ///< If information of target tree is printed out. \sa output
-    ofstream* stand_output; ///< Strem for target tree output \sa output
-    StandDescriptor<TREE> center_stand; ///< To deal with center part of stand \sa setTreeLocations
-    ofstream* cstand_output; ///< Stream for center stand output
+    bool write_output; ///< If information of target tree is printed out. \sa output    
     bool evaluate_border_forest; ///< If border forest in radiation calculations? \sa calculateRadiation
     LGMdouble k_border_conifer;///< Extinction coeffient for border forest conifers
                                ///<\sa calculateRadiation BorderForest::getBorderForestExtinction

@@ -642,8 +642,6 @@ namespace LignumForest{
     clarg.clear();
     if (ParseCommandLine(argc,argv,"-fsapwdown",clarg)){
       fsapwdownfile = clarg;
-      cout << "SAPWDOWN: " << fsapwdownfile <<endl;
-      exit(0);
     }
     if (verbose){
       cout << "parseCommandLine end" <<endl;
