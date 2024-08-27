@@ -86,6 +86,9 @@ namespace LignumForest{
   template<class TREE, class TS, class BUD, class LSYSTEM>
   void GrowthLoop<TREE,TS,BUD,LSYSTEM>::insertMetaFiles(const string& regexp)
   {
+    if (verbose){
+      cout << "INSERT META FILES A " << regexp << endl;
+    }
     glob_t glob_result;
     glob(regexp.c_str(),GLOB_TILDE|GLOB_BRACE,NULL,&glob_result);
     for (unsigned int i=0; i < glob_result.gl_pathc; ++i){

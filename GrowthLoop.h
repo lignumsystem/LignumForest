@@ -160,7 +160,7 @@ namespace LignumForest{
     ///\pre The MetaFiles must be in the working directory
     ///\attention The user must name MetaFiles so that the files are used in alphabetical order,
     ///           for example by using simple numbering: MetaFile1.txt, MetaFile2.txt,...,MetaFileN.txt.
-    ///\note Protect the \p globexpr with quotes in shell script or in commmand line,
+    ///\attention Protect the \p globexpr with quotes in shell script or in commmand line,
     ///      for example: -metafile 'Metafile*.txt'.
     ///\note The \p globexpr is a Unix glob expression and pattern matching is implemented with C library *glob* function.
     ///      Most notably curly braces can be used to express alternative matchings. For example, the
@@ -191,8 +191,13 @@ namespace LignumForest{
     ///\param argc Number arguments
     ///\param argv Command line arguments
     ///\attention Some hard coded file names as default values.
+    ///\attention Command line accepts Glob expressions. The special characters require
+    ///protection with quote characters (`'`). These speacial characters include for example
+    ///curly braces (`{` and `}`). cxxadt::ParseCommanLine() returns the Glog expression as it is.
+    ///The actual parsing of the Glob expression must be done where the expression is needed.
     ///\sa GrowthLoop::checkCommandLine
     ///\sa CheckCommandLine ParseCommandLine
+    ///\sa GrowthLoop::insertMetaFiles
     void parseCommandLine(int argc, char** argv);
     ///\brief Currently checks `eero` from command line
     ///\post If `eero` = *true* then `bud_variation` = *false*
