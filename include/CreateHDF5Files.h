@@ -52,7 +52,18 @@ namespace LignumForest{
     CreateHDF5File(const string& hdf5fname,const string& vsfname, const deque<string>& metafile_q);
     /// Close HDF5 file in destructor
     ~CreateHDF5File();
-    /// Create datasets for simulation session configuration
+    /// Create datasets for simulation session configuration:
+    /// -# Functions (*.fun files)
+    /// -# MetaFile*.txt files
+    /// -# Tree*.txt configuration files
+    /// -# Firmamanet*.txt files
+    /// -# The initial VoxelSpace configuration,
+    /// -# The command line used
+    /// \param argc Number of strings (arguments) in the command line
+    /// \param argv Vector of strings in the command line
+    /// \attention The quotation characters to protect Glob expressions seems
+    /// to be removed by the *copy* algorithm in c++ STL library.
+    /// \sa GrowthLoop::parseCommadLine()
     void createConfigurationDataSets(int argc, char** argv);
     /// Create datasets from simulation session results
     /// \param gloop Growth loop containing simulation data
