@@ -73,28 +73,30 @@ using namespace LignumForest;
 
 int main(int argc, char** argv)
 { 
-  /// \defgroup  lignumforest The LignumForest main program
-  ///@{
-  /// \par The main growth loop 
-  /// + Initialize the forest stand
-  /// + Set-up HDF5 file
-  /// + Growth and data collection
-  /// + Write data to HDF5 files
-  ///@}
-  ///
-  Sensitivity<ScotsPineSegment,ScotsPineBud> sensitivity;                                                           
+  /// \defgroup  AMAIN The LignumForest main program
+  /// @{
+  /// \par The main program
+  /// + Create the forest stand
+  /// + HDF5 files set-up
+  /// + Crowth initialization
+  /// + Growth loop
+  ///   + Prepare growth step
+  ///   + Growth step
+  ///   + Data collection
+  /// + After growth tasks
+  /// @}
+  Sensitivity<ScotsPineSegment,ScotsPineBud> sensitivity;
   ScotsPineForest gloop;
   ran3(&LignumForest::ran3_seed);
-  ///
-  /// \defgroup A_initstand Initialize forest stand
-  /// \addtogroup lignumforest
-  ///@{
-  /// \par Initializing forest stand 
+  /// \defgroup BINIT Create the forest stand
+  /// \addtogroup AMAIN
+  /// @{
+  /// \par Create the forest stand
   /// + Parse and resolve command line
   /// + Initialize functions
   /// + Create tree locations
   /// + Create trees
-  /// \internal
+  ///
   /// \snippet{lineno} lignum-forest.cc InitForest
   // [InitForest]
   gloop.parseCommandLine(argc,argv);
@@ -110,12 +112,11 @@ int main(int argc, char** argv)
   cout << "CREATE TREES DONE" << endl;
   gloop.printTreeLocations(0);
   // [InitForest]
-  /// \endinternal
-  ///@}
-  /// \defgroup B_hdf5setup Set-up HDF5 files
-  /// \addtogroup lignumforest
-  ///@{
-  /// \par Setting up HDF5 files
+  /// @}
+  /// \defgroup CHDF5 HDF5 files set-up
+  /// \addtogroup AMAIN
+  /// @{
+  /// \par HDF5 files set-up
   /// + Create HDF5 file for forest  stand data
   /// + Create HDF5 file for XML trees
   /// + Create HDF5 group for XML trees
@@ -126,29 +127,28 @@ int main(int argc, char** argv)
   ///   + Functions
   ///   + Firmament
   ///   + Initial VoxelSpace
-  /// \internal
-  /// \snippet{lineno} lignum-forest.cc HDF5INIT
-  // [HDF5INIT]
+  ///
+  /// \snippet{lineno} lignum-forest.cc HDF5Init
+  // [HDF5Init]
   string hdf5fname;
   ParseCommandLine(argc,argv,"-hdf5", hdf5fname);
   LGMHDF5File hdf5_trees(TREEXML_PREFIX+hdf5fname);
   hdf5_trees.createGroup(TXMLGROUP);
   LignumForest::CreateHDF5File hdf5datafile(hdf5fname,gloop.getVoxelFile(),gloop.getMetaFiles());
   hdf5datafile.createConfigurationDataSets(argc,argv);
-  // [HDF5INIT]
-  ///@}
-  ///\endinternal
-  ///\defgroup C_initgloop Initialize forest growth
-  ///\addtogroup lignumforest
-  ///@{
-  ///\par Forest growth initialization
-  /// + Initialize trees
-  /// + Resize HDF5 data arrays
-  /// + Initialize voxel space
-  /// + Evaluate stand variables
-  /// + Collect the initial forest data
-  ///\internal
-  ///\snippet{lineno} lignum-forest.cc InitForestGrowth
+  // [HDF5Init]
+  /// @}
+  /// \defgroup DGROWTHINIT Growth initialization
+  /// \addtogroup AMAIN
+  /// @{
+  /// \par Growth initialization
+  ///  + Initialize trees
+  ///  + Resize HDF5 data arrays
+  ///  + Initialize voxel space
+  ///  + Evaluate stand variables
+  ///  + Collect the initial forest data
+  ///
+  /// \snippet{lineno} lignum-forest.cc InitForestGrowth
   // [InitForestGrowth]
   //InitializeTrees reads in/sets a number of parameters and functions for each tree
   gloop.initializeTrees();
@@ -163,8 +163,7 @@ int main(int argc, char** argv)
   //The 0th Year dimension is used for intial data 
   gloop.collectDataAfterGrowth(0);
   // [InitForestGrowth]
-  ///@}
-  ///\endinternal
+  /// @}
   ///
   cout << "INIT DONE" << endl;
   for(int year = 0; year < gloop.getIterations(); year++) {
@@ -175,42 +174,45 @@ int main(int argc, char** argv)
       //HDF5 output assumes there is at least one tree left 
       continue;
     }
-    ///\defgroup D_datatransfer Save data from previous year
-    ///\addtogroup lignumforest
-    ///@{
-    ///\par Save simulation data
-    ///+ Pass growth \p year to L system and to *gloop*.
-    ///+ Save previous year tree height for each tree.
-    ///+ Save the current \p year in LignumForest::GrowthLoop.
-    ///+ Increase \f$\xi\f$, parameter for the share of heartwood in new segments.
-    ///+ Growth mode change check.
-    ///\sa Lignum::LGPxi.
-    ///\internal
-    ///\snippet{lineno} lignum-forest.cc IGLOOP
-    // [IGLOOP]
+    /// \defgroup EPREPARE Prepare growth step
+    /// \addtogroup AMAIN
+    /// @{
+    /// \par Prepare growth step
+    /// + Pass growth \p year to L system and to \c gloop.
+    /// + Save previous year tree height for each tree.
+    /// + Save the current \p year in LignumForest::GrowthLoop.
+    /// + Increase \f$\xi\f$, parameter for the share of heartwood in new segments.
+    /// + Growth mode change check.
+    ///
+    /// \sa Lignum::LGPxi
+    ///
+    /// \snippet{lineno} lignum-forest.cc InitGrowthLoop
+    // [InitGrowthLoop]
     //Pine::L_age is for L-system 
     Pine::L_age = (double)year;     
     gloop.setHPrev();
     gloop.setYear(year);
     gloop.increaseXi(year);
     gloop.growthModeChange(year);
-    // [IGLOOP]
-    ///@}
-    ///\endinternal
-    ///\defgroup E_radandgrowth Radiation regime and new segments
-    ///\addtogroup lignumforest
-    ///@{
-    ///\par The steps from the current state to a new state in the forest plot 
-    ///+ Update foliage in voxel space and recalculate borderforest
-    ///+ Calculate radiation climate for trees
-    ///+ Calculate photosynthesis and respiration as well as aging of tree compartments. 
-    ///+ Create new segments
-    ///+ Growth allocation
-    ///+ Prune dead branches from trees
-    ///\sa GrowthLoop::photosynthesisRespirationTreeAging().
-    ///\internal
-    ///\snippet{lineno} lignum-forest.cc NEWSEG
-    // [NEWSEG]
+    // [InitGrowthLoop]
+    /// @}
+    ///
+    /// \defgroup  FSTEP Growth step
+    /// \addtogroup AMAIN
+    /// @{
+    /// \par Growth step
+    ///  + Update foliage in voxel space and recalculate border forest
+    ///  + Calculate radiation climate for trees
+    ///  + Calculate photosynthesis, respiration and aging of tree compartments. 
+    ///  + Create new segments
+    ///  + Growth allocation
+    ///  + Prune dead branches from trees
+    ///  + Set radiation use efficiency in new segments (command line)
+    ///    + Function of shadiness experienced by mother segment (command line argument)
+    /// \sa GrowthLoop::photosynthesisRespirationTreeAging().
+    ///
+    /// \snippet{lineno} lignum-forest.cc NewSeg
+    // [NewSeg]
     gloop.setVoxelSpaceAndBorderForest();
     gloop.calculateRadiation();
     //Currently data collection in photosynthesisRespirationTreeAging
@@ -220,36 +222,24 @@ int main(int argc, char** argv)
     // REMOVE THESE WHEN YOU REMOVE fgomode,fipmode FROM LGMGrowthAllocator2 !!!!!!!!!!!!!!!!!!
     ParametricCurve fip_mode = GetFunction(*(gloop.getTreeVector())[0], LGMIP);
     ParametricCurve fgo_mode = GetFunction(*(gloop.getTreeVector())[0], SPFGO);
-
     gloop.allocationAndGrowth(fip_mode,fgo_mode);
     // Prune dead parts from the trees 
     gloop.prune();
-    // [NEWSEG]
-    ///@}
-    ///\endinternal
-    ///\defgroup F_ruegroup Radiation use efficiency
-    ///\addtogroup lignumforest
-    ///@{
-    ///\par Set radiation use efficiency
-    ///Set  radiation use efficiency in new segments as a function of shadiness
-    ///experienced by mother segment.
-    ///\internal
-    ///\snippet{lineno} lignum-forest.cc RUE
-    // [RUE]
+    // RUE: radiation use efficiency
     gloop.radiationUseEfficiency();
-    // [RUE]
-    ///@}
-    ///\endinternal
-    ///\defgroup G_datacollect Data collection
-    ///\addtogroup lignumforest
-    ///@{
-    ///\par Data collection steps after growth
-    ///+ Evaluate stand metrics 
-    ///+ Collect tree data 
-    ///+ Save trees in XML format in HDF5 file with write intervals 
-    ///\internal
-    ///\snippet{lineno} lignum-forest.cc DATACOLLECT
-    // [DATACOLLECT] 
+    // [NewSeg]
+    /// @}
+    ///
+    /// \defgroup GDATA Data collection
+    /// \addtogroup AMAIN
+    /// @{
+    /// \par Data collection
+    ///  + Evaluate stand metrics 
+    ///  + Collect tree data 
+    ///  + Save trees in XML format in HDF5 file with write intervals
+    ///
+    /// \snippet{lineno} lignum-forest.cc DataCollection
+    // [DataCollection] 
     gloop.evaluateStandVariables();
     // collectDataAfterGrowth collects data for HDF5 file. The 0th Year dimension
     // contains initial data. The year+1 requires because year is not yet updated
@@ -258,31 +248,34 @@ int main(int argc, char** argv)
     gloop.collectDataAfterGrowth(year+1);
     //Save trees as xml
     CreateTreeXMLDataSet(gloop,hdf5_trees,TXMLGROUP,gloop.getWriteInterval());
-    // [DATACOLLECT]
-    ///@}
-    ///\endinternal
+    // [DataCollection]
+    /// @}
+    ///
   } // End of  for(year = 0; ...)
+  /// \defgroup HAFTERGROWTH After growth tasks
+  /// \addtogroup AMAIN
+  /// @{
+  /// \par After growth tasks
+  ///   + Clean up growth loop
+  ///   + Collect data in HDF5 files
+  ///      + Year by year, tree by tree data
+  ///      + Aggregate stand data
+  ///      + Aggregate center stand data
+  ///      + Save HDF5 files
+  ///
+  /// \snippet{lineno} lignum-forest.cc AfterGrowth
+  // [AfterGrowth]
   gloop.cleanUp();
   if (gloop.getNumberOfTrees() == 0){
     cout << "NO TREES AFTER GROWTH LOOP" <<endl;
   }
   cout << "GROWTH DONE " << "NUMBER OF TREES " << gloop.getNumberOfTrees() << endl;
-  ///\defgroup H_hdf5data HDF5 data creation
-  ///\addtogroup lignumforest
-  ///@{
-  /// \par HDF5 data from growth loop data
-  ///+ Year by year, tree by tree data
-  ///+ Aggregate stand data
-  ///+ Aggregate center stand data
-  ///+ Save HDF5 files
-  ///\internal
-  ///\snippet{lineno} lignum-forest.cc HDF5FILECREATE
-  // [HDF5FILECREATE]  
+
   hdf5datafile.createDataSets(gloop);
   hdf5datafile.close();
-  // [HDF5FILECREATE]
-  ///@}
-  ///\endinternal
+  // [AfterGrowth]
+  /// @}
+  ///
   cout << "HDF5 DATA SAVED AND SIMULATION DONE" <<endl;
   return 0;
 }

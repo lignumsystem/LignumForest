@@ -87,7 +87,7 @@ namespace LignumForest{
   void GrowthLoop<TREE,TS,BUD,LSYSTEM>::insertMetaFiles(const string& regexp)
   {
     if (verbose){
-      cout << "INSERT META FILES A " << regexp << endl;
+      cout << "INSERT META FILES (Glob expressions): " << regexp << endl;
     }
     glob_t glob_result;
     glob(regexp.c_str(),GLOB_TILDE|GLOB_BRACE,NULL,&glob_result);
@@ -104,9 +104,6 @@ namespace LignumForest{
     }
   }
   
-  ///\brief Retrieve MetaFile in the queue
-  ///\return The first MetaFile in the queue
-  ///\post The first MetaFile is removed from the queue
   template<class TREE, class TS, class BUD, class LSYSTEM>
   string GrowthLoop<TREE,TS,BUD,LSYSTEM>::popMetaFile()
   {
@@ -115,8 +112,6 @@ namespace LignumForest{
     return s;
   }
   
-  ///\brief Print the command line **Usage** on standard out
-  ///\attention Keep it up to date after implementing a new command line option
   /// \snippet{lineno} GrowthLoopI.h Usagex
   // [Usagex]
   template<class TREE, class TS, class BUD, class LSYSTEM>
@@ -202,9 +197,6 @@ namespace LignumForest{
   }
   // [Usagex]
 
-
-
-  ///Check mandatory arguments and that number of arguments are at least three.
   template<class TREE, class TS, class BUD, class LSYSTEM>
   void GrowthLoop<TREE,TS,BUD,LSYSTEM>::checkCommandLine(int argc, char** argv)const
   {
@@ -291,7 +283,7 @@ namespace LignumForest{
     if (CheckCommandLine(argc,argv,"-pairwiseSelf")) {
       pairwise_self = true;
     }
-    ///.
+    ///
     
     ///---
     ///\par Parse output files
@@ -696,16 +688,6 @@ namespace LignumForest{
   }
 
 
-  ///Create the  trees. In a loop for each tree
-  /// + Create a tree
-  /// + Create corresponding L-system
-  /// + Create and set the tree ID (simply the position in the tree vector)
-  /// + Initialize no_h and h_prev to zero
-  /// + Initialize wspawood, wfoliage, wroot, ws_after_senescence to zero
-  /// \note Hard coded functions in the Tree constructor should exist in the  working directory
-  /// \note fsapwdown file must be given in command line
-  /// \deprecated \e to_file  deprecated, using HDF5 files instead
-  /// \todo Remove open output file stream to so called *target tree* (data for all trees for every year in HDF5 file)
   template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::createTrees()
   {
@@ -765,10 +747,7 @@ namespace LignumForest{
     }
   }
 
-  ///\note The Year dimension size is iter+1 because collection of initial data before simulation.
-  ///For `hdf5_tree_data` the first 2D slice (year = 0) should contain the intial data for all trees.
-  ///For `hdf5_stand_data` and `hdf5_center_stand_data` the first row (year = 0) should contain the initial stand data.
-  ///\remark Regarding initial data some columns are meaningless because no data cannot be collected before growth
+
   template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE,TS,BUD,LSYSTEM>::resizeTreeDataMatrix()
   {
@@ -783,9 +762,6 @@ namespace LignumForest{
     lambdav.resize(static_cast<unsigned int>(ntrees),std::nan(""));
   }
 
-  ///Using TMatrix2D as 2D array with one row.
-  ///This way no need to create 1D array for HDF5 
-  ///Use the first tree to collect the parameters
   template<class TREE, class TS,class BUD, class LSYSTEM>
   TMatrix2D<double> GrowthLoop<TREE,TS,BUD,LSYSTEM>::getHDF5TreeParameterData()
   {
@@ -819,8 +795,6 @@ namespace LignumForest{
     return tree_parameters;
   }
 
-  ///Use the first tree to collect the function
-  ///\exception x=Nan and F(x) = NaN denote function not defined
   template<class TREE, class TS,class BUD, class LSYSTEM>
   TMatrix2D<double> GrowthLoop<TREE,TS,BUD,LSYSTEM>::getHDF5TreeFunctionData(const LGMF fn_enum)
   {
@@ -1220,8 +1194,6 @@ namespace LignumForest{
     }
   }
 
-  ///Initialize L-systems (create the axiom), tree root masses and LGAsf for tree segments.
-  ///\todo remove the use of file output streams for stand data
   template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::initializeGrowthLoop()
   {
@@ -1337,8 +1309,7 @@ namespace LignumForest{
     SetValue(t, TreeM, sumM);
   }
 
-  ///To study consistently P (photosynthesis) and M  (respiration) we must
-  ///collect foliage and sapwood masses before senescense and new growth
+  
   template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::collectDataBeforeGrowth(TREE& t,unsigned int i)
   {
@@ -1604,13 +1575,6 @@ namespace LignumForest{
   }
 
 
-  ///
-  /// Allocation of photosynthetic production to growth of new segments and
-  /// expansion of existing ones. The tree structure is also updated and
-  /// new buds are created.
-  /// If iterative allocation does not succeed in allocation() (probably
-  /// P - M < 0.0) the tree is considered dead and removed from the tree
-  /// list (and no_trees is updated)
   template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::allocationAndGrowth(const ParametricCurve& fip_mode,
 							     const ParametricCurve& fgo_mode)
@@ -1781,10 +1745,6 @@ namespace LignumForest{
 	  
   }
 
-  /// \tparam TREE Tree
-  /// \tparam TS Tree segment
-  /// \tparam BUD Bud
-  /// \tparam LSYSTEM L-system
   template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::output()
   {
@@ -1806,12 +1766,6 @@ namespace LignumForest{
     }
   }
 
-  /// If you call this method after GrowthLoop::allocationAndGrowth() then the tree has newly created segments.
-  /// The GrowthLoop::treeP  and GrowthLoop::treeM.
-  /// \tparam TREE Lignum tree
-  /// \tparam TS Tree segment
-  /// \tparam BUD Bud
-  /// \tparam LSYSTEM Lindenmayer system in use
   template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::writeOutput(TREE& t, unsigned int tree_n,int iter)
   {
@@ -2021,8 +1975,6 @@ namespace LignumForest{
     }
   }
 
-  //Write a tree into xml file.  The file name comprises of the basename
-  //(=xmlfile), the position of the tree (x, y), and its age.
   template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::writeTreeToXMLFile(TREE& t, int age,int interval)const
   {
@@ -2053,7 +2005,6 @@ namespace LignumForest{
     }
   }
 
-  //Vertical distrubution of fip
   template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::writeFip(TREE& t,int interval)const
   {
@@ -2113,7 +2064,7 @@ namespace LignumForest{
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::setVoxelSpaceAndBorderForest()
   {
     ///\defgroup A_prepare Preparing radiation calculation
-    ///\ingroup D_radandgrowth
+    ///\ingroup E_radandgrowth
     ///@{
     ///\par Make ready
     ///+ VoxelSpace
@@ -2122,7 +2073,7 @@ namespace LignumForest{
     ///@}
     //
     ///\defgroup A_resize_voxelspace VoxelSpace
-    ///\addtogroup A_prepare
+    ///\ingroup A_prepare
     ///@{
     ///\par Resize VoxelSpace
     ///+ Find the VoxelSpace bounding box
@@ -2463,7 +2414,7 @@ namespace LignumForest{
     }
   }
 
-  /// \todo Remove the method, locattion data available in HDF5 file 
+  
   template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::printTreeLocations(int iter)const
   {
