@@ -231,7 +231,7 @@ abline(0,1,lwd=2,col="red")
 plot((pi/4)*100^2*d$ForestTreeData[10,1,]^2,2*d$ForestTreeData[23,1,], ylim=c(0,10), xlim=c(0,150), type="l",
      main=paste("Foliage mass vs stem cross sectional area at crown base\nevery ",as.character(pick),"th tree",sep=""),
      xlab="Stem cross section area at crown base  (cm2)", ylab="Foliage mass (kg DM)")
-legend('topleft',inset=0.05,c("Lignum trees","Lignum trees mean","y=0.55x"),col=c('black','red','blue'),lty=1,lwd=2)
+legend('topleft',inset=0.05,c("Lignum trees","Lignum trees mean","y=0.055x"),col=c('black','red','blue'),lty=1,lwd=2)
 for(i in 2:min(Ntrees/pick)) {
 	points(100^2*d$ForestTreeData[10,i*pick,]^2,2*d$ForestTreeData[23,i*pick,], type="l")
 }
