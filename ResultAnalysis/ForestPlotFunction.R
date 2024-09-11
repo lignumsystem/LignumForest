@@ -158,7 +158,7 @@ points(log((0.02+1.25*ksto$Dbhav)/100),log(ksto$N),type="l",lwd=3,col="darkgreen
 
 #Basal area
 plot(y,d$StandData[14,]*1e4, ylim=c(0,80),type="l", lwd=2,xlab="time (y)", ylab= "m2/ha", main="Basal area")
-legend('topleft',inset=0.05,c("Lignum","Varmola M","Koivisto: kasvu- ja tuotostaulukot"),col=c('black','red','darkgreen'),
+legend('topleft',inset=0.05,c("Lignum","Varmola M 1987","Koivisto: kasvu- ja tuotostaulukot"),col=c('black','red','darkgreen'),
        lty=1,lwd=2)
 points(va27$a,va27$G,type="l",lwd=3,col="red")
 points(ksto$year,ksto$G,type="l",lwd=3,col="darkgreen")
@@ -220,8 +220,8 @@ points(y,apply(1-d$ForestTreeData[11,,]/d$ForestTreeData[7,,],2,mean,na.rm=TRUE)
 
 ###Height vs diameter
 plot(100*d$ForestTreeData[8,1,],d$ForestTreeData[7,1,], ylim=c(0,30), xlim=c(0,30), type="l",main=paste("Height vs diameter at base\nevery ",as.character(pick),"th tree",sep=""),
-     xlab="Tree diameter (m)", ylab="Tree height (cm)")
-    legend('bottomright',inset=0.05,c("Lignum trees","y=x"),col=c('black','red'),lty=1,lwd=2)
+     xlab="Tree diameter (cm)", ylab="Tree height (m)")
+legend('bottomright',inset=0.05,c("Lignum trees","y=x"),col=c('black','red'),lty=1,lwd=2)
 for(i in 2:min(Ntrees/pick)) {
 	points(100*d$ForestTreeData[8,i*pick,],d$ForestTreeData[7,i*pick,], type="l")
 }
