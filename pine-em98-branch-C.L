@@ -166,7 +166,7 @@ B(data,omega,l,phys_age):
           produce  SB() Down(1.0) Pitch(pitch)B(data,omega+1,Pine::l1,phys_age) EB()
                    B(data,omega,l,phys_age);
        else if (nbuds == 2)
-          produce  SB() Down(1.0) Pitch(pitch)B(data,omega+1,Pine::l1,phys_age+1) EB() 
+          produce  SB() Down(1.0) Pitch(pitch)B(data,omega+1,Pine::l1,phys_age) EB() 
                    SB() Roll(rollmain2) Down(1.0) Pitch(pitch) B(data,omega+1,Pine::l1,phys_age) EB()
                    B(data,omega,l,phys_age);
        else if (nbuds == 3)
