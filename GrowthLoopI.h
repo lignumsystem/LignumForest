@@ -197,6 +197,7 @@ namespace LignumForest{
     cout << "                   conditions. Photosynthetic production of TreeSegment = rue * LGApr * Qabs. <value> = degree of" << endl;
     cout << "                   increase of rue as a function of shadiness (0 < <value> < 2)." << endl;
     cout << "-architectureChange <year>  Change the braching pattern in L-system after <year> in simulation." <<endl;
+    cout << "-Lmaxturn          Turn angle in degrees in the side branches when architecture change is on (default 80 degrees)." <<endl;
     cout << "-fsapwdown <file>  Part of the sapwood going down in a tree as a function of Gravelius order." <<endl;
     cout << endl;
   }
@@ -636,6 +637,7 @@ namespace LignumForest{
     ///---
     ///\par Parse growth mode change year
     clarg.clear();
+    ///+ -modeChange Growth mode change year \sa LignumForest::is_mode_change LignumForest::mode_change_year
     if (ParseCommandLine(argc,argv,"-modeChange",clarg)){
       LignumForest::is_mode_change=true;
       LignumForest::mode_change_year=atoi(clarg.c_str());
@@ -643,13 +645,25 @@ namespace LignumForest{
     ///---
     ///\par Parse Sapwood down function
     clarg.clear();
+    ///+ -fsapwdown Function file for determining pipe model to pass sapwood down from branches to the main stem
+    ///and down to the base of the tree   
     if (ParseCommandLine(argc,argv,"-fsapwdown",clarg)){
       fsapwdownfile = clarg;
+    }
+    ///---
+    ///\par Parse max branch turn angle after architecture change
+    clarg.clear();
+    ///+ -Lmaxturn Parse max turn angle after architecture change. The argument angle is in degrees. 
+    if (ParseCommandLine(argc,argv,"-Lmaxturn",clarg)){
+      //Change degrees to radians used
+      double turn_angle = atof(clarg.c_str())*PI_VALUE/180.0;
+      LignumForest::max_turn_in_architecture_change = turn_angle;
     }
     if (verbose){
       cout << "parseCommandLine end" <<endl;
       printVariables();
-    } 
+    }
+    
   }//End parseCommandLine()
 
 

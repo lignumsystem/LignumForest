@@ -21,4 +21,5 @@
 #             The second one can define changes only.
 #IMPORTANT 3: Protect the Glob expression used for the option -metafile with quotation characters.
 #IMPORTANT 4: The option -fsapwdown option is mandatory 
-./lignum-forest -iter 80 -metafile '{MetaFile,MetaFileFip6}.txt' -fsapwdown fsapwdown5.fun -voxelspace VoxelSpace.txt -modeChange 10 -architectureChange 10 -numParts 2 -hw 10 -kBorderConifer 0.11 -writeInterval 20 -increaseXi 15 -xiIncrement 15.0 -generateLocations 770 -treeDist 0.3 -hdf5 August28-5-LignumForest.h5 -dumpSelf -n_buds_ini_min 3 -n_buds_ini_max 3 -verbose
+#./lignum-forest -iter 80 -metafile '{MetaFile,MetaFileFip6}.txt' -fsapwdown fsapwdown5.fun -voxelspace VoxelSpace.txt -modeChange 10 -architectureChange 10 -numParts 2 -hw 10 -kBorderConifer 0.11 -writeInterval 20 -increaseXi 15 -xiIncrement 15.0 -generateLocations 770 -treeDist 0.3 -hdf5 August28-5-LignumForest.h5 -dumpSelf -n_buds_ini_min 3 -n_buds_ini_max 3 -verbose
+./lignum-forest -iter 80 -metafile '{MetaFile,MetaFileFip6}.txt' -fsapwdown fsapwdown3.fun -voxelspace VoxelSpace.txt -modeChange 10 -architectureChange 10 -Lmaxturn 80 -numParts 2 -hw 10 -kBorderConifer 0.11 -writeInterval 20 -increaseXi 15 -xiIncrement 15.0 -generateLocations 400 -treeDist 0.3 -hdf5 August29-5-LignumForest.h5 -dumpSelf -n_buds_ini_min 3 -n_buds_ini_max 3 -verbose

@@ -51,7 +51,9 @@ const double PI = 3.1415926535897932384;
 const double pitch = 45.0*PI/180.0; //the angle of branching in the main axis    = 45
 const double roll  = 137.5*PI/180.0; //137.5 is convenient to distribute buds (137.5*N never overlaps)
 const double turn_branch = 30.0*PI/180.0;//the angle of branching in branches  = 30
-const double turn_branch_max = 80.0*PI/180.0;//the angle of branching after architecture change
+//The angle of branching after architecture change
+//Note turn_max_branch can be given from command line and cannot be const
+double turn_branch_max = LignumForest::max_turn_in_architecture_change;
 const double pitch_down = 2.0*PI/180.0;//branches bending down annually
 const double max_pitch_down = 90.0*PI/180.0;//horizontal branches
 const double hupdir = 85.0*PI/180.0; //if a bud points down make it N degrees upwards from horizontal
@@ -91,6 +93,8 @@ derivation length: 9;
 
 Start:
 {
+  //Reset turn_branch_max if new value from comman line
+  turn_branch_max = LignumForest::max_turn_in_architecture_change;
   PineBudData data(ALIVE,0.0,1.0,1.0,1.0);
   mode = 0;
   produce F(0.30) SB() Down(1.0) Pitch(pitch) B(data,2,Pine::l1,1.0) EB() 
