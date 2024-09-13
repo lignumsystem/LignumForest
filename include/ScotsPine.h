@@ -608,8 +608,8 @@ namespace LignumForest{
 	  ///\par Segment length consistency
 	  ///Check that segment length \f$L \geq 0\f$, \f$ L \geq \mathit{LGPmin} \f$ and not too thin.
 	  ///\attention The check for segment thickness is hard coded as PineTree::SPFLR function
-	  ///\snippet{lineno} ScotsPine.h LCHECKS
 	  ///\internal
+	  ///\snippet{lineno} ScotsPine.h LCHECKS
 	  // [LCHECKS]
 	  // Final checks
 	  //1. No negative lengths

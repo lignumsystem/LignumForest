@@ -8,7 +8,7 @@ Other publications that are referred to in this document are
 - Perttunen J, Sievänen R, Nikinmaa E. 1998. LIGNUM: a model combining the structure and the functioning of trees. Ecological Modelling 108: 189–198.
 
 
-## LignumForest: CMake for macOS and Unix/Linux Makefile build system
+### CMake for macOS and Unix/Linux Makefile build system
 
 To create Makefile build system with CMake first create the
 build tree  directory and  then with `cmake`  the Unix  Makefile build
@@ -48,15 +48,12 @@ Command line options and their  short documentation can be obtained by
 running `./lignum-forest`  without any  command line parameters.  See also
 LignumForest::Usage().
 
-The growth loop for LignumForest is implemented in *lignum-forest.cc* in *main()* function.
+The growth loop for LignumForest is implemented in *lignum-forest.cc* in \ref AMAIN.
 
->[!NOTE] 
->To create identical command line with CrownDensity in LignumForest is work under progress. 
-
->[!IMPORTANT]
->It is important to type `make install` to also move `lignum-forest` to
->directory above to be used by the scripts to run simulatations.
->Typing just `make` the `lignum-forest` program remains in the compilation directory.
+> [!IMPORTANT]
+> It is important to type `make install` to also move `lignum-forest` to
+> directory above to be used by the scripts to run simulatations.
+> Typing just `make` the `lignum-forest` program remains in the compilation directory.
 
 
 To recompile `lignum-forest` type:
@@ -64,15 +61,15 @@ To recompile `lignum-forest` type:
 	make clean
 	make install
 	
->[!IMPORTANT]
->CMake tracks by default file changes only in the current project (e.g. LignumForest in this case). 
->To let CMake  follow all file dependencies `make clean` is mandatory before recompilation. 
->CMake will have correct build tree from previous software  build.
+> [!IMPORTANT]
+> CMake tracks by default file changes only in the current project (e.g. LignumForest in this case). 
+> To let CMake  follow all file dependencies correctly `make clean` is mandatory before recompilation. 
+> After `make clean` CMake will have correct build tree from previous software  build.
 
->[!IMPORTANT]
->To remove all CMake  configurations and compilation work just
->remove the build  tree directory (i.e. *debug*,  *release* or *xcode*)
->and recreate the build tree directory.
+> [!NOTE]
+> To remove all CMake  configurations and compilation work just
+> remove the build  tree directory (i.e. *debug*,  *release* or *xcode*)
+> and recreate the build tree directory.
 
 CMake  projects   are   configured  with   *CMakeLists.txt*
 files. For  this CMake  has an  extensive set  of CMake  variables and
@@ -85,11 +82,11 @@ to create libraries, find and integrate external libraries (Qt, HDF5),
 create and use external binaries (`l2c` to compile L-system files) and
 setup the final product with its dependenices.
 
->[!NOTE]
->its seems Qt4 is becoming difficult maintain in MacPorts. Also Qt `qmake` is becoming obsolete; Qt project
->has switched to CMake since Qt6.
+> [!NOTE]
+> It seems Qt4 is becoming difficult maintain in MacPorts. It does not compile on M1 Apple Silicon. 
+>Also Qt `qmake` is becoming obsolete; Qt project has switched to CMake since Qt6.
 
-## LignumForest: CMake for Xcode
+### CMake for Xcode
 
 For Xcode IDE create the Xcode project file:
 
@@ -129,7 +126,7 @@ Set command  line parameters for  `lignum-forest` in Xcode:
 
 Divide the command line into practical parts for debugging from `Arguments -> '+'`.
 
-## CMake for LignumForest dependency graph
+### CMake for LignumForest dependency graph
 
 CMake allows to generate `graphviz` output file to show all library and executable dependencies of the project.
 Then with `dot` create image file with desired file format. For example in the *release* directory type:
@@ -141,7 +138,7 @@ Then with `dot` create image file with desired file format. For example in the *
 The output file *LignumForest.pdf* contains the visual presentation of the target dependenices including
 external binaries and required link libraries. The option `-T` understands many well known image file formats.
 
-## Documentation
+### Documentation
 
 The introductionary presentation is in [GENERAL_DESCRIPTION.md](GENERAL_DESCRIPTION.md).
 

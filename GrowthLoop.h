@@ -180,11 +180,15 @@ namespace LignumForest{
     void timeStep(int year);
     ///After Growth: clean up, write output
     void afterGrowth();
-    ///Print usage information
+    ///\brief Print the comand line usage information
+    ///
+    ///\attention Keep it up to date after implementing a new command line option
     ///\deprecated Options for output files 
     ///\remark Simulation results as well as XML trees will be in HDF5 files. See option `-hdf5` 
     void usage()const;
     ///\brief Command line check
+    ///
+    ///Check mandatory arguments and that number of arguments are at least three.
     void checkCommandLine(int argc, char** argv)const;
     ///\brief Command line parser.
     ///Parse command line arguments.
@@ -213,11 +217,21 @@ namespace LignumForest{
     }
     /// \brief Create trees of the forest stand.
     ///
+    /// For each tree to be inserted in the \c vtree tree vector
+    /// +# Create a tree
+    /// +# Create corresponding L-system
+    /// +# Create and set the tree ID (simply the position in the tree vector)
+    /// +# Initialize no_h and h_prev to zero
+    /// +# Initialize wspawood, wfoliage, wroot, ws_after_senescence to zero
+    ///
     /// Create trees in predefined locations. Create also L-systems, data vectors and vector of file streams.
     /// Position of a tree in a tree vector defines its position in all othe vectors
     /// \pre Tree locations have been generated
-    /// \attention Hard coded file names for ScotsPineTree constructor 
-    /// \note The command line option `-generateLocations <num>` will override all other forest generation options 
+    /// \pre Hard coded function files for ScotsPineTree constructor must exist in the working directory
+    /// \note *fsapwdown*  function file must be given in command line
+    /// \note The command line option `-generateLocations \<num\>` will override all other forest generation options
+    /// \deprecated \c to_file  Using HDF5 files instead
+    /// \todo Remove open output file stream to so called *target tree* (data for all trees for every year in HDF5 file)
     /// \sa setTreeLocations
     /// \sa locations Tree positions
     /// \sa vtree vlsystem Vector of trees and their respective L-systems
@@ -233,6 +247,10 @@ namespace LignumForest{
     /// Data will be stored in an HDF5 file after simulation.
     /// \pre Simulation years and number of trees at the beginning as well as number of data columns are known
     /// \post 3D array and 2D array filled with std:nan and can be used to enter tree data
+    ///\note The Year dimension size is iter+1 because collection of initial data before simulation.
+    /// For \c hdf5_tree_data the first 2D slice (year = 0) should contain the intial data for all trees.
+    /// For \c hdf5_stand_data and \c hdf5_center_stand_data the first row (year = 0) should contain the initial stand data.
+    ///\remark Regarding initial data some columns are meaningless because no data cannot be collected before growth
     /// \sa createTrees  parseCommandLine
     /// \sa TREE_DATA_COLUMN_NAMES STAND_DATA_COLUMN_NAMES
     /// \sa hdf5_tree_data hdf5_stand_data hdf5_center_stand_data
@@ -279,13 +297,14 @@ namespace LignumForest{
     /// \brief Initialize growth loop
     ///
     ///Growth loop initialization
-    ///+ L-systems
+    ///+ L-systems (evaluate the axiom)
     ///+ Tree root masses
     ///+ LGAsf for new segments
     ///
     ///LGAsf depends on segment length (P. Kaitaniemi)
     ///\sa LignumForest::SetScotsPineSegmentSf
     ///\deprecated *GrowthLoop::stand_output* and *GrowthLoop::cstand_output*, using HDF5 files.
+    ///\todo remove the use of file output streams for stand data
     void initializeGrowthLoop();
     ///\brief Increase the value of Lignum::LGPxi in trees after given \p year.
     ///\pre GrowthLoop::increase_xi == *true* and \p year >= GrowthLoop::xi_start
@@ -326,6 +345,8 @@ namespace LignumForest{
     /// \tparam TREE Lignum tree
     /// \param t the tree
     /// \param i position of the tree in the tree vector
+    /// \note To study consistently P (photosynthesis) and M  (respiration) we must
+    ///       collect foliage and sapwood masses before senescense and new growth
     /// \sa wsapwood wfoliage and wroot vectors
     /// \sa vtree Tree vector
     void collectDataBeforeGrowth(TREE& t,unsigned int i);
@@ -389,7 +410,7 @@ namespace LignumForest{
     ///
     /// \deprecated Write stand level data, target tree data, crown limit data, Fip data and the target tree xml file.
     /// \sa writeOutput writeCrownLimitData writeTreeToXMLFile writeFip
-    /// \deprecated HDF5 implementation is advancing. Remove this method when enough data collected. Consult and
+    /// \note HDF5 implementation is advancing. Remove this method when enough data collected. Consult and
     /// agree with Risto.
     /// \sa collectDataAfterGrowth
     void output();
@@ -411,7 +432,9 @@ namespace LignumForest{
     /// \brief Write voxel space content (voxels)
     /// \tparam t The tree 
     void writeVoxels(TREE& t);
-    /// \brief Write tree to file.
+    /// \brief Write tree to XML file.
+    ///
+    /// The file name comprises of the basename (=xmlfile), the position of the tree (x, y), and its age.
     /// \tparam TREE Lignum tree
     /// \param t The tree
     /// \param age Tree age
@@ -430,12 +453,17 @@ namespace LignumForest{
     /// \brief Remove dead branches from trees
     void prune();
     void printVariables()const;
-    /// \brief Collect data if èero` = *true* to *eero.dat*
+    /// \brief Clean up after simulation
     ///
-    /// Collect data to *eero.dat*. Call L-system End function. Close stand and center stand output files.
+    /// \deprecated HDF5 files in use
+    /// Collect data if \c eero = *true* to *eero.dat*
+    /// Call L-system End function. Close stand and center stand output files.
     void cleanUp();
     void printSegmentQin();
     void printBranchMeans()const;
+    ///\brief Write tree locations to a file
+    ///\deprecated Locattion data available in HDF5 file 
+    ///\todo Remove the method 
     void printTreeLocations(int iter)const;
     void printVoxelObjectLocations(const string& file)const;
     TREE& getTargetTree()const{
@@ -454,11 +482,17 @@ namespace LignumForest{
     TMatrix2D<double>& getHDF5StandData(){return hdf5_stand_data;}
     ///\brief 2D data array[year][data_cols] aggregate data for the center part of the stand
     TMatrix2D<double>& getHDF5CenterStandData(){return hdf5_center_stand_data;}
-    ///\brief Tree parameter values used in simulation
+    ///\brief Tree parameter values used in simulation.
+    ///
+    ///Use the first tree to collect the parameters
+    ///\return  TMatrix2D with one row for tree parameters
     TMatrix2D<double> getHDF5TreeParameterData();
-    ///\brief Find function definition known to a tree 
+    ///\brief Find function definition known to a tree.
+    ///
+    ///Use the first tree to collect the function
     ///\pre Tree vector must have trees
     ///\return TMatrix2D<double>(N,2) of (x,f(x)) values (N rows, 2 columns)
+    ///\remark x=Nan and f(x) = NaN denote function not defined
     ///\sa cxxadt::ParametricCurve LGMF vtree
     TMatrix2D<double> getHDF5TreeFunctionData(const LGMF fn_enum);
     ///\brief Return the name of the VoxelSpace file in use 
@@ -507,10 +541,19 @@ namespace LignumForest{
     /// \post Pine::mode=0
     void createNewSegments();
     /// \brief Allocation of net photosynthates to growth.
-    ///
+    ///\
     /// Also responsible of keeping record of tree death.
     /// Dead trees are removed from the list of trees, L-systems
     /// and from the vectors of collected data.
+    ///
+    /// Allocation of photosynthetic production to growth of new segments and
+    /// expansion of existing ones. The tree structure is also updated and
+    /// new buds are created.
+    ///
+    /// If iterative allocation does not succeed in allocation() (probably
+    /// P - M < 0.0) the tree is considered dead and removed from the tree
+    /// list and \c no_trees is updated
+    /// \sa no_trees
     /// \sa vtree vlsystem locations
     /// \sa wsapwood wfoliage wroot ws_after_senescence vdatafile
     /// \deprecated \p fip_mode \p fgo_mode
@@ -636,23 +679,27 @@ namespace LignumForest{
     ///\note Hard-coded *TreeLocations.txt* file in the constructor.
     ///\sa GrowthLoop::setTreeLocation()
     string location_file;
-    ofstream* stand_output; ///< \depercated Stream for target tree output \sa output()
-    ofstream* cstand_output; ///< \deprecated Stream for center stand output
+    ofstream* stand_output; ///< \deprecated Stream for target tree output \sa output()
+    ofstream* cstand_output; ///< \deprecated Stream for center stand output \sa output()
     bool to_file;///< \deprecated If output to a file \sa createTrees   sa\ writeOutput()
     bool sensitivity_analysis; ///< If sensitivity analysis is done. \sa parseCommandLine
     bool crown_limit_data; ///< If output about crown base. \sa parseCommandLine \sa writeCrownLimitData
     bool writevoxels; ///< If output about the voxelspace \sa writeVoxels
-    /// \brief If the primary wood proportion (denoted xi) in new shoots increases
+    /// \brief Primary wood proportion (denoted xi) increment in new shoots
     ///
     /// The effect of primary wood for sapwood proportion in new segments is described in
     /// Perttunen et al. 1996. Primary wood proportion = LGPXi LIGNUM parameter, see
     /// stl-lignum/include/LGMSymbols.h \sa xi_start xi_increment
+    ///
+    ///*true* if increment, *false* otherwise.
+    ///\sa xi_increment
     bool increase_xi;
     /// \brief The value of *LGPxi* will change by 0.1/xi_increment if `ìncrease_xi` is *true*.
-    /// Default value 25.0
-    /// From command line -xiIncrement <value>.\sa increase_xi xi_start
+    ///
+    ///From command line -xiIncrement <value>.\sa increase_xi xi_start.
+    ///Default value 25.0.
     double xi_increment;
-    int xi_start; ///< Starting year of Xi increase. From command line -increaseXi <year>. \sa increase_xi xi_increment
+    int xi_start; ///< Starting year of Xi increase. From command line -increaseXi \<year\>. \sa increase_xi xi_increment
     bool self_thinning;///< NOT IN USE CURRENTLY! If forced self thinning.
     /// \brief The function K appears in radiation interception calculation.
     ///

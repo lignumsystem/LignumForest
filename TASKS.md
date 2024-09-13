@@ -5,32 +5,36 @@ Before simulating Scots pine stand with LignumForest
 some program changes and checks are needed.
 
 ## Task list
->[!NOTE]
->It seems all items are no checked. LignumForest can be tested in sorvi server.
+> [!NOTE]
+> It seems all items below are now checked. LignumForest can be tested in sorvi server.
 
 ### Command line
-- [x] Added script `run-lignum-forest.sh` to be used. **Note** the `lignum-forest` binary.
-- [x] Merge CrownDensity command line with LignumForest command line.<br>
-      *Command line of the `run-lignum-forest.sh` copied from `run-crowndens-basic-model.sh`.
-	  LignumForest specific arguments present (for example -generateTrees, -treeDist)*
----
+
+- [x] Added script run-lignum-forest.sh to be used for lignum-forest binary.
+- [x] Merge CrownDensity command line with LignumForest command line.
+- [x] Command line of the run-lignum-forest.sh copied from run-crowndens-basic-model.sh.
+- [x] LignumForest specific arguments present (for example -generateTrees, -treeDist)
+
 ### LignumForest main growth loop 
-- [x] Risto/Jari: Check the main growth loop (lignu-forest.cc \ref lignumforest) is what is required, especially:<br>
+
+- [x] Risto/Jari: Check the main growth loop (lignu-forest.cc and \ref AMAIN) is what is required, especially
   - [x] LignumForest::GrowthLoop::createNewSegments() is what is required. It has more that just creating segments. OK?
   - [x] LignumForest::GrowthLoop::allocationAndGrowth is what is required, It has (behing boolean flags) more than pipe model. OK?
-- [x] Jari: Check LignumForest::GrowthLoop::initializeTrees() is what is required, especially:<br>
-   - [x] LignumForest::branch_angle set to 45 degrees. Branch angle also set in L-system. OK?
-   - [x] LignumForest::bud_view_f set (also?) here. OK?
----
+- [x] Jari: Check LignumForest::GrowthLoop::initializeTrees() is what is required, especially
+  - [x] LignumForest::branch_angle set to 45 degrees. Branch angle also set in L-system. OK?
+  - [x] LignumForest::bud_view_f set also here
+
 ### Synchronizing with CrownDensity 
-- [x] Implementation required changes by the new command line in the main loop.<br>
-	  Check and implement the following command line options: 
+
+- [x] Implementation required changes by the new command line in the main loop.
+	  
+Check and implement the following command line options: <br>
   - [x] Jari: Implement checking and setting growth mode change and checking and triggering  architecture change year in the main loop.
-  - [x] -iter
-  - [x] -metafile
-  - [x] -voxelspace
-  - [x] -voxelCalculation <br>
-       *No -voxelCalculation in `lignum-forest`, removed from command line. VoxelSpace always in use. See -pairwiseSelf*. 
+  - [x] "-iter"
+  - [x] "-metafile"
+  - [x] "-voxelspace"
+  - [x] "-voxelCalculation" 
+       *No "-voxelCalculation" in `lignum-forest`, removed from command line. VoxelSpace always in use. See "-pairwiseSelf"*. 
   - [x] -modeChange
 	    - [x] Wild card search for MetaFile*.txt
 		- [x] GrowthLoop::growthModeChange in the main loop
@@ -46,16 +50,17 @@ some program changes and checks are needed.
   - [x] -treeDist 
   - [x] -hdf5
 - [x] Check L-system is identical to L-system in CrownDensity
-- [x] Change SetSegmentLength to one used in CrownDensity.<br>
+- [x] Change SetSegmentLength to one used in CrownDensity.
       *Using explicitely LignumForest::SetScotsPineSegmentLength*
 - [x] Check the Meta files, parameter and function files in CrownDensity
       that they are the ones that produce a satisfactory tree development
 - [x] Change Meta files, parameter and function files to ones 
       used in CrownDensity. Especially -modeChange requires rereading MetaFiles.
 - [x] Transfer global variables used from CrownDensity to LignumForest
-      and use LignumForest namespace. <br>
+      and use LignumForest namespace. 
 	  *LignumForest compiles*. 
-## Additional tasks
+
+### Additional tasks
 
 It seems CGAL 5.6 (latest manual in cgal.org) can write 
 Paraview VTK (VTU / VTP) files and also Wavefront Advanced Visualizer 

@@ -72,14 +72,37 @@ pdf(pdf_file)
 y <- d$StandData[1,]
 ymax = max(y, na.rm=TRUE)
 
-#Height
-plot(y,d$StandData[11,], type="l", ylim=c(0,40), lwd=2, xlab="time (y)", ylab="Tree height, nin, mean, max (m)", main="Mean, min and max stand height") #mean
+###Density
+aplot1 <- aplot/1e4          #area in ha
+plot(y,d$StandData[3,]/aplot1, type="l", ylim=c(0,1.1*d$StandData[3,1]/aplot1),lty=1, lwd=2, xlab="time (y)", ylab="No. trees / ha", main="Stand density in self-thinning")
+legend('bottomleft',inset=0.05,c("Lignum","Koivisto: kasvu- ja tuotostaulukot"),col=c('black','darkgreen'),
+       lty=1,lwd=2)
+points(ksto$year,ksto$N,type="l",lwd=3,col="darkgreen")
+##Density Vuokila/Ivessalo
+ftdata<-read.table("Ilvessalo.txt",header=TRUE,sep='')
+t1 <- d$StandData[1,]
+sdensity <- d$StandData[3,]/aplot1
+plot(t1,sdensity,type="l",lty=1, lwd=2, xlab="Time (y)", ylab="No. trees / ha",ylim=c(0,17000),
+     main="Stand density in self-thinning",sub="Data: Vuokila - Metsänkasvatuksen perusteet (Vuokila/Ilvessalo)")
+legend('bottomleft',inset=0.05,c("Lignum","MT","VT","CT"),col=c('black','darkgreen','red','brown', title="Forest type"),
+       lty=1,lwd=2)
+t2<-ftdata$Year
+mt<-ftdata$MT
+vt<-ftdata$VT
+ct<-ftdata$CT
+lines(t2,mt,col='darkgreen',lty=1,lwd=2)
+lines(t2,vt,col='red',lty=1,lwd=2)
+lines(t2,ct,col='brown',lty=1,lwd=2)
 
+###Height
+plot(y,d$StandData[11,], type="l", ylim=c(0,40), lwd=2, xlab="time (y)", ylab="Tree height, nin, mean, max (m)", main="Mean, min and max stand height")##mean
+legend('topleft',inset=0.05,c("Lignum mean","Lignum (min, max)"," Vuokila/Väliaho 1980"," Varmola M 1987","Koivisto: kasvu- ja tuotostaulukot"),col=c('black','black','blue','red','darkgreen'),
+       lty=c(1,2,1,1,1),lwd=2)
 
 points(y,d$StandData[12,], type="l", lwd=2, lty=2)   #min
 points(y,d$StandData[13,], type="l",lwd=2, lty=2)   #max
-points(va27$a,va27$HgM,type="l",lwd=3,col="darkgreen")
-points(vv$age,vv$H,type="l",lwd=3,col="darkgreen")
+points(va27$a,va27$HgM,type="l",lwd=3,col="red")
+points(vv$age,vv$H,type="l",lwd=3,col="blue")
 points(ksto$year,ksto$Hav,type="l",lwd=3,col="darkgreen")
 
 
@@ -96,12 +119,15 @@ mh <- median(d$ForestTreeData[7,,ymax],na.rm=TRUE)
 med <- which(h<1.002*mh&h>0.98*mh)[1]
 
 #Base diameter
-plot(y,100*d$StandData[5,], type="l", lwd=2, ylim=c(0,40),xlab="time (y)", ylab="Base diam, nin, mean, max (cm)", main="Mean, min and max diameter at base in the stand",) #mean
+plot(y,100*d$StandData[5,], type="l", lwd=2, ylim=c(0,40),xlab="time (y)", ylab="Base diam, nin, mean, max (cm)", main="Mean, min and max diameter at base in the stand")##mean
+legend('topleft',inset=0.05,c("Lignum (mean)","Lignum (min,max)"," Vuokila/Väliaho 1980"," Varmola M 1987","Koivisto: kasvu- ja tuotostaulukot"),col=c('black','black','blue','red','darkgreen'),
+       lty=c(1,2,1,1,1),lwd=2)
+
 points(y,100*d$StandData[6,], type="l",lwd=2, lty=2)   #min
 points(y,100*d$StandData[7,], type="l",lwd=2, lty=2)   #max
 #dkanto = 2 + 1,25d (Laasasenaho 1975, Folia Forestalia 233)
-points(va27$a,0.02+1.25*va27$DgM,type="l",lwd=3,col="darkgreen")
-points(vv$age,0.02+1.25*vv$DBH,type="l",lwd=3,col="darkgreen")
+points(va27$a,0.02+1.25*va27$DgM,type="l",lwd=3,col="red")
+points(vv$age,0.02+1.25*vv$DBH,type="l",lwd=3,col="blue")
 points(ksto$year,0.02+1.25*ksto$Dbhav,type="l",lwd=3,col="darkgreen")
 
 
@@ -114,42 +140,27 @@ points(y,d$ForestTreeData[7,smallest,], type="l",lwd=2,col="red")    #smallest
 plot(y,100*d$ForestTreeData[8,largest,], type="l", ylim=c(0,30), lty=1,xlab="time (y)", ylab="Diameter at base (cm)",lwd=2, main=paste("Diameter growth of (at age ", as.character(ymax-1),") shortest (red), median (green),\n tallest (blue) tree",sep=""),col="blue") #largest
 points(y,100*d$ForestTreeData[8,med,], type="l",lwd=2, col="darkgreen")    #median
 points(y,100*d$ForestTreeData[8,smallest,], type="l",lwd=2,col="red")    #median
-
-#Density
-aplot1 <- aplot/1e4          #area in ha
-plot(y,d$StandData[3,]/aplot1, type="l", ylim=c(0,1.1*d$StandData[3,1]/aplot1),lty=1, lwd=2, xlab="time (y)", ylab="No. trees / ha", main="Stand density")
-points(ksto$year,ksto$N,type="l",lwd=3,col="darkgreen")
-##Vuokila/Ivessalo
-ftdata<-read.table("Ilvessalo.txt",header=TRUE,sep='')
-t1 <- d$StandData[1,]
-sdensity <- d$StandData[3,]/aplot1
-plot(t1,sdensity,type="l",lty=1, lwd=2, xlab="Time (y)", ylab="No. trees / ha",ylim=c(0,17000),
-     main="Stand density\n(Vuokila/Ilvessalo)")
-t2<-ftdata$Year
-mt<-ftdata$MT
-vt<-ftdata$VT
-ct<-ftdata$CT
-lines(t2,mt,col='green',lty=1,lwd=2)
-lines(t2,vt,col='red',lty=1,lwd=2)
-lines(t2,ct,col='brown',lty=1,lwd=2)
-legend('bottomleft',inset=0.05,c("Lignum","MT(ksto-mt.dat)","VT","CT"),col=c('black','green','red','brown'),lty=1,
-        title="Forest type")
     
 #Self thinning plot
 aplot1 <- aplot/1e4          #area in ha
-plot(log(d$StandData[5,]),log(d$StandData[3,]/aplot1), xlim=c(log(0.001),log(0.5)),ylim=c(log(100),log(20000)),type="l", lty=1, lwd=2, xlab="log(mean base diameter)", ylab="log(No. trees / ha)", main="Self-thinning curve")
+plot(log(d$StandData[5,]),log(d$StandData[3,]/aplot1), xlim=c(log(0.001),log(0.5)),ylim=c(log(100),log(20000)),type="l", lty=1, lwd=2, xlab="log(mean base diameter)", ylab="log(No. trees / ha)",
+     main="Self-thinning curve")
+legend('bottomleft',inset=0.05,c("Lignum","-3/2","Koivisto: kasvu- ja tuotostaulukot"),col=c('black','red','darkgreen'),
+       lty=1,lwd=2)
 p1 <- c(max(log(d$StandData[5,ymax]))+1,min(log(d$StandData[3,ymax]/aplot1))-0.5)
 p22 <- log(d$StandData[3,1]/aplot1)+0.5
 p21 <- (p22-p1[2])/(-3/2)+p1[1]
 points(c(p1[1],p21),c(p1[2],p22),type="l",lwd=2,col="red")
-legend(p1[1]-0.5,p1[2]+1,"-3/2",box.lty=0,text.col="red")
+###legend(p1[1]-0.5,p1[2]+1,"-3/2",box.lty=0,text.col="red")
 points(log((0.02+1.25*ksto$Dbhav)/100),log(ksto$N),type="l",lwd=3,col="darkgreen")
 
 
 
 #Basal area
 plot(y,d$StandData[14,]*1e4, ylim=c(0,80),type="l", lwd=2,xlab="time (y)", ylab= "m2/ha", main="Basal area")
-points(va27$a,va27$G,type="l",lwd=3,col="darkgreen")
+legend('topleft',inset=0.05,c("Lignum","Varmola M 1987","Koivisto: kasvu- ja tuotostaulukot"),col=c('black','red','darkgreen'),
+       lty=1,lwd=2)
+points(va27$a,va27$G,type="l",lwd=3,col="red")
 points(ksto$year,ksto$G,type="l",lwd=3,col="darkgreen")
 
 
@@ -158,22 +169,26 @@ plot(y,d$StandData[15,]*1e4, ylim=c(0,60),type="l", lwd=2,xlab="time (y)", ylab=
 
 #Stem volume
 plot(y,d$StandData[16,]*1e4, ylim=c(0,1000),type="l", lwd=2,xlab="time (y)", ylab= "m3/ha", main="Stem volume")
-points(va27$a,va27$V,type="l",lwd=3,col="darkgreen")
-points(vv$age,vv$V,type="l",lwd=3,col="darkgreen")
+legend('topleft',inset=0.05,c("Lignum","Vuokila/Väliaho 1980","Varmola M 1987","Koivisto: kasvu- ja tuotostaulukot"),col=c('black',"blue",'red','darkgreen'),
+       lty=1,lwd=2)
+points(va27$a,va27$V,type="l",lwd=3,col="red")
+points(vv$age,vv$V,type="l",lwd=3,col="blue")
 points(ksto$year,ksto$V,type="l",lwd=3,col="darkgreen")
 
 
 #LAI and specific leaf area
 par(mar = c(5, 4, 4, 4) + 0.3)              # Additional space for second y-axis
-plot(y,d$StandData[17,], ylim=c(0,20),type="l", lty=1, lwd=2,xlab="time (y)", ylab="All-sided LAI (m2/m2)",main="LAI = continuous,  specific LA = dashed") #LAI
+plot(y,d$StandData[17,], ylim=c(0,30),type="l", lty=1, lwd=2,xlab="time (y)", ylab="All-sided LAI (m2/m2)",main="Leaf Area Index and Specific Leaf Area") ###LAI
+legend('bottomright',inset=0.05,c("LAI","SLA"),col='black',lty=c(1,2),lwd=2)
 par(new = TRUE)
 plot(y,d$StandData[17,]/d$StandData[18,],type="l", lty=2,lwd=2, axes=FALSE,xlab = "", ylab = "", ylim=c(0,32))
 axis(side = 4, at = pretty(c(0,32)))
-mtext("Specific leaf area (m2/ kg C)", side = 4, line = 3)             # Add second axis label
+mtext("SLA (m2/ kg C)", side = 4, line = 3)             # Add second axis label
 
 
 #Photosynthetic production and respiration
-plot(y,1e-3*apply(d$ForestTreeData[17,,],2,sum,na.rm=TRUE)/aplot1,type="l", lwd=2,xlab="time (y)", ylab= "t C / ha", main="GPP and Respiration") #   P/Af
+plot(y,1e-3*apply(d$ForestTreeData[17,,],2,sum,na.rm=TRUE)/aplot1,type="l", lwd=2,xlab="time (y)", ylab= "t C / ha", main="GPP and Respiration") ###   P/Af
+legend('bottomright',inset=0.05,c("GPP","Respiration"),col='black',lty=c(1,2),lwd=2)    
 points(y,1e-3*apply(d$ForestTreeData[18,,],2,sum,na.rm=TRUE)/aplot1, type="l", lty=2, lwd=2)   #min
 
 Ntrees <- d$StandData[3,1]
@@ -195,26 +210,32 @@ for(i in 2:min(Ntrees/pick)) {
 }
 
 #Crown ratio
-plot(y,1-d$ForestTreeData[11,1,]/d$ForestTreeData[7,1,], ylim=c(0,1), type="l", main=paste("Crown ratios and mean (red)\nevery ",as.character(pick),"th tree",sep=""), ylab="Crown ratio",xlab="time (y)",xlim=c(0,ymax))
+plot(y,1-d$ForestTreeData[11,1,]/d$ForestTreeData[7,1,], ylim=c(0,1), type="l", main=paste("Crown ratios and mean\nevery ",as.character(pick),"th tree",sep=""),
+     ylab="Crown ratio",xlab="time (y)",xlim=c(0,ymax))
+legend('bottomleft',inset=0.05,c("Lignum trees","Lignum trees mean"),col=c('black','red'),lty=1,lwd=2)
 for(i in 1:min(Ntrees/pick)) {
 	points(y,1-d$ForestTreeData[11,i*pick,]/d$ForestTreeData[7,i*pick,], type="l")
 }
 points(y,apply(1-d$ForestTreeData[11,,]/d$ForestTreeData[7,,],2,mean,na.rm=TRUE),type="l",lwd=2,col="red")
 
-#Height vs diameter
-plot(100*d$ForestTreeData[8,1,],d$ForestTreeData[7,1,], ylim=c(0,30), xlim=c(0,30), type="l",main=paste("Height vs diameter at base\nevery ",as.character(pick),"th tree",sep=""),xlab="Tree diameter (m)", ylab="Tree height (cm)")
+###Height vs diameter
+plot(100*d$ForestTreeData[8,1,],d$ForestTreeData[7,1,], ylim=c(0,30), xlim=c(0,30), type="l",main=paste("Height vs diameter at base\nevery ",as.character(pick),"th tree",sep=""),
+     xlab="Tree diameter (cm)", ylab="Tree height (m)")
+legend('bottomright',inset=0.05,c("Lignum trees","y=x"),col=c('black','red'),lty=1,lwd=2)
 for(i in 2:min(Ntrees/pick)) {
 	points(100*d$ForestTreeData[8,i*pick,],d$ForestTreeData[7,i*pick,], type="l")
 }
-abline(0,1,lwd=2)
+abline(0,1,lwd=2,col="red")
 
-#Foliage mass vs cross-sectional area at crown base
-plot((pi/4)*100^2*d$ForestTreeData[10,1,]^2,2*d$ForestTreeData[23,1,], ylim=c(0,10), xlim=c(0,150), type="l",main=paste("Fol.mass vs stem cross sec. area at crown b.\nevery ",as.character(pick),"th tree",sep=""),xlab="Stem cross section area at crown b.  (cm2)", ylab="Foliage mass (kg DM)")
+###Foliage mass vs cross-sectional area at crown base
+plot((pi/4)*100^2*d$ForestTreeData[10,1,]^2,2*d$ForestTreeData[23,1,], ylim=c(0,10), xlim=c(0,150), type="l",
+     main=paste("Foliage mass vs stem cross sectional area at crown base\nevery ",as.character(pick),"th tree",sep=""),
+     xlab="Stem cross section area at crown base  (cm2)", ylab="Foliage mass (kg DM)")
+legend('topleft',inset=0.05,c("Lignum trees","Lignum trees mean","y=0.055x"),col=c('black','red','blue'),lty=1,lwd=2)
 for(i in 2:min(Ntrees/pick)) {
 	points(100^2*d$ForestTreeData[10,i*pick,]^2,2*d$ForestTreeData[23,i*pick,], type="l")
 }
 points(apply((pi/4)*100^2*d$ForestTreeData[10,,]^2,2,mean,na.rm=TRUE),apply(2*d$ForestTreeData[23,,],2,mean,na.rm=TRUE),type="l",lwd=2,col="red")
-
 abline(0,0.055,col="blue",lwd=2)
 
 
