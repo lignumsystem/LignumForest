@@ -590,12 +590,13 @@ namespace LignumForest{
     VoxelSpace *vs; ///< The voxel space spanning the forest
     StandDescriptor<TREE> stand; ///< Class to handle and print stand level quantities
     BorderForest border_forest;  ///< Homogeneous forest surrounding forest of individual trees.
-    TMatrix3D<double> hdf5_tree_data; ///< 3D array[years][ntrees][ndata_cols] for trees in the stand,
-    ///< dimensions will be known after trees are generated.
+    /// 3D array[years][ntrees][ndata_cols] for trees in the stand,
+    /// dimensions will be known after trees are generated.
+    /// \sa resizeTreeDataMatrix()
+    TMatrix3D<double> hdf5_tree_data; 
     TMatrix2D<double> hdf5_stand_data; ///< 2D array[years][ndata_cols] for stand level data \sa stand
     TMatrix2D<double> hdf5_center_stand_data; ///< 2D array[years][ndata_cols] for center stand level data \sa center_stand
     StandDescriptor<TREE> center_stand; ///< To deal with center part of stand \sa setTreeLocations
-    ///
     /// \brief lambda = Iteration parameter of new growth
     /// Save lambda for each tree.
     /// After allocation Photosynthesis - Respiration = Growth(lambda)
