@@ -220,7 +220,7 @@ namespace LignumForest{
     cout << "-RUE <value>       The radiation use effeciency (rue) varies as a function of TreeSegments initial radiation" << endl;
     cout << "                   conditions. Photosynthetic production of TreeSegment = rue * LGApr * Qabs. <value> = degree of" << endl;
     cout << "                   increase of rue as a function of shadiness (0 < <value> < 2)." << endl;
-    cout << "-modeChange <year1,year2,..,yearN> Comma separated list of years when to apply new MetaFile.       
+    cout << "-modeChange <year1,year2,..,yearN> Comma separated list of years when to apply new MetaFile." <<endl;      
     cout << "-architectureChange <year>  Change the braching pattern in L-system after <year> in simulation." <<endl;
     cout << "-Lmaxturn          Turn angle in degrees in the side branches when architecture change is on (default 80 degrees)." <<endl;
     cout << "-fsapwdown <file>  Part of the sapwood going down in a tree as a function of Gravelius order." <<endl;
