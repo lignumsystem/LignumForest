@@ -165,7 +165,7 @@ namespace LignumForest{
     ///\note The \p globexpr is a Unix glob expression and pattern matching is implemented with C library *glob* function.
     ///      Most notably curly braces can be used to express alternative matchings. For example, the
     ///      glob expression <i> {MetaFile,MetaFile1}.txt </i> matches MetaFile.txt and MetaFile1.txt and nothing else.
-    ///\post The queue of MetaFiles is sorted in alphabetical order.
+    ///\post MetaFiles in the \p metafile_q are sorted in alphabetical order.
     void insertMetaFiles(const string& globexpr);
     ///\brief Retrieve the next MetaFile in the queue
     ///\retval s The first MetaFile in the queue
@@ -175,6 +175,13 @@ namespace LignumForest{
     ///\pre MetaFiles can be retrieved before growth loop 
     ///\retval metafile_q The queue of the MetaFile names
     deque<string> getMetaFiles(){return metafile_q;}
+    ///\brief Insert growth mode change years into their GrowthLoop::modechageyears_q queue
+    ///\param years Comma (,) separated list of years
+    ///\post The years in the \p modechange_q are sorted in ascending order
+    void insertModeChangeYears(const string& years);
+    int nextModeChangeYear(){return modechangeyears_q.front();}
+    int popModeChangeYear();
+    deque<int> getModeChangeYears(){return modechangeyears_q;}
     ///\brief Take given number of growth steps
     ///\param year Number of growth steps
     void timeStep(int year);
@@ -182,9 +189,9 @@ namespace LignumForest{
     void afterGrowth();
     ///\brief Print the comand line usage information
     ///
-    ///\attention Keep it up to date after implementing a new command line option
-    ///\deprecated Options for output files 
-    ///\remark Simulation results as well as XML trees will be in HDF5 files. See option `-hdf5` 
+    ///\attention Keep the method up to date after removals or implementing a new command line option
+    ///\deprecated Most options for output files, using HD5 files
+    ///\remark Simulation results as well as XML trees will be in HDF5 files. See the option `-hdf5` 
     void usage()const;
     ///\brief Command line check
     ///
@@ -658,7 +665,8 @@ namespace LignumForest{
     /// Class MainAxisVolume Defined in stl-lignum/TreeFunctor.h
     MainAxisVolume<TS,BUD> mav;
     string metafile; ///< Regular expression for MetaFiles \sa metafile_q
-    deque<string> metafile_q; ///<Metafiles possibly many in use insorted order. 
+    deque<string> metafile_q; ///<Metafiles possibly many in use in sorted order.
+    deque<int> modechangeyears_q;///<Years when to apply new MetaFile in growth
     string voxelfile;///< File of parameters for the VoxelSpace \sa checkCommandLine
     string xmlfile; ///< XML file where the tree can be saved and restored from \sa parseCommandline
     string datafile;///< Text file to save tree data each time step \sa parseCommandline

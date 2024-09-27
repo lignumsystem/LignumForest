@@ -131,9 +131,6 @@ namespace LignumForest{
   ///\brief Set mode change on/off
   ///\sa LignumForest::model_change__year
   extern bool is_mode_change;
-  ///\brief Set growth mode change year
-  ///\sa LignumForest::is_mode_change
-  extern int mode_change_year;    
   ///@}
 
   ///\defgroup vsoccupance Space occupancy model experiment

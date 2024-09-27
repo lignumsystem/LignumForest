@@ -111,6 +111,35 @@ namespace LignumForest{
     metafile_q.pop_front();
     return s;
   }
+
+  template<class TREE, class TS, class BUD, class LSYSTEM>
+  void GrowthLoop<TREE,TS,BUD,LSYSTEM>::insertModeChangeYears(const string& years)
+  {
+    stringstream year_ss(years);
+    string year_string;
+    while (getline(year_ss,year_string,',')){
+      int year = atoi(year_string.c_str());
+      modechangeyears_q.push_back(year);
+    }
+    //Sort to ascending order
+    sort(modechangeyears_q.begin(),modechangeyears_q.end(),less<int>());
+    if (verbose){
+      cout << "Mode change years: " << flush;
+      for (unsigned int i=0; i < modechangeyears_q.size();i++){
+	int year = modechangeyears_q[i]; 
+	cout << year <<" "<<flush;
+      }
+      cout <<endl;
+    }
+  }
+
+   template<class TREE, class TS, class BUD, class LSYSTEM>
+   int GrowthLoop<TREE,TS,BUD,LSYSTEM>::popModeChangeYear()
+   {
+     int year = modechangeyears_q.front();
+     modechangeyears_q.pop_front();
+     return year;
+   }
   
   /// \snippet{lineno} GrowthLoopI.h Usagex
   // [Usagex]
@@ -130,7 +159,7 @@ namespace LignumForest{
     cout << "[-space0] [-space1] [-space2] [-adHoc]" << endl;
     cout << "[-budViewFunction] [-EBH] -EBH1 <value>]" << endl;
     cout << "[-space2Distance <Value>] [-EBHREDUCTION <value>] [-EBHFINAL <value>] [-EBHInput <int>] [-RUE <value>]" << endl;
-    cout << "[-architecureChange <year>]" << endl;
+    cout << "[-modeChange <year1,year2,...,yearN] [-architecureChange <year>]" << endl;
     cout << "[-fsapwdown <file>]" << endl;
     cout << "------------------------------------------------------------------------------------------------" << endl;
     cout << "-iter Number of years to simulate" << endl;
@@ -191,6 +220,7 @@ namespace LignumForest{
     cout << "-RUE <value>       The radiation use effeciency (rue) varies as a function of TreeSegments initial radiation" << endl;
     cout << "                   conditions. Photosynthetic production of TreeSegment = rue * LGApr * Qabs. <value> = degree of" << endl;
     cout << "                   increase of rue as a function of shadiness (0 < <value> < 2)." << endl;
+    cout << "-modeChange <year1,year2,..,yearN> Comma separated list of years when to apply new MetaFile.       
     cout << "-architectureChange <year>  Change the braching pattern in L-system after <year> in simulation." <<endl;
     cout << "-Lmaxturn          Turn angle in degrees in the side branches when architecture change is on (default 80 degrees)." <<endl;
     cout << "-fsapwdown <file>  Part of the sapwood going down in a tree as a function of Gravelius order." <<endl;
@@ -272,6 +302,25 @@ namespace LignumForest{
     if (ParseCommandLine(argc,argv,"-metafile", clarg)){
       metafile = clarg;
       insertMetaFiles(metafile);
+    }
+     ///---
+    ///\par Parse growth mode change year
+    clarg.clear();
+    ///+ -modeChange Growth mode change years \sa LignumForest::is_mode_change LignumForest::mode_change_year
+    if (ParseCommandLine(argc,argv,"-modeChange",clarg)){
+      LignumForest::is_mode_change=true;
+      insertModeChangeYears(clarg);
+      if (verbose){
+	cout << "MetaFiles " << metafile_q.size() <<endl;
+	cout << "Mode change years " << modechangeyears_q.size() <<endl;
+      }
+      //Consistency check: There must be one MetaFile more than Growth mode change years
+      if (metafile_q.size() != modechangeyears_q.size()+1){
+	cout << "Growth mode change consistency error" <<endl;
+	cout << "The number of MetaFiles " << metafile_q.size()
+	     << " must be the number of mode change years " <<  modechangeyears_q.size() << " plus 1" << endl;
+	exit(0);
+      }
     }
     ///+ `-voxelspace`, voxel space definition \sa voxelfile
     clarg.clear();
@@ -625,14 +674,6 @@ namespace LignumForest{
     if (ParseCommandLine(argc,argv,"-architectureChange",clarg)){
 	Pine::is_architecture_change = true;
 	Pine::architecture_change_year = atoi(clarg.c_str());
-    }
-    ///---
-    ///\par Parse growth mode change year
-    clarg.clear();
-    ///+ -modeChange Growth mode change year \sa LignumForest::is_mode_change LignumForest::mode_change_year
-    if (ParseCommandLine(argc,argv,"-modeChange",clarg)){
-      LignumForest::is_mode_change=true;
-      LignumForest::mode_change_year=atoi(clarg.c_str());
     }
     ///---
     ///\par Parse Sapwood down function
@@ -1285,8 +1326,9 @@ namespace LignumForest{
   template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::growthModeChange(int year)
   {
-    if (LignumForest::is_mode_change && (year == LignumForest::mode_change_year)){
+    if (LignumForest::is_mode_change && (!modechangeyears_q.empty()) && (year == nextModeChangeYear())){
       string f = popMetaFile();
+      popModeChangeYear();
       LGMVERBOSE verb = verbose ? VERBOSE : QUIET;
       InitializeTree<TS,BUD> init(f,verb);
       for (unsigned int i=0; i < vtree.size(); i++){

@@ -33,7 +33,6 @@ namespace LignumForest{
   int ebh_mode = 0;          
   LGMdouble max_rueqin;
   bool is_mode_change = false;
-  int mode_change_year = INT_MAX;
   Firmament dummy_firm;
   VoxelSpace space_occupancy(Point(0.0,0.0,0.0),Point(1.0,1.0,1.0),
 			     0.1,0.1,0.1,5,5,5,dummy_firm);
