@@ -145,7 +145,7 @@ points(y,100*d$ForestTreeData[8,smallest,], type="l",lwd=2,col="red")    #median
 aplot1 <- aplot/1e4          #area in ha
 plot(log(d$StandData[5,]),log(d$StandData[3,]/aplot1), xlim=c(log(0.001),log(0.5)),ylim=c(log(100),log(20000)),type="l", lty=1, lwd=2, xlab="log(mean base diameter)", ylab="log(No. trees / ha)",
      main="Self-thinning curve")
-legend('bottomleft',inset=0.05,c("Lignum","-3/2","Koivisto: kasvu- ja tuotostaulukot"),col=c('black','red','darkgreen'),
+legend('bottomleft',inset=0.05,c("Lignum",expression(tan(alpha) == -3/2),"Koivisto: kasvu- ja tuotostaulukot"),col=c('black','red','darkgreen'),
        lty=1,lwd=2)
 p1 <- c(max(log(d$StandData[5,ymax]))+1,min(log(d$StandData[3,ymax]/aplot1))-0.5)
 p22 <- log(d$StandData[3,1]/aplot1)+0.5
