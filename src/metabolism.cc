@@ -91,8 +91,17 @@ namespace LignumForest{
 
     //Sapwood senescence if segment age > SPHwStart (Bjorklund, Silva Fennica)
     if (GetValue(*this,LGAage) > GetValue(dynamic_cast<const ScotsPineTree&>(GetTree(*this)),SPHwStart)){
+    //Butt swell
+      double myH = GetValue(dynamic_cast<const ScotsPineTree&>(GetTree(*this)),LGAH);
+      double rel_pos = GetMidPoint(*this).getZ()/myH;
+      double bsw_factor = 0.0;
+      if(rel_pos < 0.2) {
+	bsw_factor += GetValue(dynamic_cast<const ScotsPineTree&>(GetTree(*this)),LGPq) *
+	  pow(1.0 - rel_pos/0.2, 2.0);
+      }      
       LGMdouble dAs = GetValue(GetTree(*this),LGPss) * GetValue(*this,LGAAs);
-      LGMdouble Ah_new =  dAs + GetValue(*this, LGAAh);
+      LGMdouble Ah_new =  dAs + GetValue(*this, LGAAh) + bsw_factor;  //Butt swell
+
       LGMdouble Rh_new = sqrt(Ah_new/PI_VALUE);
       SetValue(*this,LGARh,Rh_new);
     }
