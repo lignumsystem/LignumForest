@@ -181,8 +181,19 @@ namespace LignumForest{
   ///\brief Boolean flag to set bud view function on or off.
   ///\sa bud_vew_f
   extern bool is_bud_view_function;
-  ///The angle of branching after architecture change. Set in L system.
+  ///\brief The angle of branching after architecture change. Set in L system.
   extern double max_turn_in_architecture_change;
+  ///\brief Butt swell model in diameter growth.
+  ///
+  ///Adjust \f$LGPq\f$ in butt swell model with a coefficient \f$c\f$: \f$LGPq = c*LGPq\f$ and \f$0 \le c \le 1\f$.
+  ///The default value for \f$c\f$ is 1.0 (i.e. no effect).
+  ///\note The butt swell model is implemented in ScotsPineSegment. The most straigthforward way
+  ///to implement adjustment parameters is to use global variables in LignumForest namespace.
+  ///\sa ScotsPineSegment::aging() GrowthLoop::usage() GrowthLoop::parseCommanLine() LignumForest::butt_swell_start 
+  extern double butt_swell_coeff;
+  ///\brief Tree age to start butt swell, default value is INT_MAX (i.e. never).
+  ///\sa ScotsPineSegment::aging() GrowthLoop::usage()  GrowthLoop::parseCommanLine() LignumForest::butt_swell_coeff
+  extern int butt_swell_start;
   ///@}
   
 }//end namespace

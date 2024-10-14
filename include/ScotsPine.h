@@ -311,6 +311,15 @@ namespace LignumForest{
     }
 
     void respiration();
+    ///\brief Aging tailored to ScotsPineSegment.
+    ///
+    ///Heartwood formation after SPHwStart years (Bjorklund, Silva Fennica).<br>
+    ///Butt swell model \f$\mathit{BSW}\$f adds sapwood senescence thus adding to sapwood requirement:
+    ///\f[\mathit{BSW} = c\times\mathit{LGPq}\times(1.0 - r/0.2)^2.0\f]
+    ///where \f$c\f$ is the adjustment coeffient, \f$\mathit{LGPq}\f$ is the segment shortening tree parameter
+    ///and \f$ 0.0 < r < 0.2\f$ is the relative height position of the segment midpoint in the tree.
+    ///\pre For the butt swell model to take effect the tree age must be over a treshold value.
+    ///\sa GrowthLoop::parseCommandLine() LignumForest::butt_swell_coeff LignumForest::butt_swell_start
     void aging();
     void setEBHResource(const double& r) {EBH_resource = r;}
     double getEBHResource() {return EBH_resource;}

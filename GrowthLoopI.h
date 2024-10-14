@@ -224,6 +224,8 @@ namespace LignumForest{
     cout << "-architectureChange <year>  Change the braching pattern in L-system after <year> in simulation." <<endl;
     cout << "-Lmaxturn          Turn angle in degrees in the side branches when architecture change is on (default 80 degrees)." <<endl;
     cout << "-fsapwdown <file>  Part of the sapwood going down in a tree as a function of Gravelius order." <<endl;
+    cout << "-butt_swell_coeff  Adjustment coefficient (between 0 and 1) for the butt swell model." <<endl;
+    cout << "-butt_swell_start  Tree age to start butt swell." <<endl;									   
     cout << endl;
   }
   // [Usagex]
@@ -691,6 +693,25 @@ namespace LignumForest{
       //Change degrees to radians used
       double turn_angle = atof(clarg.c_str())*PI_VALUE/180.0;
       LignumForest::max_turn_in_architecture_change = turn_angle;
+    }
+    ///---
+    ///\par Parse butt swell coefficent
+    if (ParseCommandLine(argc,argv,"-butt_swell_coeff",clarg)){
+      double bsc = atof(clarg.c_str());
+      if (bsc < 0.0 || bsc > 1.0){
+	cout << "Butt swell coefficient not in interval [0,1] " << bsc <<endl;
+	cout << "Exiting program" << endl;
+	exit(0);
+      }
+      LignumForest::butt_swell_coeff = bsc;
+      cout << "Butt swell coefficient " <<  LignumForest::butt_swell_coeff << endl;
+    }
+    ///---
+    ///\par Parse butt swell start year
+    if (ParseCommandLine(argc,argv,"-butt_swell_start",clarg)){
+      double bss = atoi(clarg.c_str());
+      LignumForest::butt_swell_start = bss;
+      cout << "Butt swell start year " << LignumForest::butt_swell_start <<endl;
     }
     if (verbose){
       cout << "parseCommandLine end" <<endl;

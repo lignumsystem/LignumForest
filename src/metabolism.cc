@@ -82,8 +82,6 @@ namespace LignumForest{
     SetValue(*this,LGAM, resp);
   }
 
-  ///Aging  tailored for ScotsPineSegment:  heartwood formation  after SPHwStart 
-  ///years (Bjorklund, Silva Fennica).
   void ScotsPineSegment::aging()
   {
     //Add age (see foliage senescence below)
@@ -91,17 +89,19 @@ namespace LignumForest{
 
     //Sapwood senescence if segment age > SPHwStart (Bjorklund, Silva Fennica)
     if (GetValue(*this,LGAage) > GetValue(dynamic_cast<const ScotsPineTree&>(GetTree(*this)),SPHwStart)){
-    //Butt swell
-      double myH = GetValue(dynamic_cast<const ScotsPineTree&>(GetTree(*this)),LGAH);
-      double rel_pos = GetMidPoint(*this).getZ()/myH;
+      //Butt swell
+      int tree_age = GetValue(GetTree(*this),LGAage);
       double bsw_factor = 0.0;
-      if(rel_pos < 0.2) {
-	bsw_factor += GetValue(dynamic_cast<const ScotsPineTree&>(GetTree(*this)),LGPq) *
-	  pow(1.0 - rel_pos/0.2, 2.0);
-      }      
+      if (tree_age >= LignumForest::butt_swell_start){
+	double myH = GetValue(dynamic_cast<const ScotsPineTree&>(GetTree(*this)),LGAH);
+	double rel_pos = GetMidPoint(*this).getZ()/myH;
+	if(rel_pos < 0.2) {
+	  double lgpq = GetValue(dynamic_cast<const ScotsPineTree&>(GetTree(*this)),LGPq);
+	  bsw_factor += LignumForest::butt_swell_coeff*lgpq*pow(1.0 - rel_pos/0.2, 2.0);
+	}
+      }
       LGMdouble dAs = GetValue(GetTree(*this),LGPss) * GetValue(*this,LGAAs);
       LGMdouble Ah_new =  dAs + GetValue(*this, LGAAh) + bsw_factor;  //Butt swell
-
       LGMdouble Rh_new = sqrt(Ah_new/PI_VALUE);
       SetValue(*this,LGARh,Rh_new);
     }

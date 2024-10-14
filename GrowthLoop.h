@@ -114,7 +114,7 @@ namespace LignumForest{
        self_thinning(false), generate_locations(false), 
        no_trees(0), wood_voxel(true), evaluate_border_forest(true),seg_len_var(0.0),
        pairwise_self(false), eero(false),  g_fun_varies(false), g_fun_var(0.0),
-       random_branch_angle(false), ba_variation(0.0), dDb(0.003) {}
+       random_branch_angle(false), ba_variation(0.0), dDb(0.003){}
     ///\brief Initialize with one tree
     ///
     ///One tree with its L_system. The `location_file` is set to "TreeLocations.txt" for predefined tree locations.   

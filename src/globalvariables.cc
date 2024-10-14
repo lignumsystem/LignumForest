@@ -23,6 +23,8 @@ namespace LignumForest{
   double rel_bud = 0.0;
   double branch_angle = 45.0 * PI_VALUE / 180.0;
   double max_turn_in_architecture_change = 80.0*PI_VALUE/180.0;
+  double butt_swell_coeff = 1.0;
+  int butt_swell_start = INT_MAX;
 }
 
 namespace LignumForest{
