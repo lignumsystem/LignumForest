@@ -160,7 +160,7 @@ else()
 endif()
 add_custom_command(TARGET lignum-forest
   POST_BUILD
-  COMMENT "REMEMBER to type \"make install\" to install lignum-forest\nto the working directory above."
+  COMMENT "REMEMBER to type \"make install\" to install \"lignum-forest\" into the working directory above."
   )
 install(TARGETS lignum-forest DESTINATION "${CMAKE_CURRENT_LIST_DIR}")
 
