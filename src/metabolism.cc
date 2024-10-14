@@ -101,7 +101,8 @@ namespace LignumForest{
 	}
       }
       LGMdouble dAs = GetValue(GetTree(*this),LGPss) * GetValue(*this,LGAAs);
-      LGMdouble Ah_new =  dAs + GetValue(*this, LGAAh) + bsw_factor;  //Butt swell
+      LGMdouble Ah_new =  dAs + GetValue(*this, LGAAh) * (1.0 + bsw_factor);  //Butt swell
+
       LGMdouble Rh_new = sqrt(Ah_new/PI_VALUE);
       SetValue(*this,LGARh,Rh_new);
     }
