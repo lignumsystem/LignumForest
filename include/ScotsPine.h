@@ -314,7 +314,7 @@ namespace LignumForest{
     ///\brief Aging tailored to ScotsPineSegment.
     ///
     ///Heartwood formation after SPHwStart years (Bjorklund, Silva Fennica).<br>
-    ///Butt swell model \f$\mathit{BSW}\$f adds sapwood senescence thus adding to sapwood requirement:
+    ///Butt swell model \f$\mathit{BSW}\f$ adds sapwood senescence thus adding to sapwood requirement:
     ///\f[\mathit{BSW} = c\times\mathit{LGPq}\times(1.0 - r/0.2)^2.0\f]
     ///where \f$c\f$ is the adjustment coeffient, \f$\mathit{LGPq}\f$ is the segment shortening tree parameter
     ///and \f$ 0.0 < r < 0.2\f$ is the relative height position of the segment midpoint in the tree.
