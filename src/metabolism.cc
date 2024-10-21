@@ -96,8 +96,7 @@ namespace LignumForest{
 	double myH = GetValue(dynamic_cast<const ScotsPineTree&>(GetTree(*this)),LGAH);
 	double rel_pos = GetMidPoint(*this).getZ()/myH;
 	if((rel_pos > 0.0) || (rel_pos < 0.2)) {
-	  double lgpq = GetValue(dynamic_cast<const ScotsPineTree&>(GetTree(*this)),LGPq);
-	  bsw_factor += LignumForest::butt_swell_coeff*lgpq*pow(1.0 - rel_pos/0.2, 2.0);
+	  bsw_factor += LignumForest::butt_swell_coeff*pow(1.0 - rel_pos/0.2, 2.0);
 	}
       }
       LGMdouble dAs = GetValue(GetTree(*this),LGPss) * GetValue(*this,LGAAs);

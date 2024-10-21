@@ -524,18 +524,30 @@ namespace LignumForest{
 	    // [EBH2]
 	    ///\endinternal
 	  }
-
 	  //Random variation in lengths of segments (not stem)
 	  if(LignumForest::is_random_length && (go > 1.0)) {
 	    LGMdouble rp = GetValue(GetTree(*ts),LGPlen_random);
+	    //cout << "IN SEGMENT_RANDOM_LENGTH " << rp << endl;
 	    ///\par  Optional random segment length variation
-	    ///Applied to both Basic and EBH models. Random length is not
-	    ///applied in  the main stem
+	    ///Set the segment length \f$L_r\f$ randomly around the deterministic length \f$L\f$:
+	    ///\f[
+	    ///L_r = L + (r_p/0.5)\times(\mathit{ran3}(s)-0.5)
+	    ///\f]
+	    ///where $r_p$ is the parameter (given by the user) and the function \f$\mathit{ran3}\f3
+	    ///returns random number in [0,1) from uniform distribution.
+	    ///Applied to both Basic and EBH models. Random component is not applied in  the main stem.
+	    ///\note The lower and upper bounds defined with \f$r_p\f$ are not checked.
+	    ///\note Negative seed value \f$s\f$ for \f$\mathit{ran3}\f$ initializes the sequence for that value.
+	    ///      Any positive value generates one random number from the sequence.
+	    /// \sa The command line argument -segLenVar and LignumForest::is_random_length.
+	    ///\todo Condider changing \f$\mathit{ran3}\f$ to STL library *std::uniform_real_distribution*
+	    ///(in the header *random*).
 	    ///\internal
 	    ///\snippet{lineno} ScotsPine.h RANDOM
 	    // [RANDOM]
-	    // For branches if random variation in use
-	    Lnew *= 1.0 + (rp/0.5)*(ran3(&LignumForest::ran3_seed)-0.5);
+	    // Segment length adjustment for branches if random variation in use
+	    int generate_random_number = abs(LignumForest::ran3_seed);
+	    Lnew *= 1.0 + (rp/0.5)*(ran3(&generate_random_number)-0.5);
 	    // [RANDOM]
 	    ///\endinternal
 	  }

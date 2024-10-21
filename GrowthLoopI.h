@@ -196,7 +196,7 @@ namespace LignumForest{
     cout << "-H_0_ini, -H_var_ini        For variation of initial heights (defaults = 0.3 and 0.0)" << endl;
     cout << "-n_buds_ini_min, -n_buds_ini_max  For variation of initial number of buds (defaults = 4 and 4)" << endl;
     cout << "-p0Var <value>                Random variation of p0 +- max <value> per cent from the value in Tree.txt" << endl;
-    cout << "-segLenVar <value>         Random variation of length of new segments around Lnew, per cent" << endl;
+    cout << "-segLenVar         Random variation of length of new segments around Lnew, per cent" << endl;
     cout << "-pairwiseSelf      Pairwise radiation calculation for the tree itself." << endl;
     cout << "-eero              For studying the relationships between a) leaf light climate and b) syncronized variation" << endl;
     cout << "                   in leaf nitrogen concentration, leaf mass per area and leaf longevity, shoot length and" << endl;
@@ -518,13 +518,13 @@ namespace LignumForest{
     clarg.clear();
     if (ParseCommandLine(argc,argv,"-p0Var", clarg))
       p0_var = atof(clarg.c_str());
-    ///+ `-segLenVar` Variation in segment length in percentage
-    ///\sa seg_len_var
-    seg_len_var = 0.0;
+    ///+ `-segLenVar` Activate variation in segment length in percentage
+    ///\sa The Lignum::LGPlen_random parameter for tree set in Tree parameter file
+    ///\sa LignumForest::is_random_length
     clarg.clear();
-    if (ParseCommandLine(argc,argv,"-segLenVar", clarg))
-      seg_len_var = atof(clarg.c_str());
-    seg_len_var /= 100.0;            //per cent -> [0,1]
+    if (CheckCommandLine(argc,argv,"-segLenVar")){
+      LignumForest::is_random_length=true;
+    }
     ///+ `-budVariation` in pecenatage
     ///\sa LignumForest::rel_bud LignumForest::bud_variation
     LignumForest::rel_bud = 0.0;
@@ -729,7 +729,6 @@ namespace LignumForest{
     if(eero) {
       p0_var = 0.0;
       LignumForest::bud_variation = false;
-      seg_len_var = 0.0;
     }
 
   }
@@ -904,10 +903,9 @@ namespace LignumForest{
       SetValue(*vtree[i],SPHwStart,(double)hw_start);
       init.initialize(*vtree[i]);
       SetValue(*vtree[i],TreeQinMax,GetFirmament(*vtree[i]).diffuseBallSensor());
-      SetValue(*vtree[i], LGPlen_random, seg_len_var);
+      //cout << "TREE SEG_LEN_VAR " << GetValue(*vtree[i],LGPlen_random) << endl;
       SetValue(*vtree[i], SPis_EBH, 0.0);
       // [TINIT]
-      ///\sa GrowthLoop::hw_start GrowthLoop::seg_len_var 
       ///\endinternal
     }
     

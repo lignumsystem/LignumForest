@@ -112,7 +112,7 @@ namespace LignumForest{
        to_file(false),sensitivity_analysis(false),crown_limit_data(false),
        writevoxels(false),increase_xi(false),xi_increment(25.0),
        self_thinning(false), generate_locations(false), 
-       no_trees(0), wood_voxel(true), evaluate_border_forest(true),seg_len_var(0.0),
+       no_trees(0), wood_voxel(true), evaluate_border_forest(true),
        pairwise_self(false), eero(false),  g_fun_varies(false), g_fun_var(0.0),
        random_branch_angle(false), ba_variation(0.0), dDb(0.003){}
     ///\brief Initialize with one tree
@@ -136,7 +136,7 @@ namespace LignumForest{
        crown_limit_data(false),
        writevoxels(false),increase_xi(false),
        self_thinning(false), generate_locations(false), location_file("Treelocations.txt"),
-       no_trees(1),stand_output(NULL),cstand_output(NULL),wood_voxel(true), evaluate_border_forest(true),seg_len_var(0.0),
+       no_trees(1),stand_output(NULL),cstand_output(NULL),wood_voxel(true), evaluate_border_forest(true),
        pairwise_self(false), eero(false),  g_fun_varies(false), g_fun_var(0.0),
        random_branch_angle(false), ba_variation(0.0), dDb(0.003)
     {
@@ -740,12 +740,7 @@ namespace LignumForest{
     vector<double> h_prev; ///< Tree height of previous time step. \sa no_h \sa allocationAndGrowth
     LGMdouble p0_var; ///< Random variation in photosynthetic efficiency between trees. \sa initializeTree
     string stand_file; ///< File name for output of stand values \sa output
-    string cstand_file; ///< File name for output of center stand values \sa output
-    /// \brief For generation of random variation in lengths of new segments.
-    ///
-    /// The variability is controlled with LIGNUM parameter LGPlen_random (see
-    /// stl-lignum/include/LGMSymbols.h) \sa SetScotsPineSegmentLength
-    LGMdouble seg_len_var; 
+    string cstand_file; ///< File name for output of center stand values \sa output  
     //===============  24.10.2019
     /// \brief Shading in tree's own crown is analyzed with backward ray casting.
     ///
