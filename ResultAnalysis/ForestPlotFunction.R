@@ -51,18 +51,18 @@ n <- length(v)
 sum(outer(v, v, FUN=function(x,y){abs(x-y)}),na.rm=TRUE) / (2 * n * sum(v,na.rm=TRUE))
 }
 
-ForestPlot <- function(infile,aplot,pick) {
+ForestPlot <- function(infile,aplot,pick, GYdata = "") {
 
 
 d <- H5Fopen(infile)
 
-va27 <- read.table("Va27.txt",header=FALSE)
+va27 <- read.table(paste(GYdata,"Va27.txt",sep=""),header=FALSE)
 colnames(va27) <- c("a", "Hd",   "HgM",    "DgM",   "V",  "Hc", "G")
 
-vv <- read.table("VVV-40.txt",header=FALSE)
+vv <- read.table(paste(GYdata,"VVV-40.txt",sep=""),header=FALSE)
 colnames(vv) <- c("age",    "DBH",		"H",		"Hcb",		"Wf", "V")
 
-ksto <- read.table("ksto-mt.dat", header=TRUE)
+ksto <- read.table(paste(GYdata,"ksto-mt.dat",sep=""), header=TRUE)
 
 pdf_file <- paste(infile,".pdf",sep="")
 
@@ -79,7 +79,7 @@ legend('bottomleft',inset=0.05,c("Lignum","Koivisto: kasvu- ja tuotostaulukot"),
        lty=1,lwd=2)
 points(ksto$year,ksto$N,type="l",lwd=3,col="darkgreen")
 ##Density Vuokila/Ivessalo
-ftdata<-read.table("Ilvessalo.txt",header=TRUE,sep='')
+ftdata<-read.table(paste(GYdata,"Ilvessalo.txt",sep=""),header=TRUE,sep='')
 t1 <- d$StandData[1,]
 sdensity <- d$StandData[3,]/aplot1
 plot(t1,sdensity,type="l",lty=1, lwd=2, xlab="Time (y)", ylab="No. trees / ha",ylim=c(0,17000),
@@ -118,17 +118,16 @@ smallest <- which(h<1.001*mh)[1]
 mh <- median(d$ForestTreeData[7,,ymax],na.rm=TRUE)
 med <- which(h<1.002*mh&h>0.98*mh)[1]
 
-#Base diameter
-plot(y,100*d$StandData[5,], type="l", lwd=2, ylim=c(0,40),xlab="time (y)", ylab="Base diam, nin, mean, max (cm)", main="Mean, min and max diameter at base in the stand")##mean
+#DBH
+plot(y,100*d$StandData[8,], type="l", lwd=2, ylim=c(0,40),xlab="time (y)", ylab="Diameter, min, mean, max (cm)", main="Mean, min and max BH diameter in the stand")##mean
 legend('topleft',inset=0.05,c("Lignum (mean)","Lignum (min,max)"," Vuokila/Väliaho 1980"," Varmola M 1987","Koivisto: kasvu- ja tuotostaulukot"),col=c('black','black','blue','red','darkgreen'),
        lty=c(1,2,1,1,1),lwd=2)
 
-points(y,100*d$StandData[6,], type="l",lwd=2, lty=2)   #min
-points(y,100*d$StandData[7,], type="l",lwd=2, lty=2)   #max
-#dkanto = 2 + 1,25d (Laasasenaho 1975, Folia Forestalia 233)
-points(va27$a,0.02+1.25*va27$DgM,type="l",lwd=3,col="red")
-points(vv$age,0.02+1.25*vv$DBH,type="l",lwd=3,col="blue")
-points(ksto$year,0.02+1.25*ksto$Dbhav,type="l",lwd=3,col="darkgreen")
+points(y,100*d$StandData[9,], type="l",lwd=2, lty=2)   #min
+points(y,100*d$StandData[10,], type="l",lwd=2, lty=2)   #max
+points(va27$a,va27$DgM,type="l",lwd=3,col="red")
+points(vv$age,vv$DBH,type="l",lwd=3,col="blue")
+points(ksto$year,ksto$Dbhav,type="l",lwd=3,col="darkgreen")
 
 
 #Height
@@ -136,14 +135,23 @@ plot(y,d$ForestTreeData[7,largest,], type="l", ylim=c(0,1.2*d$ForestTreeData[7,l
 points(y,d$ForestTreeData[7,med,], type="l",lwd=2, col="darkgreen")    #median
 points(y,d$ForestTreeData[7,smallest,], type="l",lwd=2,col="red")    #smallest
 
+
+#Height vs breast height diameter
+plot(100*d$StandData[8,],d$StandData[11,], type="l", xlim=c(0,30), ylim=c(0,30), lwd=2, xlab="BH diameter (cm)", ylab="Mean tree height (m)", main="Height vs breast height diameter\nGreen = Koivisto, Varmola, Vuok&V:o")
+abline(0,1,col="blue",lwd=2)
+points(ksto$Dbhav,ksto$Hav,type="l",lwd=2,col="darkgreen")
+points(va27$DgM,va27$HgM, type="l",lwd=2,col="darkgreen")
+points(vv$DBH,vv$H, type="l",lwd=2,col="darkgreen")
+
+
 #Base diameter
-plot(y,100*d$ForestTreeData[8,largest,], type="l", ylim=c(0,30), lty=1,xlab="time (y)", ylab="Diameter at base (cm)",lwd=2, main=paste("Diameter growth of (at age ", as.character(ymax-1),") shortest (red), median (green),\n tallest (blue) tree",sep=""),col="blue") #largest
-points(y,100*d$ForestTreeData[8,med,], type="l",lwd=2, col="darkgreen")    #median
-points(y,100*d$ForestTreeData[8,smallest,], type="l",lwd=2,col="red")    #median
+# plot(y,100*d$ForestTreeData[5,largest,], type="l", ylim=c(0,30), lty=1,xlab="time (y)", ylab="Diameter at base (cm)",lwd=2, main=paste("Diameter growth of (at age ", as.character(ymax-1),") shortest (red), median (green),\n tallest (blue) tree",sep=""),col="blue") #largest
+# points(y,100*d$ForestTreeData[6,med,], type="l",lwd=2, col="darkgreen")
+# points(y,100*d$ForestTreeData[7,smallest,], type="l",lwd=2,col="red")
     
 #Self thinning plot
 aplot1 <- aplot/1e4          #area in ha
-plot(log(d$StandData[5,]),log(d$StandData[3,]/aplot1), xlim=c(log(0.001),log(0.5)),ylim=c(log(100),log(20000)),type="l", lty=1, lwd=2, xlab="log(mean base diameter)", ylab="log(No. trees / ha)",
+plot(log(d$StandData[8,]),log(d$StandData[3,]/aplot1), xlim=c(log(0.001),log(0.5)),ylim=c(log(100),log(20000)),type="l", lty=1, lwd=2, xlab="log(mean Dbh)", ylab="log(No. trees / ha)",
      main="Self-thinning curve")
 legend('bottomleft',inset=0.05,c("Lignum",expression(tan(alpha) == -3/2),"Koivisto: kasvu- ja tuotostaulukot"),col=c('black','red','darkgreen'),
        lty=1,lwd=2)
@@ -151,8 +159,7 @@ p1 <- c(max(log(d$StandData[5,ymax]))+1,min(log(d$StandData[3,ymax]/aplot1))-0.5
 p22 <- log(d$StandData[3,1]/aplot1)+0.5
 p21 <- (p22-p1[2])/(-3/2)+p1[1]
 points(c(p1[1],p21),c(p1[2],p22),type="l",lwd=2,col="red")
-###legend(p1[1]-0.5,p1[2]+1,"-3/2",box.lty=0,text.col="red")
-points(log((0.02+1.25*ksto$Dbhav)/100),log(ksto$N),type="l",lwd=3,col="darkgreen")
+points(log(ksto$Dbhav/100),log(ksto$N),type="l",lwd=3,col="darkgreen")
 
 
 
@@ -203,10 +210,10 @@ for(i in 2:min(Ntrees/pick)) {
 }
 
 
-#Tree diameters at base
-plot(y,100*d$ForestTreeData[8,1,], ylim=c(0,30), type="l",main=paste("Individual tree diameter at base\nevery ",as.character(pick),"th tree",sep=""),xlab="time (y)", ylab="Tree diameter (cm)")
+#Tree diameters at BH
+plot(y,100*d$ForestTreeData[9,1,], ylim=c(0,30), type="l",main=paste("Individual tree diameter at BH\nevery ",as.character(pick),"th tree",sep=""),xlab="time (y)", ylab="Tree diameter (cm)")
 for(i in 2:min(Ntrees/pick)) {
-	points(y,100*d$ForestTreeData[8,pick*i,], type="l")
+	points(y,100*d$ForestTreeData[9,pick*i,], type="l")
 }
 
 #Crown ratio
@@ -219,11 +226,11 @@ for(i in 1:min(Ntrees/pick)) {
 points(y,apply(1-d$ForestTreeData[11,,]/d$ForestTreeData[7,,],2,mean,na.rm=TRUE),type="l",lwd=2,col="red")
 
 ###Height vs diameter
-plot(100*d$ForestTreeData[8,1,],d$ForestTreeData[7,1,], ylim=c(0,30), xlim=c(0,30), type="l",main=paste("Height vs diameter at base\nevery ",as.character(pick),"th tree",sep=""),
+plot(100*d$ForestTreeData[9,1,],d$ForestTreeData[7,1,], ylim=c(0,30), xlim=c(0,30), type="l",main=paste("Height vs diameter BH\nevery ",as.character(pick),"th tree",sep=""),
      xlab="Tree diameter (cm)", ylab="Tree height (m)")
 legend('bottomright',inset=0.05,c("Lignum trees","y=x"),col=c('black','red'),lty=1,lwd=2)
 for(i in 2:min(Ntrees/pick)) {
-	points(100*d$ForestTreeData[8,i*pick,],d$ForestTreeData[7,i*pick,], type="l")
+	points(100*d$ForestTreeData[9,i*pick,],d$ForestTreeData[7,i*pick,], type="l")
 }
 abline(0,1,lwd=2,col="red")
 
@@ -244,8 +251,8 @@ abline(0,0.055,col="blue",lwd=2)
 h <- d$ForestTreeData[7,,ymax]
 hist(h[h>0.9*d$StandData[12,ymax]], main=paste("Height distribution at age ", as.character(ymax),sep=""), xlab="Tree height (m)")
 #
-db <- d$ForestTreeData[13,,ymax]
-hist(db[h>0.9*d$StandData[12,ymax]], main=paste("Distribution of diameter at base at age ", as.character(max(y)),sep=""), xlab="Diameter (cm)")
+db <- d$ForestTreeData[9,,ymax]
+hist(db[h>0.9*d$StandData[12,ymax]], main=paste("Distribution of BH diameter at age ", as.character(max(y)),sep=""), xlab="Diameter (cm)")
 ##
 
 plot(y,apply(d$ForestTreeData[7,,],2,gini),ylim=c(0,1),type="l", lwd=2,xlab="time (y)", ylab= "Gini coefficient", main="Gini coeff., solid = height, dashed = base diameter") 
