@@ -151,15 +151,21 @@ points(vv$DBH,vv$H, type="l",lwd=2,col="darkgreen")
     
 #Self thinning plot
 aplot1 <- aplot/1e4          #area in ha
-plot(log(d$StandData[8,]),log(d$StandData[3,]/aplot1), xlim=c(log(0.001),log(0.5)),ylim=c(log(100),log(20000)),type="l", lty=1, lwd=2, xlab="log(mean Dbh)", ylab="log(No. trees / ha)",
+    plot(d$StandData[8,],d$StandData[3,]/aplot1,log="xy",ylim=c(500,20000),type="l", lty=1, lwd=2, xlab="log(mean Dbh)", ylab="log(No. trees / ha)",
      main="Self-thinning curve")
-legend('bottomleft',inset=0.05,c("Lignum",expression(tan(alpha) == -3/2),"Koivisto: kasvu- ja tuotostaulukot"),col=c('black','red','darkgreen'),
-       lty=1,lwd=2)
-p1 <- c(max(log(d$StandData[5,ymax]))+1,min(log(d$StandData[3,ymax]/aplot1))-0.5)
-p22 <- log(d$StandData[3,1]/aplot1)+0.5
+    legend('bottomleft',inset=0.05,cex=0.8,c("Lignum",
+                                             expression(paste(N == alpha*bar(D)^-beta,", ",beta==-3/2," (", N,"=stocking density",",",bar(D),"=RMS stand diameter",",","Reineke ",1933^(1),")"),
+                                                        "Koivisto: kasvu- ja tuotostaulukot")),col=c('black','red','darkgreen'),lty=1,lwd=2)
+text(0.14,460,cex=0.6,"(1) Here in the context of Koivisto")
+p1 <- c(max(d$StandData[5,ymax])+1,min(d$StandData[3,ymax]/aplot1)-0.5)
+p22 <- d$StandData[3,1]/aplot1+0.5
 p21 <- (p22-p1[2])/(-3/2)+p1[1]
-points(c(p1[1],p21),c(p1[2],p22),type="l",lwd=2,col="red")
-points(log(ksto$Dbhav/100),log(ksto$N),type="l",lwd=3,col="darkgreen")
+### The previous self thinning curve is commented   
+### points(c(p1[1],p21),c(p1[2],p22),type="l",lwd=2,col="red")
+### The alpha = 91000 is from Koivisto
+### (solving for alpha in N = alpha*Dmean^-(3/2) for some data points gives values round 90000-94000) 
+points(ksto$Dbhav/100,91000.0*(ksto$Dbhav)**(-3/2),type="l",lwd=2,col="red")
+points(ksto$Dbhav/100,ksto$N,type="l",lwd=3,col="darkgreen")
 
 
 
