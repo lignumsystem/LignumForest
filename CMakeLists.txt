@@ -31,11 +31,14 @@
 # Set command line parameters for 'lignum-forest' in Product (menu bar) -> Scheme -> Edit Schmeme -> Arguments.
 # Divide the command line into practical parts for debugging from Arguments -> '+'.
 # -------------------------------------
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.30)
 # cmake 3.23 for Xcode 13 recommends the policy CMP0114 (warning output)
-cmake_policy(SET CMP0114 NEW)
-project(LignumForest DESCRIPTION "Indiviudal trees in heterogenous Scots pine forest")
-
+#cmake_policy(SET CMP0114 NEW)
+#cmake_policy(SET CMP0175 NEW)
+#cmake_policy(SET CMP0177 NEW)
+project(LignumForest DESCRIPTION "Individual trees in single species Scots pine forest")
+message("Project  ${CMAKE_PROJECT_NAME}: ${LignumForest_DESCRIPTION}")
+message("---------------------------------------------------------------------------")
 # Lignum core projects as an ExternalProject. 'lignum-core' target is compiled first
 # Note: lignum-core  has to be configured with cmake first. See lignum-core/CMakeLists.txt
 include(ExternalProject)
@@ -159,6 +162,7 @@ else()
   message(FATAL_ERROR "Exiting cmake")
 endif()
 add_custom_command(TARGET lignum-forest
+  COMMAND echo "CompilationLignumForest done"
   POST_BUILD
   COMMENT "REMEMBER to type \"make install\" to install \"lignum-forest\" into the working directory above."
   )

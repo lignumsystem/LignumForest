@@ -328,6 +328,12 @@ namespace LignumForest{
     clarg.clear();
     if (ParseCommandLine(argc,argv,"-voxelspace", clarg)){
       voxelfile = clarg;
+      std::ifstream f(voxelfile);
+      if (!f.good()){
+	cout << "VoxelSpace file " << voxelfile  << " does not exists or not accessible" <<endl;
+       	cout << "Exiting program" << endl;
+	exit(0);
+      }
     }
     ///+ `-pairwiseSelf` in voxel space radiation regime
     ///\sa pairwise_self
