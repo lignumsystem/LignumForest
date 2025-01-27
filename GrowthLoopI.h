@@ -34,6 +34,16 @@ using namespace LignumForest;
 // extern bool LignumForest::is_bud_view_function;///<Reinitialized in GrowthLoopI.h.
 // extern double LignumForest::global_hcb;///<Initialized in GrowthLoopI.h
 // extern double L_H;///<Initialized in GrowthLoopI.h
+
+
+//These globals are for analysing/testing radiation calculations
+//they are defined in  lignum_forest.cc
+extern bool is_analyze_k;         //If analysing/testing is done
+extern int year_of_k_analyze;     //Year of analysis
+extern int analyze_k_pick;        //If only every n'th tree is analyzed
+extern bool do_analyze_k;         //this is for gloop.calculateRadiation()
+extern bool calculate_analyze_k;  //this goes to EvaluateRadiationForCfTreeSegmentInVoxelSpace
+
 namespace LignumForest{                                 
   template <class TREE,class TS, class BUD, class LSYSTEM>
   int  CreateTreeXMLDataSet(const GrowthLoop<TREE,TS,BUD,LSYSTEM>& gl, LGMHDF5File& hdf5_file,const string& group_name, const int interval)
@@ -160,7 +170,7 @@ namespace LignumForest{
     cout << "[-budViewFunction] [-EBH] -EBH1 <value>]" << endl;
     cout << "[-space2Distance <Value>] [-EBHREDUCTION <value>] [-EBHFINAL <value>] [-EBHInput <int>] [-RUE <value>]" << endl;
     cout << "[-modeChange <year1,year2,...,yearN] [-architecureChange <year>]" << endl;
-    cout << "[-fsapwdown <file>]" << endl;
+    cout << "[-fsapwdown <file>] [-analyze_k <year>] [-analyze_k_pick <int>]" << endl;
     cout << "------------------------------------------------------------------------------------------------" << endl;
     cout << "-iter Number of years to simulate" << endl;
     cout << "-metafile <globexpr> Glob expression (as for Unix command line) for MetaFiles." << endl 
@@ -225,7 +235,10 @@ namespace LignumForest{
     cout << "-Lmaxturn          Turn angle in degrees in the side branches when architecture change is on (default 80 degrees)." <<endl;
     cout << "-fsapwdown <file>  Part of the sapwood going down in a tree as a function of Gravelius order." <<endl;
     cout << "-butt_swell_coeff  Adjustment coefficient (between 0 and 1) for the butt swell model." <<endl;
-    cout << "-butt_swell_start  Tree age to start butt swell." <<endl;									   
+    cout << "-butt_swell_start  Tree age to start butt swell." <<endl;
+    cout << "-analyze_k <year>  This is for testing radiation calculations: in the year <year> test" << endl;
+    cout << "                   data is written (truncate mode) to file k_data and program stops." << endl;
+    cout << "-analyze_k_pick <int>  If radiation is tested in every n'th tree." << endl;
     cout << endl;
   }
   // [Usagex]
@@ -286,6 +299,8 @@ namespace LignumForest{
     if (verbose){
       cout << "parseCommandLine begin" <<endl;
     }
+
+  
     ///---
     ///\par Check the command line for mandatory arguments.
     checkCommandLine(argc,argv);
@@ -723,7 +738,25 @@ namespace LignumForest{
       cout << "parseCommandLine end" <<endl;
       printVariables();
     }
+
+//This is for analysing/testing radiation calculations
+    clarg.clear();
+    is_analyze_k = false;
+    if (ParseCommandLine(argc,argv,"-analyze_k",clarg)){
+      is_analyze_k = true;
+      year_of_k_analyze = atoi(clarg.c_str());
+      k_data.open("k_data.dat", std::ofstream::trunc);
+      k_data << "h dt hr Af fol od" << endl;
+    }
+
+    //This is for analysing/testing radiation calculations
+    clarg.clear();
+    analyze_k_pick = 1;
+    if (ParseCommandLine(argc,argv,"-analyze_k_pick",clarg)){
+      analyze_k_pick = atoi(clarg.c_str());
+    }
     
+       
   }//End parseCommandLine()
 
 
@@ -2208,7 +2241,7 @@ namespace LignumForest{
   template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::calculateRadiation()
   {
-
+    
     EvaluateRadiationForCfTreeSegmentInVoxelSpace
       <ScotsPineSegment,ScotsPineBud> Rad(K, vs, &border_forest, evaluate_border_forest,
 					  k_border_conifer, wood_voxel, pairwise_self);
@@ -2217,12 +2250,20 @@ namespace LignumForest{
     SetStarMean<TS,BUD> setstar(ParametricCurve(0.14));
     ResetQinQabs<TS,BUD> RQQ;
     for (unsigned int k = 0; k < (unsigned int)no_trees; k++) {
+
       TREE* t = vtree[k];
       ForEach(*t,setstar);
       ForEach(*t,RQQ);
   
       if(pairwise_self) {
 	UnDumpScotsPineTree(*vs,*t,num_parts,wood_voxel);
+      }
+
+      //This is for analysing/testing radiation calculations
+      if( do_analyze_k && (static_cast<int>(k) % analyze_k_pick == 0) ) {
+	calculate_analyze_k = true;
+      } else {
+	calculate_analyze_k = false;
       }
 
       ForEach(*t,Rad);
