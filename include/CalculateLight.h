@@ -46,7 +46,8 @@ namespace LignumForest{
     bool pairwise_self; //If self-shading is evaluated by ray casting
   };
 
-  class AccumulateOpticalDepth{
+  //NOTE: this assumes constant size voxels
+  class AccumulateOpticalDepth{ 
   public:
     AccumulateOpticalDepth(LGMdouble side, bool wd) :
       box_side_length(side), wood(wd)
@@ -72,6 +73,28 @@ namespace LignumForest{
     bool wood;                       //  If woody parts are considered
   };
 
+  class AccumulateFOLIAGE{
+  public:
+    AccumulateFOLIAGE(LGMdouble side) :
+      box_side_length(side)
+    {
+      box_volume = pow(box_side_length,3.0);
+    }
+
+    double operator()(double o_d,VoxelMovement& vm){
+      if( vm.af > R_EPSILON ) {
+	o_d += vm.af * vm.l / box_volume;
+      }
+      return o_d;
+    }
+  private:
+    LGMdouble box_side_length;
+    LGMdouble box_volume;
+  };
+
+
+
+  
 #undef HIT_THE_FOLIAGE
 #undef NO_HIT
 #undef HIT_THE_WOOD

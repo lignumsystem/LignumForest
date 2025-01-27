@@ -66,6 +66,15 @@
 //Includes L-system, turtle graphics, GrowthLoop typedefs
 #include <GLoopDefs.h>
 
+//These globals are for analysing/testing radiation calculations
+bool is_analyze_k = false;         //If analysing/testing is done
+int year_of_k_analyze = INT_MAX;   //Year of analysis
+int analyze_k_pick = 1;            //If only every n'th tree is analyzed
+ofstream k_data;                   //File for analysed data
+bool do_analyze_k = false;         //this is for gloop.calculateRadiation()
+bool calculate_analyze_k = false;  //this goes to EvaluateRadiationForCfTreeSegmentInVoxelSpace
+
+
 using namespace Pine;
 using namespace LignumForest;
 
@@ -166,7 +175,11 @@ int main(int argc, char** argv)
   /// @}
   ///
   cout << "INIT DONE" << endl;
+
+  do_analyze_k = false;  //this is for analyzing/testing radiation calculations
+  
   for(int year = 0; year < gloop.getIterations(); year++) {
+
     cout << "GROWTH LOOP YEAR " << year <<endl;
     if(gloop.getNumberOfTrees() < 1) {
       cout << "Number of trees left " << gloop.getNumberOfTrees() << " Stop." << endl;
@@ -214,7 +227,20 @@ int main(int argc, char** argv)
     /// \snippet{lineno} lignum-forest.cc NewSeg
     // [NewSeg]
     gloop.setVoxelSpaceAndBorderForest();
-    gloop.calculateRadiation();
+    
+    //If analyzing/testing radiation calculations has been desired (-analyze_k <year>)
+    //stop after radiation calculations in the year <year>
+    if( is_analyze_k && (year >= year_of_k_analyze) ){
+      k_data.open("k_data.dat", std::ofstream::app);
+      do_analyze_k = true;
+      gloop.calculateRadiation();
+      cout << "Analyzing/testing radiation done, exiting." << endl;
+      k_data.close();
+      exit(0);
+    } else {
+      gloop.calculateRadiation();
+    }
+
     //Currently data collection in photosynthesisRespirationTreeAging
     //before new growth and tree aging
     gloop.photosynthesisRespirationTreeAging();

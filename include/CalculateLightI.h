@@ -13,6 +13,10 @@
 /* using namespace Lignum; */
 /* using namespace sky; */
 
+//These globals are for analysing/testing radiation calculations
+extern bool calculate_analyze_k;
+extern ofstream k_data;
+
 
 //=================================================================================================
 //
@@ -50,8 +54,16 @@ namespace LignumForest{
 	ForEach(tt,s_e);
       }
       vector<double> s(number_of_sectors, 0.0);
+      //These  are for analysing/testing radiation calculations
+      vector<double> s_f(number_of_sectors, 0.0);         //******************************
+      vector<double> o_depth(number_of_sectors, 0.0);         //******************************
  
       AccumulateOpticalDepth AOD(voxel_space->getXSideLength(), wood);
+      
+      //These  are for analysing/testing radiation calculations
+      AccumulateFOLIAGE AFO(voxel_space->getXSideLength());        //*********************
+ 
+      
       for (int i = 0; i < number_of_sectors; i++){
 	MJ Iop = firmament.diffuseRegionRadiationSum(i,radiation_direction);
 
@@ -61,6 +73,12 @@ namespace LignumForest{
 
 	voxel_space->getRoute(vm, middle, dir, K, false,false);
 	LGMdouble optical_depth = accumulate(vm.begin(),vm.end(),0.0,AOD);
+
+	//These  are for analysing/testing radiation calculations
+	if( calculate_analyze_k ) {
+	  s_f[i] = accumulate(vm.begin(),vm.end(),0.0,AFO);           //*********************
+	  o_depth[i] = optical_depth;
+	}
 
 	optical_depth += v_pairwise_self[i]; //Possible contribution of own crown by ray casting
 
@@ -94,6 +112,35 @@ namespace LignumForest{
       } //End of no_sectors ...
 
       MJ Q_in = accumulate(s.begin(),s.end(),0.0);
+
+      //These are for analysing/testing radiation calculations
+      if( calculate_analyze_k ) {
+	LGMdouble FOL = accumulate(s_f.begin(),s_f.end(),0.0);               //*********************
+	LGMdouble ODEPTH = accumulate(o_depth.begin(),o_depth.end(),0.0);    //*********************
+	Axis<TS,BUD>& ax = GetAxis(tt);
+	TS* fs = dynamic_cast<ScotsPineSegment *>(GetFirstTreeSegment(ax));
+	Point base = GetPoint(*fs);
+	Point here = GetPoint(*ts);
+	double z = here.getZ();
+	DCLData dcl;
+	dcl = AccumulateDown(tt,dcl,AddBranchWf(),DiameterCrownBase<TS,BUD>());
+	double Hcb = dcl.HCrownBase();
+	double H = GetValue(tt,LGAH);
+	double cl = H - Hcb;
+	double h_rel = 0.0;
+	if( cl > 0.0 ) {
+	  h_rel = min(1.0, max(0.0, (z-Hcb)/cl) );
+	} else {
+	  h_rel = -1.0;
+	}
+	
+	Point ext = here - base;
+	ext.setZ(0.0);
+	
+	k_data << z << " " << ext.getLength() << " " << h_rel << " "
+	       << GetValue(*ts,LGAAf) << " " << FOL << " " << ODEPTH << endl;
+      }
+      
 
       //s contains now incoming radiation from each sector. Evaluate how
       //much segment absorbs from incoming radation.
