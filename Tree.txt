@@ -6,7 +6,7 @@ LGPlr 0.01
 LGPsf 28
 LGPms 0.024
 LGPmr 0.24
-LGPnl 0.03
+LGPnl 0.05
 LGPpr 0.0007
 LGPar 0.5
 LGPLmin 0.04

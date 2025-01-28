@@ -231,7 +231,8 @@ int main(int argc, char** argv)
     //If analyzing/testing radiation calculations has been desired (-analyze_k <year>)
     //stop after radiation calculations in the year <year>
     if( is_analyze_k && (year >= year_of_k_analyze) ){
-      k_data.open("k_data.dat", std::ofstream::app);
+      k_data.open("k_data.dat", std::ofstream::trunc);
+      k_data << "h dt hr Af fol od" << endl;
       do_analyze_k = true;
       gloop.calculateRadiation();
       cout << "Analyzing/testing radiation done, exiting." << endl;

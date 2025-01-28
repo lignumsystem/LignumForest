@@ -238,7 +238,7 @@ namespace LignumForest{
     cout << "-butt_swell_start  Tree age to start butt swell." <<endl;
     cout << "-analyze_k <year>  This is for testing radiation calculations: in the year <year> test" << endl;
     cout << "                   data is written (truncate mode) to file k_data and program stops." << endl;
-    cout << "-analyze_k_pick <int>  If radiation is tested in every n'th tree." << endl;
+    cout << "-analyze_k_pic <int>  If radiation is tested in every n'th tree." << endl;
     cout << endl;
   }
   // [Usagex]
@@ -745,8 +745,6 @@ namespace LignumForest{
     if (ParseCommandLine(argc,argv,"-analyze_k",clarg)){
       is_analyze_k = true;
       year_of_k_analyze = atoi(clarg.c_str());
-      k_data.open("k_data.dat", std::ofstream::trunc);
-      k_data << "h dt hr Af fol od" << endl;
     }
 
     //This is for analysing/testing radiation calculations
