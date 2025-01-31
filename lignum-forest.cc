@@ -234,7 +234,8 @@ int main(int argc, char** argv)
     /// \addtogroup AMAIN
     /// @{
     /// \par Data collection
-    ///  + Evaluate stand metrics 
+    ///  + Evaluate stand metrics
+    ///  + Collect VoxelSpace dimensions
     ///  + Collect tree data 
     ///  + Save trees in XML format in HDF5 file with write intervals
     ///
@@ -246,6 +247,8 @@ int main(int argc, char** argv)
     // to denote the end of the growth
     // and the year=0 is reserved of the initial data. 
     gloop.collectDataAfterGrowth(year+1);
+    //Collect VoxelSpace dimensions
+    gloop.collectVoxelSpaceData(year+1,gloop.getWriteInterval());
     //Save trees as xml
     CreateTreeXMLDataSet(gloop,hdf5_trees,TXMLGROUP,gloop.getWriteInterval());
     // [DataCollection]
