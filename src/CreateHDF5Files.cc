@@ -30,6 +30,8 @@ namespace LignumForest{
     hdf5_file.createGroup(LignumForest::ALLFNFILEGROUP);
     hdf5_file.createGroup(LignumForest::FIRMAMENTGROUP);
     hdf5_file.createGroup(LignumForest::VOXELSPACEGROUP);
+    //Dataset for VoxelSpace size development
+    hdf5_file.createGroup(LignumForest::VOXELSPACESIZESGROUP);
   }
 
   void CreateHDF5File::createConfigurationDataSets(int argc, char** argv)
@@ -82,12 +84,13 @@ namespace LignumForest{
     //All files for functions and prameters.
     hdf5_file.createGroup(LignumForest::AFGROUP);
     hdf5_file.createGroup(LignumForest::PFILEGROUP);
-    //File datasets for MetaFiles, parameters, functions, firmament, voxel space 
+    //HDF5 groups for MetaFiles, parameters, functions, firmament, (original) voxel space and voxel space data
     hdf5_file.createGroup(LignumForest::ALLMETAFILEGROUP);
     hdf5_file.createGroup(LignumForest::ALLPARAMFILEGROUP);
     hdf5_file.createGroup(LignumForest::ALLFNFILEGROUP);
     hdf5_file.createGroup(LignumForest::FIRMAMENTGROUP);
     hdf5_file.createGroup(LignumForest::VOXELSPACEGROUP);
+    hdf5_file.createGroup(LignumForest::VOXELSPACESIZESGROUP);
     //Data sets
     //3D dataset for simulation results: each tree, each year (i.e. time is the 3rd dimension)
     hdf5_file.createDataSet(LignumForest::TREE_DATA_DATASET_NAME,hdf5_data.rows(),hdf5_data.cols(),hdf5_data.zdim(),hdf5_data);

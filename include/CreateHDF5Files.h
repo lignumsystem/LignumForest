@@ -3,10 +3,11 @@
 #include <deque>
 #include <LGMHDF5File.h>
 #include <TreeDataAfterGrowth.h>
-
+#include <CreateVoxelSpaceData.h>
 ///\file CreateHDF5Files.h
 namespace LignumForest{
-  ///After simulation create HDF5 file for simulation results.
+  ///\brief After simulation create HDF5 file for simulation results.
+  ///
   ///The HDF5 file contains also parameters, functions used as well as the command line
   ///\pre Simulation i.e. the growth loop is done and the results are in `hdf5_data` and in `hdf5_tree_param_data`
   ///\param hdf5fname File name for the HDF5 file
@@ -26,6 +27,8 @@ namespace LignumForest{
   ///       parameters, Metafiles, Firmament etc.
   /// \todo Save snapshots of the contents of the Voxel space as 3D matrix (matrices) for further study
   /// \note For LignumForest see the class LignumForest::CreateHDF5File.
+  /// \deprecated
+  ///\sa CreateHDF5File::createDataSets
   void CreateLignumHDF5File(const string& hdf5fname, const TMatrix3D<double>& hdf5_data, TMatrix2D<double> hdf5_tree_param_data,int argc, char** argv);
 
   ///\brief Create HDF5 file for simulation data
@@ -43,6 +46,7 @@ namespace LignumForest{
   /// -# Function files as files
   /// -# Firmament file as file
   /// -# The initial voxel space file as file
+  /// -# VoxelSpace dimensions collected during simulation
   class CreateHDF5File{
   public:
     /// Create and initialize HDF5 file with its groups.
@@ -107,6 +111,13 @@ namespace LignumForest{
       hdf5_file.createDataSet(TFGROUP+FNA_STR[i],hdf5_tree_fn_data.rows(),hdf5_tree_fn_data.cols(),hdf5_tree_fn_data);
       hdf5_file.createColumnNames(TFGROUP+FNA_STR[i],TREE_FN_ATTRIBUTE_NAME,TREE_FN_COLUMN_NAMES);
     }
+
+    //VoxelSpace dimensions during simulation
+    const CreateVoxelSpaceData&  vsdata = gloop.getVoxelSpaceData();
+    const TMatrix2D<double>& vsmatrix = vsdata.getData();
+    hdf5_file.createDataSet(LignumForest::VOXELSPACESIZESGROUP+LignumForest::VOXELSPACESIZES_DATASET_NAME,vsmatrix.rows(),vsmatrix.cols(),vsmatrix);
+    hdf5_file.createColumnNames(LignumForest::VOXELSPACESIZESGROUP+LignumForest::VOXELSPACESIZES_DATASET_NAME,LignumForest::VOXELSPACESIZES_ATTRIBUTE_NAME,
+				LignumForest::VS_SIZES_COLUMN_NAMES);
   }
 }//namespace LignumForest
 #endif
