@@ -31,7 +31,7 @@
 #include <Space.h>
 #include <Palubicki_functors.h>
 #include <TreeDataAfterGrowth.h>
-
+#include <CreateVoxelSpaceData.h>
 namespace LignumForest{
 
   ///Maximum value for *LGPxi* in tree segment when \f$ \xi \f$ increment is in effect
@@ -375,6 +375,11 @@ namespace LignumForest{
     /// \sa wsapwood wfoliage wroot ws_after_senescence Collect biomasses  
     /// \sa vtree Tree vector 
     void collectDataAfterGrowth(const int year, bool collect_stand=true);
+    /// \brief Collect VoxelSpace dimensions with regular intervals
+    /// \param year Forest age
+    /// \param interval Interval year
+    /// \pre Data collected if \f$ \mathit{year} \bmod \mathit{interval} = 0 \f$
+    void collectVoxelSpaceData(const int year, const int interval);
     /// \brief Collect sapwood after senescence.
     ///
     /// Collect sapwood mass to `ws_after_senescence` vector.
@@ -588,13 +593,16 @@ namespace LignumForest{
     /// \sa vtree vlsystem locations
     /// \sa wsapwood wfoliage wroot ws_after_senescence vdatafile
     void removeTreesAllOver(const vector<unsigned int>& vremove);
-    vector<TREE*>& getTreeVector() {return vtree;}
+    const vector<TREE*>& getTreeVector()const{return vtree;}
+    const VoxelSpace* getVoxelSpace()const{return vs;}
+    const CreateVoxelSpaceData& getVoxelSpaceData()const{return vsdata;}
   private:
     vector<TREE*> vtree; ///< Vector of trees. \sa getTrees
     vector<LSYSTEM*> vlsystem; ///< Vector of L-systems, one for each tree
     vector<pair<double,double> > locations; ///< Positions of trees
     vector<ofstream*> vdatafile;///< Vector of output files (as file streams) for each tree. 
     VoxelSpace *vs; ///< The voxel space spanning the forest
+    CreateVoxelSpaceData vsdata; ///< VoxelSpace size data 
     StandDescriptor<TREE> stand; ///< Class to handle and print stand level quantities
     BorderForest border_forest;  ///< Homogeneous forest surrounding forest of individual trees.
     /// 3D array[years][ntrees][ndata_cols] for trees in the stand,

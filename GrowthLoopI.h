@@ -1576,6 +1576,12 @@ namespace LignumForest{
   }
 
   template<class TREE, class TS,class BUD, class LSYSTEM>
+  void GrowthLoop<TREE, TS,BUD,LSYSTEM>::collectVoxelSpaceData(const int year, const int interval)
+  {
+    vsdata.insertData(*vs,year,interval);
+  }
+  
+  template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::collectSapwoodAfterSenescence(TREE& t, unsigned int i)
   {
     ws = collectSapwoodMass(t);
