@@ -29,8 +29,10 @@ namespace LignumForest{
   const string ALLFNFILEGROUP("/AllFunctionFiles/");
   /// Group name for Firmament
   const string FIRMAMENTGROUP("/Firmament/");
-  /// File prefix for the HDF5 file containg XML representation for the trees
+  /// Group prefix for the initial VoxelSpace
   const string VOXELSPACEGROUP("/VoxelSpace/");
+  /// Group name for VoxelSpace sizes during sikmulation
+  const string VOXELSPACESIZESGROUP("/VoxelSpaceSizes/");
   /// File prefix for XML trees.
   const string TREEXML_PREFIX("TreesXML_");
   /// HDF5 Dataset name for command line
@@ -39,8 +41,11 @@ namespace LignumForest{
   const string STAND_DATA_DATASET_NAME("StandData");
   /// HDF5 dataset name for center stand level data
   const string CENTER_STAND_DATA_DATASET_NAME("CenterStandData");
+  const string VOXELSPACESIZES_DATASET_NAME("VoxelSpaceSizesData");
   /// HDF5 attribute name for stand data column names.
   const string STAND_DATA_COLUMN_ATTRIBUTE_NAME("StandDataColumnNames");
+  /// HDF5 attribute name for VoxelSpace size developnent
+  const string VOXELSPACESIZES_ATTRIBUTE_NAME("VoxelSpaceSizesColumnNames");
   /// Column names for stand data
   const array<string,19> sdcn={
     "Year","StandArea","N_trees","10000*N_trees/StandArea","Dbase_mean","Dbase_min","Dbase_max","Dbh_mean","Dbh_min","Dbh_max",
@@ -140,7 +145,7 @@ namespace LignumForest{
   ///Column names for tree paramters
   const array<string,2> p_columns={"Name","Value"};
   const vector<string> TREE_PARAMETER_COLUMN_NAMES(p_columns.begin(),p_columns.end());
-  ///Attribute name for function datasetes, i.e. column names for data frames 
+  ///Attribute name for function datasets, i.e. column names for data frames 
   const string TREE_FN_ATTRIBUTE_NAME("ColumnNames");
   ///Attribute name for tree parameter attributes
   const string TREE_PARAMETER_FILE_ATTRIBUTE_NAME=("ColumnNames");
@@ -149,5 +154,8 @@ namespace LignumForest{
   const vector<LGMF> FN_V(fna.begin(),fna.end());
   const array<string,7> fna_str={"LGMAL","LGMFM","LGMIP","LGMONB","LGMNB","LGMVI","LGMVIONB"};
   const vector<string> FNA_STR(fna_str.begin(),fna_str.end());
+  ///Column names for VoxelSpace development dataset
+  const array<string,7> vs_sizes_column_names={"Year","LLX","LLY","LLZ","URX","URY","URZ"};
+  const vector<string> VS_SIZES_COLUMN_NAMES(vs_sizes_column_names.begin(),vs_sizes_column_names.end());
 }//End namespace LignumForest
 #endif
