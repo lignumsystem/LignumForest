@@ -44,7 +44,7 @@ namespace LignumForest{
   const string VOXELSPACESIZES_DATASET_NAME("VoxelSpaceSizesData");
   /// HDF5 attribute name for stand data column names.
   const string STAND_DATA_COLUMN_ATTRIBUTE_NAME("StandDataColumnNames");
-  /// HDF5 attribute name for VoxelSpace size developnent
+  /// HDF5 attribute name (i.e. column names) for VoxelSpace size developnent
   const string VOXELSPACESIZES_ATTRIBUTE_NAME("VoxelSpaceSizesColumnNames");
   /// Column names for stand data
   const array<string,19> sdcn={
@@ -154,7 +154,7 @@ namespace LignumForest{
   const vector<LGMF> FN_V(fna.begin(),fna.end());
   const array<string,7> fna_str={"LGMAL","LGMFM","LGMIP","LGMONB","LGMNB","LGMVI","LGMVIONB"};
   const vector<string> FNA_STR(fna_str.begin(),fna_str.end());
-  ///Column names for VoxelSpace development dataset
+  ///Column names for VoxelSpace size development dataset, LL = Lower Left corner point, UR = Upper Right corner point
   const array<string,7> vs_sizes_column_names={"Year","LLX","LLY","LLZ","URX","URY","URZ"};
   const vector<string> VS_SIZES_COLUMN_NAMES(vs_sizes_column_names.begin(),vs_sizes_column_names.end());
 }//End namespace LignumForest

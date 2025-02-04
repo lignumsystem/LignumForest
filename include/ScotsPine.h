@@ -15,7 +15,9 @@ namespace LignumForest{
   class ScotsPineBud;
   ///Scots pine tree
   class ScotsPineTree: public Tree<ScotsPineSegment,ScotsPineBud>{
-    ///Return the function asked
+    ///\param t The tree
+    ///\param name The function name
+    ///\return Return the function \p name queried as ParametricCurve
     friend const ParametricCurve& GetFunction(const ScotsPineTree& t, SPFN name)
     {
       switch (name){
@@ -48,6 +50,9 @@ namespace LignumForest{
 
     ///Two alternatives of SetFunction, the latter one comes from merging tree
     ///growth of the project CrownDensity
+    ///\param t The tree
+    ///\param f The function as ParametricCurve
+    ///\param name The function name
     friend void SetFunction(ScotsPineTree& t, ParametricCurve& f, SPFN name)
     {  
       if (name == SPFAF){
@@ -98,7 +103,10 @@ namespace LignumForest{
     //   }
     // }
   
-
+    ///Query ScotsPineTree specific attribute value
+    ///\param t The tree
+    ///\param name The attribute name
+    ///\return The queried attribute value as *double*
     friend double GetValue(const  ScotsPineTree& t, SPAD name)
     {
       if (name == SPHwStart){
@@ -116,6 +124,10 @@ namespace LignumForest{
       }
     }
 
+    ///Query Palubicki et al related related attibute value
+    ///\param t The tree
+    ///\param name The attribute name
+    ///\note The attribute \p name is \c SPis_EBH
     friend double GetValue(ScotsPineTree& t, SPPD name) {
       if (name == SPis_EBH){ //If Palubicki et al 2009 Extended Borchert et Honda
 	// resource distribution in use (0 = false, 1 = true)
@@ -127,7 +139,12 @@ namespace LignumForest{
       }
     }
 
-
+    ///Set heartwood start or crown limit
+    ///\param t The tree
+    ///\param name The attribute name
+    ///\param value The attribute value
+    ///\return The old value
+    ///\note The attribute \p name can be \c SPHwStart or \c SPHc 
     friend double SetValue(ScotsPineTree& t, SPAD name, double value)
     {
       double old_value = GetValue(t,name);
@@ -143,6 +160,12 @@ namespace LignumForest{
       return old_value;
     }
 
+    ///Set Extended Borchert et Honda related value
+    ///\param t The tree
+    ///\param name The attribute name
+    ///\param value The attribute value
+    ///\return 0.0
+    ///\note The \p name can be \c SPis_EBH
     friend double SetValue(ScotsPineTree& t, SPPD name, double value)
     {
       //    double old_value = GetValue(t,name);
@@ -193,7 +216,7 @@ namespace LignumForest{
     ///The SetValue  for LGPsf  changes the specific  leaf area to  be a
     ///function instead of being  single tree level parameter. That's why
     ///no  value argument.<br>
-    ///The data from P Kaitaniemi suggesta following model for sf (m2/kgC)<br>
+    ///The data from P Kaitaniemi suggesta following model for \f$ sf \mathit{(m2/kgC)}\f$<br>
     ///    \f$ sf = 200.0/(5.8307 + 5.3460 \times \mathit{relative_height} + \mathit{omega} + 27.0*\mathit{length}\f$
     ///Specific  leaf  area depends  on  the  relative  height of  the
     ///segment in a tree, its gravelius order and its length.
@@ -533,7 +556,7 @@ namespace LignumForest{
 	    ///\f[
 	    ///L_r = L + (r_p/0.5)\times(\mathit{ran3}(s)-0.5)
 	    ///\f]
-	    ///where $r_p$ is the parameter (given by the user) and the function \f$\mathit{ran3}\f3
+	    ///where \f$r_p\f$ is the parameter (given by the user) and the function \f$\mathit{ran3}\f$
 	    ///returns random number in [0,1) from uniform distribution.
 	    ///Applied to both Basic and EBH models. Random component is not applied in  the main stem.
 	    ///\note The lower and upper bounds defined with \f$r_p\f$ are not checked.
@@ -674,7 +697,7 @@ namespace LignumForest{
       return tc;
     }
   private:
-    double l;///<Lamda to iterate segment lengths
+    double l;///<Lambda to iterate segment lengths
   };
 
 

@@ -1588,10 +1588,11 @@ namespace LignumForest{
     ws_after_senescence[i] = ws;
   }
 
+  ///\remark TreeAging takes care of senescence in segments (above ground part) and root mortality.
   template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::treeAging(TREE& t)
   {
-    //TreeAging takes care of senescence in segments (above ground part) and root mortality.
+    
     ForEach(t,TreeAging<TS,BUD>()); 
     SetValue(t,TreeWr, 
 	     GetValue(t,TreeWr)-GetValue(t,LGPsr)*GetValue(t,TreeWr));
