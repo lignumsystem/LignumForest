@@ -9,39 +9,40 @@
 ///+ Run the simulation
 ///+ Save simulation data to HDF5 files.
 ///
+
 ///\page cmakefileforest Compile LignumForest
-///CMakeLists.txt to compile LignumForest. There are several L-system files to experiment
-///with tree architecture. Check LSYSTEMFILE and LSYSTEMSRC variables in CMakeLists.txt
-///before compilation. With CMake all the compilation work is done in a designated
-///compilation directory. 
-///\note The binary after compilation is called `lignum-forest`
-///\attention Remamber to type `make install` in the compilation directory
-///to copy `lignum-forest` to *LignumForest* working direcgtory.
-///\deprecated The Qt `qmake` build tool is obsolete (see the README.md file for details).
-///
+///Use CMake to compile LignumForest. The binary after compilation is called `lignum-forest`
+///With CMake all the compilation work is done in a designated compilation directory using CMakeLists.txt files.
+///There are several L-system files to experiment with tree architecture. Check LSYSTEMFILE and LSYSTEMSRC variables
+///in CMakeLists.txt before compilation. 
+///\attention In compilation `make install` is required to copy `lignum-forest` to LignumForest working directory. 
+///\deprecated The Qt `qmake` build tool is obsolete. See the README.md file for details.
+///\par CMakeLists.txt
 ///\include CMakeLists.txt
+///\page cmakefileforest
+
 ///\page runscriptforest Run LignumForest 
-///Use the following `run-lignum-forest.sh` script to run `lignum-forest` with the latest
-///CrownDensity (i.e. `crowndens`) parameters and function set. The command line for `lignum-forest` must be
-///checked to be synchronised with `crowndens` before any serious simulations, most notably
-///for growth mode and architectural change years.
-///\note The *-metafile* option accepts regular expressions. Protect the regular expression with quotes.
+///The following  `run-lignum-forest.slurm` script can be used to run `lignum-forest`
+///either using `bash` shell or with Slurm worload manager.
+///Check the command line parameters for the `lignum-forest` binary.
+///The `-metafile` option accepts glob expressions. Protect the glob expression with quotes.
 ///\note Remember to update the option *-hdf5* file name.
-///\note In compilation `make install` is required to copy `lignum-forest` to LignumForest working directory. 
-///
-///\include run-lignum-forest.sh
-///
-///\page lsystemCforest L-system experiment C
-///The L-system implemented in pine-em98-branch-C.L is identical to the one in CrownDensity. 
+///\par run-lignum-forest.slurm
+///\include run-lignum-forest.slurm
+///\page runscriptforest
+
+///\page lsystemcforest L-system experiment C
+///The L-system implemented in pine-em98-branch-C.L is identical to the one in CrownDensity.
+///\par Physiological age
 ///Introduce concept *physiological age* for buds. Each branch bud inherits the physiological
 ///age of the mother bud  and each time step increase the physiological age by 1. When the physiological age
-///reaches  LignumForest::architecture_change_year the terminating bud genererates *always* two side branches.
-///Only Turn, no Roll along mother axis. *These side branches have high branching angle*.
-///See `Pine::turn_branch_max` value in pine-em98-branch-C.L.
+///reaches  LignumForest::architecture_change_year the terminating bud genererates always exactly *two* side branches.
+///Only Turn, no Roll along mother axis. These side branches have high branching angle to make denser tree crown.
 ///In this case branching stops if and only if tree parameters and tree functions determine so.
-///
+///\sa  `Pine::turn_branch_max` value in pine-em98-branch-C.L.
+///\par pine-em98-branch-C.L
 ///\include pine-em98-branch-C.L
-
+///\page lsystemcforest
 
 //Lignum implementation
 #include <Lignum.h>
