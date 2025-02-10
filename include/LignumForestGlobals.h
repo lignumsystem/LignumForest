@@ -194,6 +194,10 @@ namespace LignumForest{
   ///\brief Tree age to start butt swell, default value is INT_MAX (i.e. never).
   ///\sa ScotsPineSegment::aging() GrowthLoop::usage()  GrowthLoop::parseCommanLine() LignumForest::butt_swell_coeff
   extern int butt_swell_start;
+  //\brief Terminate buds grown out of VoxelSpace
+  //
+  //Default False, command line option -terminate_buds sets the value to True
+  extern bool terminate_escaped_buds; 
   ///@}
   
 }//end namespace

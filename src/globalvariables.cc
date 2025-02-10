@@ -35,9 +35,9 @@ namespace LignumForest{
   int ebh_mode = 0;          
   LGMdouble max_rueqin;
   bool is_mode_change = false;
-  Firmament dummy_firm;
+  Firmament dummy_firmament;
   VoxelSpace space_occupancy(Point(0.0,0.0,0.0),Point(1.0,1.0,1.0),
-			     0.1,0.1,0.1,5,5,5,dummy_firm);
+			     0.1,0.1,0.1,5,5,5,dummy_firmament);
   double global_hcb;
   double dDb;
   bool space0 = false;
@@ -46,5 +46,6 @@ namespace LignumForest{
   double space2_distance = 0.3;
   bool is_height_function = false;
   ParametricCurve bud_view_f("bvf.fun");
-  bool is_bud_view_function = false;   
+  bool is_bud_view_function = false;
+  bool terminate_escaped_buds = false;
 }//end namespace
