@@ -23,10 +23,10 @@
 
 ///\page runscriptforest Run LignumForest 
 ///The following  `run-lignum-forest.slurm` script can be used to run `lignum-forest`
-///either using `bash` shell or with Slurm worload manager.
-///Check the command line parameters for the `lignum-forest` binary.
-///The `-metafile` option accepts glob expressions. Protect the glob expression with quotes.
-///\note Remember to update the option *-hdf5* file name.
+///either using `bash` shell or with Slurm worload manager. Check the command line parameters
+///for the `lignum-forest` binary. The `-metafile` option accepts glob expressions.
+///Protect the glob expression with quotes.
+///\attention Read the `ÌMPORTANT` comments before simulations
 ///\par run-lignum-forest.slurm
 ///\include run-lignum-forest.slurm
 ///\page runscriptforest
@@ -224,6 +224,8 @@ int main(int argc, char** argv)
     ParametricCurve fip_mode = GetFunction(*(gloop.getTreeVector())[0], LGMIP);
     ParametricCurve fgo_mode = GetFunction(*(gloop.getTreeVector())[0], SPFGO);
     gloop.allocationAndGrowth(fip_mode,fgo_mode);
+    //Terminate buds grown out of VoxelSpace
+    gloop.terminateEscapedBuds();
     // Prune dead parts from the trees 
     gloop.prune();
     // RUE: radiation use efficiency
