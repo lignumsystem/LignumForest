@@ -32,6 +32,7 @@
 #include <Palubicki_functors.h>
 #include <TreeDataAfterGrowth.h>
 #include <CreateVoxelSpaceData.h>
+#include <TerminateEscapedBuds.h>
 namespace LignumForest{
 
   ///Maximum value for *LGPxi* in tree segment when \f$ \xi \f$ increment is in effect
@@ -282,9 +283,13 @@ namespace LignumForest{
     void initializeTrees();
     /// \brief Create voxel space
     ///
-    ///Read voxel space file for voxel space dimensions and create voxel space.
+    ///Read the voxel space file for VoxelSpace dimensions and create VoxelSpace.
+    ///Resize RectangularCuboids modelling VoxelSpace and center stand perimeters
+    ///in GrowthLoop::terminate_buds according to the original VoxelSpace dimensions
+    ///but set the height (z coordinate) to infinity. Buds are then checked against the (x,y) perimeter.
     ///\pre Voxel space file must exist
-    ///\sa GrowthLoop::voxelfile 
+    ///\post cxxadt::RectangularCuboid heights in GrowthLoop::terminate_buds set to `std::numeric_limits<double>::max()`
+    ///\sa GrowthLoop::voxelfile LignumForest::terminate_buds
     void initializeVoxelSpace();
     /// \brief Read and install functions 
     /// 
@@ -464,6 +469,15 @@ namespace LignumForest{
     void writeFip(TREE& t,int interval)const;
     /// \brief Remove dead branches from trees
     void prune();
+    /// \brief Terminate buds 
+    ///
+    /// Terminate buds grown out of VoxelSpace.
+    /// \pre A tree is in the border forest, exterior portion of the stand
+    /// between center stand and VoxelSpace perimeter.
+    /// \post Buds grown out of VoxelSpace have status DEAD.
+    /// \post Lignum trees match to their L-system strings
+    /// \sa lignumToLstring
+    void terminateEscapedBuds();
     void printVariables()const;
     /// \brief Clean up after simulation
     ///
@@ -602,7 +616,8 @@ namespace LignumForest{
     vector<pair<double,double> > locations; ///< Positions of trees
     vector<ofstream*> vdatafile;///< Vector of output files (as file streams) for each tree. 
     VoxelSpace *vs; ///< The voxel space spanning the forest
-    CreateVoxelSpaceData vsdata; ///< VoxelSpace size data 
+    CreateVoxelSpaceData vsdata; ///< VoxelSpace size data
+    TerminateEscapedBuds<TS,BUD> terminate_buds;///< Terminate buds grown outside VoxelSpace
     StandDescriptor<TREE> stand; ///< Class to handle and print stand level quantities
     BorderForest border_forest;  ///< Homogeneous forest surrounding forest of individual trees.
     /// 3D array[years][ntrees][ndata_cols] for trees in the stand,

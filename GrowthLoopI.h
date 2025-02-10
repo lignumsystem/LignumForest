@@ -224,8 +224,9 @@ namespace LignumForest{
     cout << "-architectureChange <year>  Change the braching pattern in L-system after <year> in simulation." <<endl;
     cout << "-Lmaxturn          Turn angle in degrees in the side branches when architecture change is on (default 80 degrees)." <<endl;
     cout << "-fsapwdown <file>  Part of the sapwood going down in a tree as a function of Gravelius order." <<endl;
-    cout << "-butt_swell_coeff  Adjustment coefficient (between 0 and 1) for the butt swell model." <<endl;
-    cout << "-butt_swell_start  Tree age to start butt swell." <<endl;									   
+    cout << "-butt_swell_coeff <value>  Adjustment coefficient (between 0 and 1) for the butt swell model." <<endl;
+    cout << "-butt_swell_start <value>  Tree age to start butt swell." <<endl;
+    cout << "-terminate_buds    Terminate buds grown out of VoxelSpace (set status DEAD)" <<endl;
     cout << endl;
   }
   // [Usagex]
@@ -719,6 +720,12 @@ namespace LignumForest{
       LignumForest::butt_swell_start = bss;
       cout << "Butt swell start year " << LignumForest::butt_swell_start <<endl;
     }
+    ///---
+    ///\par Check terminate escaped buds option
+    if (CheckCommandLine(argc,argv,"-terminate_buds")){
+      LignumForest::terminate_escaped_buds = true;
+      cout << "Terminate escaped buds " << LignumForest::terminate_escaped_buds << endl;
+    }
     if (verbose){
       cout << "parseCommandLine end" <<endl;
       printVariables();
@@ -1121,6 +1128,10 @@ namespace LignumForest{
 			s1,s2,s3,
 			static_cast<int>(vx/s1),static_cast<int>(vy/s2),static_cast<int>(vz/s3),
 			GetFirmament(*vtree[0]));
+    //TerminateEscapedBuds stores VoxelSpace and CenterStand dimensions.
+    //Set the height (z-coordinate) of upper right corner to infinity, i.e. max supported value by compiler.
+    //A bud is then checked against (x,y) coordinates 
+    terminate_buds.resize(Point(0,0,0),Point(vx,vy,std::numeric_limits<double>::max()),b1,b2);
   }
 
   template<class TREE, class TS,class BUD, class LSYSTEM>
@@ -2147,7 +2158,25 @@ namespace LignumForest{
     }
   }
 
-
+  template<class TREE, class TS,class BUD, class LSYSTEM>
+  void GrowthLoop<TREE, TS,BUD,LSYSTEM>::terminateEscapedBuds()
+  {
+    if (LignumForest::terminate_escaped_buds == true){
+      for (unsigned int k = 0; k < (unsigned int)no_trees; k++){
+	TREE* t = vtree[k];
+	LSYSTEM* l = vlsystem[k];
+	Point p = GetPoint(*t);
+	//If a tree is not inside center stand, then it is in the border forest
+	if (!terminate_buds.insideCenterStand(p)){
+	  //cout << "Tree " << k << " in border stand " << p << endl; 
+	  ForEach(*t,terminate_buds);
+	  l->lignumToLstring(*t,1,PBDATA);
+	}
+      }
+    }
+  }
+    
+  
   template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::setVoxelSpaceAndBorderForest()
   {
