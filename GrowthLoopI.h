@@ -1626,9 +1626,7 @@ namespace LignumForest{
   }
 
   template<class TREE, class TS,class BUD, class LSYSTEM>
-  bool GrowthLoop<TREE, TS,BUD,LSYSTEM>::allocation(TREE& t, bool verbose, const ParametricCurve& fip_mode,
-						    const ParametricCurve& fgo_mode)
-
+  bool GrowthLoop<TREE, TS,BUD,LSYSTEM>::allocation(TREE& t, bool verbose)
   {
     
     try{
@@ -1675,8 +1673,7 @@ namespace LignumForest{
 
 
   template<class TREE, class TS,class BUD, class LSYSTEM>
-  void GrowthLoop<TREE, TS,BUD,LSYSTEM>::allocationAndGrowth(const ParametricCurve& fip_mode,
-							     const ParametricCurve& fgo_mode)
+  void GrowthLoop<TREE, TS,BUD,LSYSTEM>::allocationAndGrowth()
   {
     list<unsigned int> dead_trees;
     dead_trees.clear();
@@ -1698,7 +1695,7 @@ namespace LignumForest{
       // [PipeModel]
       /// \remark This is for Pipe model calculations:
       /// \endinternal
-      if(!allocation(*t,bracket_verbose,fip_mode,fgo_mode)){
+      if(!allocation(*t,bracket_verbose)){
 	cout << "In GrowthLoop<TREE, TS,BUD,LSYSTEM>::allocationAndGrowth():" <<endl;
 	cout << "   GrowthLoop<TREE, TS,BUD,LSYSTEM>:allocation failed()" <<endl;
 	dead_trees.push_back(k);       //iteration failed, this tree is dead
@@ -2180,21 +2177,8 @@ namespace LignumForest{
   template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::setVoxelSpaceAndBorderForest()
   {
-    ///\defgroup A_prepare Preparing radiation calculation
-    ///\ingroup E_radandgrowth
-    ///@{
-    ///\par Make ready
-    ///+ VoxelSpace
-    ///+ Insert trees
-    ///+ etc.
-    ///@}
-    //
-    ///\defgroup A_resize_voxelspace VoxelSpace
-    ///\ingroup A_prepare
-    ///@{
-    ///\par Resize VoxelSpace
-    ///+ Find the VoxelSpace bounding box
-    ///+ Resize VoxelSpace
+    ///\par Voxel space bounding box
+    ///Find the bounding box for the forest stand and resize voxel space.
     ///\internal
     ///\snippet{lineno} GrowthLoopI.h BoundingBox
     // [BoundingBox]
@@ -2209,14 +2193,9 @@ namespace LignumForest{
     vs->reset();
     // [BoundingBox]
     ///\endinternal
-    ///@}
     //
-    ///\defgroup B_insert_trees Insert trees
-    ///\addtogroup A_prepare
-    ///@{
     ///\par Insert trees into VoxelSpace
-    ///+ Insert trees
-    ///+ Update VoxelSpace summary values
+    ///Insert trees and update voxel space  summary values.
     ///\internal
     ///\snippet{lineno} GrowthLoopI.h DumpTrees
     // [DumpTrees]
@@ -2228,17 +2207,21 @@ namespace LignumForest{
     vs->updateBoxValues();
     // [DumpTrees]
     ///\endinternal
-    ///@}
     //
-    //The border forest top is set according to voxelspace
-    // (i.e. bounding box)
-    // so that the dimesions match. The dimensions of top height of the stand could
-    // also be used but it is not exactly the same as of bounding box
-    // since it considers also needles: bounding box is higher
-    // than stand top height by length of needles. 
+    ///\par The border forest
+    ///The top is set according to voxel space (i.e. bounding box)
+    ///so that the dimesions match. The dimensions of top height of the stand could
+    ///also be used but it is not exactly the same as of bounding box
+    ///since it considers also needles: bounding box is higher
+    ///than stand top height by length of needles.
+    ///\internal
+    ///\snippet{lineno} GrowthLoopI.h BorderForest
+    // [BorderForest]
     border_forest.setH(bb.getMax().getZ());
     border_forest.setHcb(stand.getMinCrownLimit());
     border_forest.setLAI(stand.getLAI());
+    // [BorderForest]
+    ///\endinternal
   }
  
   template<class TREE, class TS,class BUD, class LSYSTEM>

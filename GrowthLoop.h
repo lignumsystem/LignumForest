@@ -409,15 +409,15 @@ namespace LignumForest{
     /// \tparam TREE Lignum tree
     /// \param t Lignum tree 
     /// \param verbose Verbose output
-    /// \param fip_mode Function fip(ip) after growth mode change
-    /// \param fgo_mode Function fgo(go) after growth mode change
+    // \param fip_mode \deprecated Function fip(ip) after growth mode change, not used
+    // \param fgo_mode \deprecated Function fgo(go) after growth mode change, not used
     /// \exception TreeGrowthAllocatorException  Exception caught if \f$P < M \f$
     /// \exception BisectionBracketException Exception caught if no \f$ \lambda \f$ s.t. \f$ P-M-G(\lambda) < 0\f$
     /// \exception BisectionMaxIterationException  Exception caught if  \f$ P-M-G(\lambda) = 0\f$
     ///                                             not found after cxxadt::MAX_ITER iterations
     /// \sa vtree
     /// \remark If the return value is *false* the tree \p t is considered dead and will be removed from tree vector.
-    bool allocation(TREE& t,bool verbose,const ParametricCurve& fip_mode, const ParametricCurve& fgo_mode);
+    bool allocation(TREE& t,bool verbose);
     /// \brief Set radiation use efficiency (rue) in new segments
     /// Set the radiation use efficiency (rue) of new segments (age = 0) on the basis of shadiness
     /// experienced by their mother. It is measured as Qin / QinMax, QinMax = maximum Qin
@@ -582,10 +582,9 @@ namespace LignumForest{
     /// \sa no_trees
     /// \sa vtree vlsystem locations
     /// \sa wsapwood wfoliage wroot ws_after_senescence vdatafile
-    /// \deprecated \p fip_mode \p fgo_mode
     /// \note \p Pine::mode is set to 1 to create new buds after GrowthLoop::allocation()
     /// \post Pine::mode = 1 
-    void allocationAndGrowth(const ParametricCurve& fip_mode, const ParametricCurve& fgo_mode);
+    void allocationAndGrowth();
     int getNumberOfTrees() {return no_trees;}
     void setYear(const int& y) {year = y;}
     ///Save the previous year tree heights
