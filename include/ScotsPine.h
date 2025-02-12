@@ -394,6 +394,9 @@ namespace LignumForest{
   ///    -# Growth mode change applies new functions and tree parameters.
   ///    -# Growth mode and architecture mode are independent from each other.
   ///
+  ///It is assumed that paramters and functions affecting a segment length can be
+  ///retrieved from the new segment or from the Lignum tree.
+  //\sa SetScotsPineSegmentLength::operator(TreeCompartment<ScotsPineSegment,ScotsPineBud>*)
   ///\sa Usage 
   class SetScotsPineSegmentLength{
   public:
