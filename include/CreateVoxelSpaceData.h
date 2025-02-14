@@ -3,12 +3,12 @@
 #include <TMatrix3D.h>
 #include <VoxelSpace.h>
 ///\file CreateVoxelSpaceData.h
-///\brief Collect VoxelSpace size data during the simulation.
 
 namespace LignumForest{
-  ///\brief Collect VoxelSpace lower left and upper right
-  ///corner point data to a 2D matrix.
+  ///\brief Collect voxel space data
   ///
+  ///Collect voxel space size data with regular intervals.
+  ///Save lower left and upper right corner point data to a 2D matrix.
   ///The 2D matrix can be saved to a HDF5 file.
   ///\sa LignumForest::LGMHDF5File
   class CreateVoxelSpaceData{

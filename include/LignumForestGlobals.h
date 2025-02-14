@@ -1,12 +1,11 @@
 #ifndef CROWNDENSITYGLOBALS_H
 #define CROWNDENSITYGLOBALS_H
 ///\file LignumForestGlobals.h
-///\brief Global varables in LignumForest
+///Global variables in in L-systems and in LignumForest.\footnote{This file gives examples of Doxygen grouping}
 ///
 ///To cut mutual dependency with CrownDensity global
-///variables created in CrownDensity are moved to LignumForest,
-///grouped as \ref lgmforest and explicitely referred with LignumForest namespace.
-///(CrownDensity remains depended on LignumForest).
+///variables created in CrownDensity are moved to LignumForest
+///in LignumForest namespace,
 ///\sa globalvariables.cc
 
 #include <LGMSymbols.h>
@@ -15,13 +14,19 @@
 #include <Firmament.h>
 #include <VoxelSpace.h>
 
-///\defgroup lsysglobal L-system global variables
-///Global variables used in LignumForest initialized by GrowthLoop.
-///L-system global variables are needed in L-systems: pine-em98.L
-///and in its derivatives like pine-em98-branch-C.L
-///@{
+
+///\brief Pine namespace
+///
+///L-system global variables needed in communication between L-system and Lignum tree,
+///hence in the Pine namespace. See for example pine-em98.L and in its derivatives
+///like pine-em98-branch-C.L
 namespace Pine{
-  ///\brief Age
+  ///\ingroup LIGNUMFORESTGLOBALGROUP
+  ///\defgroup A_LSYSTEMGLOBALGROUP Global variables in L-system
+  ///L-system global variables needed in communication between L-system and Lignum tree.
+  ///These variables are in Pine namespace.
+  ///@{
+  ///\brief Tree age
   extern double L_age;
   ///\brief Tree height
   extern double L_H;
@@ -39,32 +44,40 @@ namespace Pine{
   extern bool is_architecture_change;
   ///\brief Set architecture change year
   extern int architecture_change_year;
+  ///@}
 }
-///@}
 
-///\defgroup lgmforest Global variables used in LignumForest
-///@{
+
+///\brief LignumForest namespace
+///
 ///Global variables used in LignumForest initialized by GrowthLoop.
 ///To cut mutual dependency with CrownDensity global
-///variables from CrownDensity are moved to LignumForest
+///variables from CrownDensity were moved to LignumForest
 ///and explicitely referred with LignumForest namespace.
-///@}
 namespace LignumForest{
-  ///\defgroup spaceb L-system Global variables
-  ///\ingroup lgmforest
+  ///\defgroup LIGNUMFORESTGLOBALGROUP Global variables
+  ///Global variables for various experiments to model and adjust forest growth
   ///@{
-  ///Global variables to set height and lengths 
+  ///@}
+  ///\ingroup LIGNUMFORESTGLOBALGROUP 
+  ///\defgroup B_HEIGHTVARS Global variables for initial sapling height
+  ///@{
   ///\brief Initial height ot trees
   extern double H_0_ini;
   ///\brief Variation of initial tree height
   extern double H_var_ini;
-  ///\brief Set bud variation  on/off \sa rel_bud
+  ///@}
+  ///\ingroup LIGNUMFORESTGLOBALGROUP 
+  ///\defgroup C_INITIALSAPLINGBUDVARS Variables for buds in the initial saplings
+  ///@{
+  ///\brief Set bud variation on or off \sa rel_bud
   extern bool bud_variation;
   ///\brief The effect of crowding on buds
   ///
   ///The effect of crowding on number of lateral
   ///buds via function bud_view_f.
-  ///Requires \sa bud_variation
+  ///\pre Requires LignumForest::bud_variation
+  ///\sa LignumForest::bud_variation
   extern double rel_bud;
   ///\brief Variation in the initial max number of buds.
   extern int n_buds_ini_max;
@@ -73,28 +86,27 @@ namespace LignumForest{
   ///\deprecated Variation in branch angle. Set in \sa pine-em98.L
   extern double branch_angle;
   ///@}
+  
 }
 
 namespace LignumForest{
-  ///\defgroup rndvar Random number generator e.g. in L-system
-  ///\ingroup lgmforest
+  ///\ingroup LIGNUMFORESTGLOBALGROUP
+  ///\defgroup D_RANDOMVARS Variables for randomness
   ///@{
   ///\brief Seed for ran3 function
   extern int ran3_seed;
-  ///@}
-  
-  ///\defgroup adhoc Ad hoc experiments for segment growth
-  ///\ingroup lgmforest
-  ///@{
   ///\brief Random component in segment length.
   ///
-  ///Use random component to apply conditionally any function implementing segment elongation)
+  ///Use random component to apply conditionally any function implementing segment elongation
   extern bool is_random_length;
-  ///\brief Ad hoc lengthening of shoots at crown base. \sa CrownDensity::adoc
+  ///\brief Ad hoc lengthening experiment of shoots at crown base.
+  ///\sa CrownDensity::adoc
   extern bool is_adhoc;
-  ///\brief Function for ad hoc lengthening of shoots at crown base.
+  ///\brief Function for ad hoc lengthening experiment of shoots at crown base.
   ///\sa LignumForest::is_adhoc
   extern ParametricCurve adhoc;
+  ///@}
+  
   ///\brief Global variable for EBH model is needed e.g. in bybranches.cc-
   ///
   ///\todo Not (yet) used in LignumForest
@@ -104,10 +116,8 @@ namespace LignumForest{
   ///\brief Radiation use efficiency experiment
   ///\attention Not (yet) used in LignumForest
   extern LGMdouble max_rueqin;
-  ///@}
-
-  ///\defgroup fipfgo F(ip) and F(go) functions
-  ///\ingroup lgmforest
+  ///\ingroup LIGNUMFORESTGLOBALGROUP
+  ///\defgroup E_RELATIVELIGHT Segment length functions
   ///@{
   ///\brief Relative light and Gravelius order functions
   ///
@@ -120,34 +130,37 @@ namespace LignumForest{
   ///\deprecated Gravelius order functions are read from MetaFiles
   extern ParametricCurve fgo_mode;
   ///@}
-  
-  ///\defgroup modechange Growth mode change experiment
-  ///\ingroup lgmforest
+  ///\ingroup LIGNUMFORESTGLOBALGROUP
+  ///\defgroup F_GROWTHMODE Growth mode change variables
+  ///@{
   ///\brief Reinitialize trees
   ///
   ///Reread MetaFiles and reinitialize trees.
-  ///\todo Not implemented in LignumForest
-  ///@{
   ///\brief Set mode change on/off
-  ///\sa LignumForest::model_change__year
+  ///\sa GrowthLoop::insertModeChangeYears()
   extern bool is_mode_change;
   ///@}
-
-  ///\defgroup vsoccupance Space occupancy model experiment
-  ///\ingroup lgmforest
+  ///\ingroup LIGNUMFORESTGLOBALGROUP
+  ///\defgroup G_GROWTHSPACE Growth space experiment variables
   ///@{
-  ///\brief Growth space occupancy experiment
-  ///
-  ///Additional Firmament for  VoxelSpace `LignumForest::space_occupancy`.
+  ///\brief Additional Firmament for  VoxelSpace `LignumForest::space_occupancy`.
   ///\sa LignumForest::space_occupancy
   extern Firmament dummy_firm;
   ///\brief Additional VoxelSpace for space occupancy
   ///\sa sky::dummy_firm
   extern VoxelSpace space_occupancy;
+  ///\brief Three options \p space0, \p space1 and \p space2, for three space occupancy model experiments
+  ///\name Space occupancy models
+  ///@{
+  extern bool space0;
+  extern bool space1;
+  extern bool space2;
+  ///\brief Look ahead distance for a bud  in \p space2 model
+  extern double space2_distance;
   ///@}
-  
-  ///\defgroup hcbconvey Crown base adjustment experiment
-  ///\ingroup lgmforest
+  ///@}
+  ///\ingroup  LIGNUMFORESTGLOBALGROUP
+  ///\defgroup H_STEMSHAPE Crown and stem shape experiment
   ///@{
   ///\brief Height crown base
   extern double global_hcb;
@@ -156,26 +169,21 @@ namespace LignumForest{
   extern double dDb;
   ///@}
 
-  ///\defgroup spacecolon Space colonialization experiment
-  ///\ingroup lgmforest
-  ///Options for SetScotsPineSegmentLength (in ScotsPine.h)
-  ///and other related global variables
+  ///\ingroup LIGNUMFORESTGLOBALGROUP
+  ///\defgroup Z_OBSELETE Variables not in use
   ///@{
-  extern bool space0;
-  extern bool space1;
-  extern bool space2;
-  extern double space2_distance;
-  ///\todo Not used in LignumForest
+  ///\deprecated Not used in LignumForest
+  ///\todo Renmove from LignumForest
   extern bool is_height_function;
   ///@}
-
-  //\defgroup budview Bud view experiment
-  ///\ingroup lgmforest
-  ///Global variable to convey the Bud View Function to L-system
-  ///and if LignumForest::bud_view_f is in use
+  
+  ///\ingroup LIGNUMFORESTGLOBALGROUP
+  ///\defgroup I_BUDVIEW Bud lookahead view experiment
   ///@{
   ///\brief Bud view function
   ///
+  ///Global variable to convey the Bud View Function to L-system
+  ///and if LignumForest::bud_view_f is in use
   ///\attention initialized with "bvf.fun" in globalvariables.cc
   extern ParametricCurve bud_view_f;
   ///\brief Boolean flag to set bud view function on or off.
@@ -183,22 +191,33 @@ namespace LignumForest{
   extern bool is_bud_view_function;
   ///\brief The angle of branching after architecture change. Set in L system.
   extern double max_turn_in_architecture_change;
+  ///@}
+  ///\ingroup LIGNUMFORESTGLOBALGROUP
+  ///\defgroup J_BUTTSWELL Butt swell experiment
+  ///@{
   ///\brief Butt swell model in diameter growth.
   ///
   ///Adjust \f$LGPq\f$ in butt swell model with a coefficient \f$c\f$: \f$LGPq = c*LGPq\f$ and \f$0 \le c \le 1\f$.
   ///The default value for \f$c\f$ is 1.0 (i.e. no effect).
-  ///\note The butt swell model is implemented in ScotsPineSegment. The most straigthforward way
+  ///The butt swell model is implemented in ScotsPineSegment. The most straigthforward way
   ///to implement adjustment parameters is to use global variables in LignumForest namespace.
+  ///\note Butt swell is in use
   ///\sa ScotsPineSegment::aging() GrowthLoop::usage() GrowthLoop::parseCommanLine() LignumForest::butt_swell_start 
   extern double butt_swell_coeff;
   ///\brief Tree age to start butt swell, default value is INT_MAX (i.e. never).
   ///\sa ScotsPineSegment::aging() GrowthLoop::usage()  GrowthLoop::parseCommanLine() LignumForest::butt_swell_coeff
   extern int butt_swell_start;
-  //\brief Terminate buds grown out of VoxelSpace
-  //
-  //Default False, command line option -terminate_buds sets the value to True
-  extern bool terminate_escaped_buds; 
   ///@}
-  
+  ///\ingroup LIGNUMFORESTGLOBALGROUP
+  ///\defgroup K_BUDTERMINATION 11. Terminate buds
+  ///Terminate buds grown out of VoxelSpace
+  ///@{
+  ///\brief Terminate buds
+  ///
+  ///Boolean flag. Terminate buds grown out of VoxelSpace, default False.
+  ///The command line option `-terminate_buds` sets the value to True.
+  ///\note Bud termination is in use
+  extern bool terminate_escaped_buds;
+  ///@}
 }//end namespace
 #endif

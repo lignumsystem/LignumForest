@@ -4,13 +4,9 @@
 #include <glob.h>
 #include <LignumForestGlobals.h>
 ///\file  GrowthLoopI.h
-///\brief GrowthLoop implementation.
 ///
 ///GrowthLoopI.h runs completely in voxel space.
 ///Changes marked with **run-voxel**.
-///
-//The following addtogroup seems to help doxygen to understand L-files
-//to some extent!
 
 namespace Pine{
 
@@ -309,7 +305,8 @@ namespace LignumForest{
      ///---
     ///\par Parse growth mode change year
     clarg.clear();
-    ///+ -modeChange Growth mode change years \sa LignumForest::is_mode_change LignumForest::mode_change_year
+    ///+ -modeChange Growth mode change years
+    ///\sa LignumForest::is_mode_change GrowthLoop::insertModeChangeYears()
     if (ParseCommandLine(argc,argv,"-modeChange",clarg)){
       LignumForest::is_mode_change=true;
       insertModeChangeYears(clarg);

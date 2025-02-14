@@ -2,10 +2,9 @@
 #include <LignumForestGlobals.h>
 using namespace LignumForest;
 ///\file generate-tree-locations.cc
-///\brief Tree locations  Nonstationary Poisson process.
 //extern int LignumForest::ran3_seed;   //is a global variable
 namespace LignumForest{
-  
+  ///\brief Tree locations  Nonstationary Poisson process.
   void GenerateLocations(int& nTrees, double corner1X, double corner1Y, double corner2X, 
 			 double corner2Y, double rmin, 
 			 const ForestGap& gap,

@@ -425,7 +425,8 @@ namespace LignumForest{
     void radiationUseEfficiency();
     /// \brief Output of simulation to files.
     ///
-    /// \deprecated Write stand level data, target tree data, crown limit data, Fip data and the target tree xml file.
+    /// Write stand level data, target tree data, crown limit data, Fip data and the target tree xml file.
+    /// \deprecated Using HDF5 file 
     /// \sa writeOutput writeCrownLimitData writeTreeToXMLFile writeFip
     /// \note HDF5 implementation is advancing. Remove this method when enough data collected. Consult and
     /// agree with Risto.
@@ -433,7 +434,7 @@ namespace LignumForest{
     void output();
     /// \brief Tree level output.
     ///
-    /// \deprecated Write now tree level output to HDF5 file. 
+    /// \deprecated Using HDF5 file. 
     /// \tparam TREE Lignum tree
     /// \param t The tree
     /// \param tree_n Tree position in the tree vector
@@ -442,6 +443,7 @@ namespace LignumForest{
     void writeOutput(TREE& t,unsigned int tree_n,int iter);
     void writeSensitivityAnalysisData(TREE& t);
     /// \brief Write crown limit data to study crown rise.
+    /// \deprecated Using HDF5 file
     /// \tparam TREE Lignum tree
     /// \param  t The tree 
     /// \param iteration Current iteration year in the similation
@@ -486,6 +488,7 @@ namespace LignumForest{
     /// Call L-system End function. Close stand and center stand output files.
     void cleanUp();
     void printSegmentQin();
+    ///\deprecated Using HDF5 files
     void printBranchMeans()const;
     ///\brief Write tree locations to a file
     ///\deprecated Locattion data available in HDF5 file 
