@@ -48,7 +48,7 @@ Command line options and their  short documentation can be obtained by
 running `./lignum-forest`  without any  command line parameters.  See also
 LignumForest::Usage().
 
-The growth loop for LignumForest is implemented in *lignum-forest.cc* in \ref AMAIN.
+The main growth loop for LignumForest is implemented in *lignum-forest.cc*.
 
 > [!IMPORTANT]
 > It is important to type `make install` to also move `lignum-forest` to

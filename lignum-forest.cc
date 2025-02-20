@@ -1,5 +1,5 @@
 /// \file lignum-forest.cc 
-/// \brief The main program for the LignumForest.
+///The main program for the LignumForest.\footnote{This file gives examples of Doxygen grouping}
 ///
 ///Main program growth loop generates now only HDF5 files for result analysis.<br>
 ///Growth loop steps
@@ -71,34 +71,34 @@ using namespace Pine;
 using namespace LignumForest;
 
 
-
+///\defgroup AMAIN LignumForest main program
+///@{
+///The growth steps for the LignumForest
+///\page AMAINPAGE LignumForest growth
+///@}
 int main(int argc, char** argv)
-{ 
-  /// \defgroup  AMAIN The LignumForest main program
-  /// @{
-  /// \par The main program
-  /// + Create the forest stand
-  /// + HDF5 files set-up
-  /// + Crowth initialization
-  /// + Growth loop
-  ///   + Prepare growth step
-  ///   + Growth step
-  ///   + Data collection
-  /// + After growth tasks
-  /// @}
-  Sensitivity<ScotsPineSegment,ScotsPineBud> sensitivity;
+{
+  ///\ingroup AMAIN
+  ///@{
+  ///\par Variables for the main growth loop
+  ///+ The `ScotsPineForest gloop` is in control of the growth loop
+  ///+ The `ran3` uniform random number generator used in the program
+  ///\snippet{lineno} lignum-forest.cc GLoopVar
+  // [GLoopVar]
   ScotsPineForest gloop;
   ran3(&LignumForest::ran3_seed);
-  /// \defgroup BINIT Create the forest stand
-  /// \addtogroup AMAIN
-  /// @{
-  /// \par Create the forest stand
+  // [GLoopVar]
+  ///\page MAINVARIABLES 1. Variables
+  ///@}
+  Sensitivity<ScotsPineSegment,ScotsPineBud> sensitivity;
+  ///\ingroup AMAIN
+  ///@{
+  ///\par Steps to set-up a forest stand  
   /// + Parse and resolve command line
   /// + Initialize functions
   /// + Create tree locations
   /// + Create trees
-  ///
-  /// \snippet{lineno} lignum-forest.cc InitForest
+  ///\snippet{lineno} lignum-forest.cc InitForest
   // [InitForest]
   gloop.parseCommandLine(argc,argv);
   gloop.resolveCommandLineAttributes();
@@ -113,14 +113,12 @@ int main(int argc, char** argv)
   cout << "CREATE TREES DONE" << endl;
   gloop.printTreeLocations(0);
   // [InitForest]
-  /// @}
-  /// \defgroup CHDF5 HDF5 files set-up
-  /// \addtogroup AMAIN
-  /// @{
-  /// \par HDF5 files set-up
-  /// + Create HDF5 file for forest  stand data
-  /// + Create HDF5 file for XML trees
-  /// + Create HDF5 group for XML trees
+  ///\page CREATEFORESTSTAND 2. Forest stand
+  ///@}
+  ///\ingroup AMAIN
+  ///@{
+  ///\par Steps to set-up HDF5 files
+  /// + Create HDF5 file for forest stand data
   /// + Create HDF5 datasets for simulation configuration
   ///   + Command line
   ///   + MetaFiles
@@ -128,8 +126,10 @@ int main(int argc, char** argv)
   ///   + Functions
   ///   + Firmament
   ///   + Initial VoxelSpace
-  ///
-  /// \snippet{lineno} lignum-forest.cc HDF5Init
+  ///   + Voxel space size evolution
+  /// + Create HDF5 file for XML trees
+  /// + Create HDF5 group for XML trees
+  ///\snippet{lineno} lignum-forest.cc HDF5Init
   // [HDF5Init]
   string hdf5fname;
   ParseCommandLine(argc,argv,"-hdf5", hdf5fname);
@@ -138,18 +138,18 @@ int main(int argc, char** argv)
   LignumForest::CreateHDF5File hdf5datafile(hdf5fname,gloop.getVoxelFile(),gloop.getMetaFiles());
   hdf5datafile.createConfigurationDataSets(argc,argv);
   // [HDF5Init]
-  /// @}
-  /// \defgroup DGROWTHINIT Growth initialization
-  /// \addtogroup AMAIN
-  /// @{
-  /// \par Growth initialization
+  ///\page HDF5FILES 3. HDF5 files
+  ///@}
+  ///\ingroup AMAIN
+  ///@{
+  ///\par Steps in growth initialization
   ///  + Initialize trees
   ///  + Resize HDF5 data arrays
   ///  + Initialize voxel space
   ///  + Evaluate stand variables
   ///  + Collect the initial forest data
-  ///
-  /// \snippet{lineno} lignum-forest.cc InitForestGrowth
+  ///  + Collect the initial voxel space dimensions
+  ///\snippet{lineno} lignum-forest.cc InitForestGrowth
   // [InitForestGrowth]
   //InitializeTrees reads in/sets a number of parameters and functions for each tree
   gloop.initializeTrees();
@@ -163,10 +163,17 @@ int main(int argc, char** argv)
   gloop.evaluateStandVariables();
   //The 0th Year dimension is used for intial data 
   gloop.collectDataAfterGrowth(0);
+  //The original voxel space
+  gloop.collectVoxelSpaceData(0,gloop.getWriteInterval());
   // [InitForestGrowth]
-  /// @}
-  ///
+  ///\page GROWTHINIT 4. Growth initialization
+  ///@}
+  /// 
   cout << "INIT DONE" << endl;
+  ///\ingroup AMAIN
+  ///@{
+  ///\page GROWTHLOOP 5. Growth loop
+  ///@}
   for(int year = 0; year < gloop.getIterations(); year++) {
     cout << "GROWTH LOOP YEAR " << year <<endl;
     if(gloop.getNumberOfTrees() < 1) {
@@ -175,10 +182,9 @@ int main(int argc, char** argv)
       //HDF5 output assumes there is at least one tree left 
       continue;
     }
-    /// \defgroup EPREPARE Prepare growth step
-    /// \addtogroup AMAIN
+    /// \ingroup AMAIN
     /// @{
-    /// \par Prepare growth step
+    /// \par Steps in preparing the  growth step
     /// + Pass growth \p year to L system and to \c gloop.
     /// + Save previous year tree height for each tree.
     /// + Save the current \p year in LignumForest::GrowthLoop.
@@ -196,20 +202,28 @@ int main(int argc, char** argv)
     gloop.increaseXi(year);
     gloop.growthModeChange(year);
     // [InitGrowthLoop]
+    ///\page PREPAREGROWTHSTEP 5.1 Prepare growth step
     /// @}
     ///
-    /// \defgroup  FSTEP Growth step
-    /// \addtogroup AMAIN
+    /// \ingroup AMAIN 
     /// @{
-    /// \par Growth step
+    /// \par Steps in new growth
     ///  + Update foliage in voxel space and recalculate border forest
     ///  + Calculate radiation climate for trees
     ///  + Calculate photosynthesis, respiration and aging of tree compartments. 
     ///  + Create new segments
     ///  + Growth allocation
     ///  + Prune dead branches from trees
-    ///  + Set radiation use efficiency in new segments (command line)
-    ///    + Function of shadiness experienced by mother segment (command line argument)
+    ///  + Set radiation use efficiency in new segments (command line argument)
+    ///    + Use function of shadiness experienced by mother segment (command line argument)
+    ///
+    /// It is assumed that parameters and functions affecting segment length and diameter
+    ///can be retrieved from the new segment and the Lignum tree.
+    /// \sa GrowthLoop::allocationAndGrowth()
+    /// \sa Lignum::LGMGrowthAllocator2 and Lignum::LGMGrowthAllocator2::operator()()
+    /// \sa LignumForest::SetScotsPineSegmentLength
+    /// \sa LignumForest::ScotsPineDiameterGrowth2
+    /// \sa  LignumForest::PartialSapwoodAreaDown
     /// \sa GrowthLoop::photosynthesisRespirationTreeAging().
     ///
     /// \snippet{lineno} lignum-forest.cc NewSeg
@@ -220,10 +234,9 @@ int main(int argc, char** argv)
     //before new growth and tree aging
     gloop.photosynthesisRespirationTreeAging();
     gloop.createNewSegments();
-    // REMOVE THESE WHEN YOU REMOVE fgomode,fipmode FROM LGMGrowthAllocator2 !!!!!!!!!!!!!!!!!!
-    ParametricCurve fip_mode = GetFunction(*(gloop.getTreeVector())[0], LGMIP);
-    ParametricCurve fgo_mode = GetFunction(*(gloop.getTreeVector())[0], SPFGO);
-    gloop.allocationAndGrowth(fip_mode,fgo_mode);
+    //It assumed that parameters and functions affecting segment length and diameter
+    ///can be retrieved from the new segment and the Lignum tree 
+    gloop.allocationAndGrowth();
     //Terminate buds grown out of VoxelSpace
     gloop.terminateEscapedBuds();
     // Prune dead parts from the trees 
@@ -231,15 +244,15 @@ int main(int argc, char** argv)
     // RUE: radiation use efficiency
     gloop.radiationUseEfficiency();
     // [NewSeg]
+    ///\page GROWTHSTEP 5.2 Growth
     /// @}
     ///
-    /// \defgroup GDATA Data collection
-    /// \addtogroup AMAIN
+    /// \ingroup AMAIN 
     /// @{
-    /// \par Data collection
-    ///  + Evaluate stand metrics
-    ///  + Collect VoxelSpace dimensions
-    ///  + Collect tree data 
+    /// \par Data collection steps 
+    ///  + Evaluate stand metrics every year
+    ///  + Collect data for each tree every year
+    ///  + Collect voxel space dimensions with write intervals
     ///  + Save trees in XML format in HDF5 file with write intervals
     ///
     /// \snippet{lineno} lignum-forest.cc DataCollection
@@ -255,19 +268,20 @@ int main(int argc, char** argv)
     //Save trees as xml
     CreateTreeXMLDataSet(gloop,hdf5_trees,TXMLGROUP,gloop.getWriteInterval());
     // [DataCollection]
+    ///\page DATACOLLECTION 5.3 Data collection
     /// @}
     ///
   } // End of  for(year = 0; ...)
-  /// \defgroup HAFTERGROWTH After growth tasks
-  /// \addtogroup AMAIN
+  /// \ingroup AMAIN
   /// @{
-  /// \par After growth tasks
-  ///   + Clean up growth loop
-  ///   + Collect data in HDF5 files
+  /// \par Save data after growth 
+  ///  + Clean up growth loop
+  ///  + Create datasets for HDF5 file
   ///      + Year by year, tree by tree data
   ///      + Aggregate stand data
   ///      + Aggregate center stand data
-  ///      + Save HDF5 files
+  ///      + Voxel space dimensions data 
+  ///  + Close HDF5 files for forest stand data and XML trees
   ///
   /// \snippet{lineno} lignum-forest.cc AfterGrowth
   // [AfterGrowth]
@@ -279,7 +293,9 @@ int main(int argc, char** argv)
 
   hdf5datafile.createDataSets(gloop);
   hdf5datafile.close();
+  hdf5_trees.close();
   // [AfterGrowth]
+  ///\page AFTERGROWTH 6. After growth
   /// @}
   ///
   cout << "HDF5 DATA SAVED AND SIMULATION DONE" <<endl;
