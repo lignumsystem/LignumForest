@@ -242,6 +242,10 @@ plot(y,1e-3*apply(trees[17,mukana,],2,sum,na.rm=TRUE)/aplot1,type="l", lwd=2,xla
 legend('bottomright',inset=0.05,c("GPP","Respiration"),col='black',lty=c(1,2),lwd=2)    
 points(y,1e-3*apply(trees[18,mukana,],2,sum,na.rm=TRUE)/aplot1, type="l", lty=2, lwd=2)   #min
 
+
+
+######       ALL TREES
+
 #Ntrees <- stand[3,1]
 Ntrees <- length(mukana)
 
@@ -277,6 +281,16 @@ for(i in 2:min(Ntrees/pick)) {
 	points(100*trees[9,mukana[i*pick],],trees[7,mukana[i*pick],], type="l")
 }
 abline(0,1,lwd=2,col="red")
+
+
+#Mean Branch legth
+#bmax <- max(c(trees[48,mukana[largest],ymax],trees[48,mukana[med],ymax],trees[48,mukana[smallest],ymax]))
+plot(y,trees[48,mukana[1],], type="l", ylim=c(0,4), lty=1,xlab="time (y)", ylab="D2 weighted mean length (m)",lwd=2, main=paste("Mean branch length every ",as.character(pick),"th tree",sep=""))
+for(i in 2:min(Ntrees/pick)) {
+	points(y,trees[48,mukana[i*pick],], type="l")
+}
+
+
 
 ###Foliage mass vs cross-sectional area at crown base
 plot((pi/4)*100^2*trees[10,mukana[1],]^2,2*trees[23,mukana[1],], ylim=c(0,10), xlim=c(0,150), type="l",
