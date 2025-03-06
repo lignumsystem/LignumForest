@@ -2170,7 +2170,6 @@ namespace LignumForest{
     }
   }
     
-  
   template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::setVoxelSpaceAndBorderForest()
   {
@@ -2214,6 +2213,10 @@ namespace LignumForest{
     ///\internal
     ///\snippet{lineno} GrowthLoopI.h BorderForest
     // [BorderForest]
+    ///\attention Note that here only the height of BorderForest is updated. As branches
+    ///\attention grow VoxelSpace extends sideways. It thus grows into BorderForest. It may be
+    ///\attention necessary to correct this, depending how BorderStand.borderStandExtinction() is realised.  
+
     border_forest.setH(bb.getMax().getZ());
     border_forest.setHcb(stand.getMinCrownLimit());
     border_forest.setLAI(stand.getLAI());
