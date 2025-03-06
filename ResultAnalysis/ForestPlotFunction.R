@@ -203,7 +203,7 @@ plot(stand[8,gt0],stand[3,gt0]/aplot1,log="xy",ylim=c(500,20000),type="l", lty=1
 xlab="log(mean Dbh)", ylab="log(No. trees / ha)", main="Self-thinning curve")
 legend('bottomleft',inset=0.05,cex=0.8,c("Lignum",
 expression(paste(N == alpha*bar(D)^{-3/2}," (", N," = Density",", ",bar(D)," = RMS stand diameter",","," Reineke ",1933^(1),")"),"Koivisto: kasvu- ja tuotostaulukot")),col=c('black','red','darkgreen'),lty=1,lwd=2)
-text(0.14,460,cex=0.6,"(1) Here in the context of Koivisto")
+text(0.10,460,cex=0.6,"(1) Here in the context of Koivisto")
 points(ksto$Dbhav/100,91000.0*(ksto$Dbhav)**(-3/2),type="l",lwd=2,col="red")
 points(ksto$Dbhav/100,ksto$N,type="l",lwd=3,col="darkgreen")
 
