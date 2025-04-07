@@ -127,7 +127,7 @@ int main(int argc, char** argv)
   ///   + Firmament
   ///   + Initial VoxelSpace
   ///   + Voxel space size evolution
-  /// + Create HDF5 file for XML trees
+   /// + Create HDF5 file for XML trees
   /// + Create HDF5 group for XML trees
   ///\snippet{lineno} lignum-forest.cc HDF5Init
   // [HDF5Init]
@@ -146,6 +146,7 @@ int main(int argc, char** argv)
   ///  + Initialize trees
   ///  + Resize HDF5 data arrays
   ///  + Initialize voxel space
+  ///  + Initialize GrowthLoop::terminate_buds to check runaway branches
   ///  + Evaluate stand variables
   ///  + Collect the initial forest data
   ///  + Collect the initial voxel space dimensions
@@ -156,7 +157,11 @@ int main(int argc, char** argv)
   //Resize the 3D and 2D data arrays for HDF5 file to right dimensions.
   //Simulation years and number of trees are known
   gloop.resizeTreeDataMatrix();
+  //VoxelSpace size ininitialization 
   gloop.initializeVoxelSpace();
+  //Initialize space to check runaway branches. Create large enough space
+  //inside voxel space to avoid escaped branches to expand voxel space
+  gloop.initializeEscapedBuds();
   //Sets initial values of some variables in trees
   gloop.initializeGrowthLoop();
   // Evaluate stand variables before collectDataAfterGrowth
@@ -195,7 +200,7 @@ int main(int argc, char** argv)
     ///
     /// \snippet{lineno} lignum-forest.cc InitGrowthLoop
     // [InitGrowthLoop]
-    //Pine::L_age is for L-system 
+    //Pine::L_age is for L-system
     Pine::L_age = (double)year;     
     gloop.setHPrev();
     gloop.setYear(year);
@@ -229,6 +234,7 @@ int main(int argc, char** argv)
     /// \snippet{lineno} lignum-forest.cc NewSeg
     // [NewSeg]
     gloop.setVoxelSpaceAndBorderForest();
+    cout << "Radiation calculation" <<endl;
     gloop.calculateRadiation();
     //Currently data collection in photosynthesisRespirationTreeAging
     //before new growth and tree aging
