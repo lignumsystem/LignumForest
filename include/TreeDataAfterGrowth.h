@@ -155,7 +155,7 @@ namespace LignumForest{
   const array<string,7> fna_str={"LGMAL","LGMFM","LGMIP","LGMONB","LGMNB","LGMVI","LGMVIONB"};
   const vector<string> FNA_STR(fna_str.begin(),fna_str.end());
   ///Column names for VoxelSpace size development dataset, LL = Lower Left corner point, UR = Upper Right corner point
-  const array<string,7> vs_sizes_column_names={"Year","LLX","LLY","LLZ","URX","URY","URZ"};
+  const array<string,12> vs_sizes_column_names={"Year","LLX","LLY","LLZ","URX","URY","URZ","Area","Width","Length","Height","Width_x_Length"};
   const vector<string> VS_SIZES_COLUMN_NAMES(vs_sizes_column_names.begin(),vs_sizes_column_names.end());
 }//End namespace LignumForest
 #endif

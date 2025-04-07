@@ -29,7 +29,7 @@ namespace LignumForest{
     ///\post The `current_row` = -1.
     ///\note Matrix indexing starts from 0 and `current_row` is updated
     ///after each row insertion
-  CreateVoxelSpaceData(int rows, int cols=7):
+  CreateVoxelSpaceData(int rows, int cols):
     vspacedata(rows,cols),current_row(-1){};
     ///Insert the lower left and the upper right corner points from VoxelSpace
     ///for the given simulation year.
