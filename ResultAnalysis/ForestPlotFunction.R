@@ -63,7 +63,7 @@ in_center <- function(x,y, pX, pY, dx, dy) {
 	x >= dx & x <= pX-dx & y >= dy & y <= pY-dy	
 }
 
-ForestPlot <- function(infile,aplot,pick, GYdata = "", center = "a") {
+ForestPlot <- function(infile,aplot,pick, GYdata = "", center = "a",outdir="./") {
 
 
 d <- H5Fopen(infile)
@@ -84,15 +84,19 @@ ftdata<-read.table(paste(GYdata,"Ilvessalo.txt",sep=""),header=TRUE,sep='')
 #All trees on the plot or only in the center center of the plot
 trees <- d$ForestTreeData
 
+if (!dir.exists(outdir)){
+        dir.create(outdir)
+}
+    
 if(center != "c") {
 	stand <- d$StandData
-	pdf_file <- paste(infile,".pdf",sep="")
+	pdf_file <- paste(outdir,"/",infile,".pdf",sep="")
 	print("All trees included")
 	mtxt = "All trees included"
 	mukana <- 1:length(trees[1,,1])
 } else {
 	stand <- d$CenterStandData
-	pdf_file <- paste(infile,"_c.pdf",sep="")
+	pdf_file <- paste(outdir,"/",infile,"_c.pdf",sep="")
 	print("Center stand")
 	mtxt = "Center stand"
 
@@ -125,7 +129,9 @@ ymax = max(y, na.rm=TRUE)
 
 
 ###Height
-plot(y,stand[11,], type="l", ylim=c(0,40), lwd=2, xlab="time (y)", ylab="Tree height, nin, mean, max (m)", main=paste("Mean, min and max stand height\nIn the plots: ",mtxt,sep=""))##mean
+plot(y,stand[11,], type="l", ylim=c(0,40), lwd=2, xlab="time (y)", ylab="Tree height, nin, mean, max (m)",
+     main=paste("Mean, min and max stand height\nIn the plots: ",mtxt,sep=""),
+     sub=paste("Plot area ",aplot,"m2",sep=""))##mean
 legend('topleft',inset=0.05,c("Lignum mean","Lignum (min, max)"," Vuokila/Väliaho 1980"," Varmola M 1987","Koivisto: kasvu- ja tuotostaulukot"),col=c('black','black','blue','red','darkgreen'),
        lty=c(1,2,1,1,1),lwd=2)
 
