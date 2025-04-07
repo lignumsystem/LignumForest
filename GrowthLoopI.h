@@ -1116,7 +1116,7 @@ namespace LignumForest{
     LGMdouble s1,s2,s3,b1,b2; s1 = s2 = s3 = 0.0; b1=b2=0.0;
     vf >> vx >> vy >> vz >> s1 >> s2 >> s3 >> b1 >> b2;
     //vx,vy,vz define the voxel space  dimensions, s1, s2, s3 define the
-    //voxel box dimensions
+    //voxel box dimensions, b1 and b2 the border forest width
     if (verbose){
       cout << "Voxel Space: " << vx << " " << vy << " " << vz << " " 
 	   << s1 << " " << s2 << " " << s3 << " " << b1 << " " << b2 <<endl;
@@ -1125,12 +1125,33 @@ namespace LignumForest{
 			s1,s2,s3,
 			static_cast<int>(vx/s1),static_cast<int>(vy/s2),static_cast<int>(vz/s3),
 			GetFirmament(*vtree[0]));
-    //TerminateEscapedBuds stores VoxelSpace and CenterStand dimensions.
+    //LignumForest::TerminateEscapedBuds stores VoxelSpace and CenterStand dimensions.
     //Set the height (z-coordinate) of upper right corner to infinity, i.e. max supported value by compiler.
     //A bud is then checked against (x,y) coordinates 
     terminate_buds.resize(Point(0,0,0),Point(vx,vy,std::numeric_limits<double>::max()),b1,b2);
   }
 
+  template<class TREE, class TS,class BUD, class LSYSTEM>
+  void GrowthLoop<TREE, TS,BUD,LSYSTEM>::initializeEscapedBuds(int width)
+  {
+    //Origo
+    Point p0 = vs->getLowerLeftCorner();
+    //Diaginally opposite point, clcokwise upper third point
+    Point p6= vs->getUpperRightCorner();
+    //Clockwise bottom third point
+    Point p2(p6.getX(),p6.getY(),p0.getZ());
+    //Clockwise bottom fourth point
+    Point p3(p6.getX(),p0.getY(),p0.getZ());
+    //Width (x direction) of the voxel space
+    double p0p3 = p0||p3;
+    //Length (y direction) of the voxels space
+    double p2p3 = p2||p3;
+    //LignumForest::TerminateEscapedBuds stores VoxelSpace and CenterStand dimensions.
+    //Set the height (z-coordinate) of upper right corner to infinity, i.e. max supported value by compiler.
+    //A bud is then checked against (x,y) coordinates 
+    terminate_buds.resize(Point(0,0,0),Point(p0p3,p2p3,std::numeric_limits<double>::max()),width,width);
+  }
+  
   template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::initializeFunctions()
   {

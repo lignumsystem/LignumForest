@@ -291,6 +291,17 @@ namespace LignumForest{
     ///\post cxxadt::RectangularCuboid heights in GrowthLoop::terminate_buds set to `std::numeric_limits<double>::max()`
     ///\sa GrowthLoop::voxelfile LignumForest::terminate_buds
     void initializeVoxelSpace();
+    ///\brief Initialize \p terminate_buds
+    ///
+    ///LignumForest::TerminateEscapedBuds can retain the initial VoxelSpace dimensions
+    ///as well as the width of the zone where the trees are inspected for runaway branches.
+    ///The border forest can be too narrow to prevent branches expanding outside VoxelSpace.
+    ///The default value for the inspection zone is 5m.
+    ///\pre VoxelSpace must be initialized
+    ///\param width The width of the inspection zone
+    ///\sa GrowthLoop::initializeVoxelSpace
+    ///\todo Consider command line parameter for the inspection zone width
+    void initializeEscapedBuds(int width=5);
     /// \brief Read and install functions 
     /// 
     /// Read and install the following functions from files:
