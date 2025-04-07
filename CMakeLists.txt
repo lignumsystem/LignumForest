@@ -78,11 +78,13 @@ if(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin")
   message("LignumForest")
   message("------------")
   message("Apple macOS (Darwin) platform")
-  # The following lines find Qt4 headers and libraries, qmake must be in PATH
+  #The following lines find Qt4 headers and libraries, qmake must be in PATH
   #find_package(Qt4 COMPONENTS QtOpenGL QtXml QtGui QtCore REQUIRED)
-  #find_package(OpenGL REQUIRED)
   # The following lines find Qt5 headers and libraries, qmake must be in PATH
-  find_package(Qt5 COMPONENTS Xml Core  REQUIRED)           
+  find_package(Qt5 COMPONENTS Xml Core  REQUIRED)
+  #HSF5 for  collecting simulation results
+  find_package(HDF5 COMPONENTS C CXX HL REQUIRED)
+  #Simple visualization tool in macOS
   find_package(OpenGL REQUIRED) 
   # cmake 3.23 output erroneusly prints 'glut not found'. It is found. 
   find_package(GLUT REQUIRED)
@@ -122,12 +124,12 @@ COMMAND ${CMAKE_CURRENT_LIST_DIR}/../LEngine/bin/l2c ${CMAKE_CURRENT_LIST_DIR}/$
 # Main target, the executable 'lignum-forest'
 add_executable(lignum-forest ${SOURCE_FILES})
 target_include_directories(lignum-forest PUBLIC . include
-${CMAKE_CURRENT_LIST_DIR}/
-${CMAKE_CURRENT_LIST_DIR}/include
-${CMAKE_CURRENT_LIST_DIR}/../stl-voxelspace/include
-${CMAKE_CURRENT_LIST_DIR}/../Pine
-${CMAKE_CURRENT_LIST_DIR}/../XMLTree
-${CMAKE_CURRENT_LIST_DIR}/../LEngine/include
+  ${CMAKE_CURRENT_LIST_DIR}/
+  ${CMAKE_CURRENT_LIST_DIR}/include
+  ${CMAKE_CURRENT_LIST_DIR}/../stl-voxelspace/include
+  ${CMAKE_CURRENT_LIST_DIR}/../Pine
+  ${CMAKE_CURRENT_LIST_DIR}/../XMLTree
+  ${CMAKE_CURRENT_LIST_DIR}/../LEngine/include
 )
 
 # This add_dependencies for lignum-forest seem to generate time stamp based necessary automatic rebuilds
