@@ -63,7 +63,7 @@ in_center <- function(x,y, pX, pY, dx, dy) {
 	x >= dx & x <= pX-dx & y >= dy & y <= pY-dy	
 }
 
-ForestPlot <- function(infile,aplot,pick, GYdata = "", center = "a",outdir="./") {
+ForestPlot <- function(infile, pick, GYdata = "", center = "a") {
 
 
 d <- H5Fopen(infile)
@@ -81,44 +81,47 @@ ftdata<-read.table(paste(GYdata,"Ilvessalo.txt",sep=""),header=TRUE,sep='')
 
 
 
+
+#The size of the plot and is read from VoxelSpace.txt & information about
+#plot boudary
+	
+# The x and y sizes of the stand (plot) are given on the first line of VoxelSpace.txt
+# as two first items, they are read in to plot_x, plot_y
+# The distance of center area from stand edge (x and y) is given on the third line
+# of VoxelSpace.txt as: dist_x dist_y
+
+#values are separated by spaces and lines by '\n' in VoxelSpace.txt
+
+pos <- unlist(gregexpr(" ",d$VoxelSpace))   #First line, X Y Z values
+plot_x <- as.numeric(substr(d$VoxelSpace,1,pos[1]-1))
+plot_y <- as.numeric(substr(d$VoxelSpace,pos[1]+1,pos[2]-1))
+
+pos <- unlist(gregexpr('\n',d$VoxelSpace))
+line3 <- substr(d$VoxelSpace,pos[2]+1,pos[3]-1)  #line 3 between 2nd and 3rd '\n'
+pos <- unlist(gregexpr(" ",line3))
+dist_x <- as.numeric(substr(line3,1,pos[1]-1))   #line3 contains two numbers separated by a space
+dist_y <- as.numeric(substr(line3,pos[1]+1,nchar(line3)))
+	
+
+
 #All trees on the plot or only in the center center of the plot
 trees <- d$ForestTreeData
 
-if (!dir.exists(outdir)){
-        dir.create(outdir)
-}
-    
 if(center != "c") {
 	stand <- d$StandData
-	pdf_file <- paste(outdir,"/",infile,".pdf",sep="")
+	pdf_file <- paste(infile,".pdf",sep="")
 	print("All trees included")
 	mtxt = "All trees included"
 	mukana <- 1:length(trees[1,,1])
+	aplot = plot_x * plot_y			#Plot area in m2
 } else {
 	stand <- d$CenterStandData
-	pdf_file <- paste(outdir,"/",infile,"_c.pdf",sep="")
+	pdf_file <- paste(infile,"_c.pdf",sep="")
 	print("Center stand")
 	mtxt = "Center stand"
-
 	# If center stand, individual trees must be checked whether they belong to the center
-	# The x and y sizes of the stand (plot) are given on the first line of VoxelSpace.txt
-	# as two first items, they are read in to plot_x, plot_y
-	# The distance of center area from stand edge (x and y) is given on the third line
-	# of VoxelSpace.txt as: dist_x dist_y
-
-	#values are separated by spaces and lines by '\n' in VoxelSpace.txt
-
-	pos <- unlist(gregexpr(" ",d$VoxelSpace))   #First line, X Y Z values
-	plot_x <- as.numeric(substr(d$VoxelSpace,1,pos[1]-1))
-	plot_y <- as.numeric(substr(d$VoxelSpace,pos[1]+1,pos[2]-1))
-
-	pos <- unlist(gregexpr('\n',d$VoxelSpace))
-	line3 <- substr(d$VoxelSpace,pos[2]+1,pos[3]-1)  #line 3 between 2nd and 3rd '\n'
-	pos <- unlist(gregexpr(" ",line3))
-	dist_x <- as.numeric(substr(line3,1,pos[1]-1))   #line3 contains two numbers separated by a space
-	dist_y <- as.numeric(substr(line3,pos[1]+1,nchar(line3)))
-
 	mukana <- which(in_center(trees[2,,1],trees[3,,1],plot_x,plot_y,dist_x,dist_y))
+	aplot = (plot_x - 2*dist_x) * (plot_y - 2*dist_y)			#Plot area in m2
 }
 
 pdf(pdf_file)
@@ -129,9 +132,7 @@ ymax = max(y, na.rm=TRUE)
 
 
 ###Height
-plot(y,stand[11,], type="l", ylim=c(0,40), lwd=2, xlab="time (y)", ylab="Tree height, nin, mean, max (m)",
-     main=paste("Mean, min and max stand height\nIn the plots: ",mtxt,sep=""),
-     sub=paste("Plot area ",aplot,"m2",sep=""))##mean
+plot(y,stand[11,], type="l", ylim=c(0,40), lwd=2, xlab="time (y)", ylab="Tree height, nin, mean, max (m)", main=paste("Mean, min and max stand height\nIn the plots: ",mtxt,sep=""))##mean
 legend('topleft',inset=0.05,c("Lignum mean","Lignum (min, max)"," Vuokila/Väliaho 1980"," Varmola M 1987","Koivisto: kasvu- ja tuotostaulukot"),col=c('black','black','blue','red','darkgreen'),
        lty=c(1,2,1,1,1),lwd=2)
 
@@ -140,6 +141,8 @@ points(y,stand[13,], type="l",lwd=2, lty=2)   #max
 points(va27$a,va27$HgM,type="l",lwd=3,col="red")
 points(vv$age,vv$H,type="l",lwd=3,col="blue")
 points(ksto$year,ksto$Hav,type="l",lwd=3,col="darkgreen")
+
+
 
 
 # longest and shortest trees
@@ -156,7 +159,7 @@ med <- which(h<1.02*mh&h>0.98*mh)[1]
 
 
 #DBH
-plot(y,100*d$StandData[8,], type="l", lwd=2, ylim=c(0,40),xlab="time (y)", ylab="Diameter, min, mean, max (cm)", main="Mean, min and max BH diameter in the stand")##mean
+plot(y,100*stand[8,], type="l", lwd=2, ylim=c(0,40),xlab="time (y)", ylab="Diameter, min, mean, max (cm)", main="Mean, min and max BH diameter in the stand")##mean
 legend('topleft',inset=0.05,c("Lignum (mean)","Lignum (min,max)"," Vuokila/Väliaho 1980"," Varmola M 1987","Koivisto: kasvu- ja tuotostaulukot"),col=c('black','black','blue','red','darkgreen'),
        lty=c(1,2,1,1,1),lwd=2)
 
@@ -174,16 +177,23 @@ points(y,trees[7,mukana[smallest],], type="l",lwd=2,col="red")    #smallest
 
 
 #Height vs breast height diameter
-plot(100*stand[8,],stand[11,], type="l", xlim=c(0,30), ylim=c(0,30), lwd=2, xlab="BH diameter (cm)", ylab="Mean tree height (m)", main="Height vs breast height diameter\nGreen = Koivisto, Varmola, Vuok&V:o")
-abline(0,1,col="blue",lwd=2)
+plot(100*stand[8,],stand[11,], type="l", xlim=c(0,30), ylim=c(0,30), lwd=2, xlab="BH diameter (cm)", ylab="Mean tree height (m)", main="Height vs breast height diameter\nGreen = Koivisto, Varmola, Vuok&V:o, dH=f(CR)*dD (blue)")
 points(ksto$Dbhav,ksto$Hav,type="l",lwd=2,col="darkgreen")
 points(va27$DgM,va27$HgM, type="l",lwd=2,col="darkgreen")
 points(vv$DBH,vv$H, type="l",lwd=2,col="darkgreen")
 
+#Height increment from diam. increment using a model component of Sievänen, R. 1993.
+#A process-based model for dimensional growth of even-aged stands. Scand. J. For. Res. 8:28-48 that
+#has been adjusted to Finnhs pine forests
+Hinc <-(50+130*(1-apply(1-trees[11,mukana,]/trees[7,mukana,],2,mean,na.rm=TRUE)[1:ymax+1]))*diff(100*stand[8,])
+
+points(100*stand[8,1:ymax],1+cumsum(Hinc)/100,type="l",lwd=2,col="blue")
+
+
 
 ###Density
 aplot1 <- aplot/1e4          #area in ha
-plot(y,stand[3,]/aplot1, type="l", ylim=c(0,1.1*stand[3,1]/aplot1),lty=1, lwd=2, xlab="time (y)", ylab="No. trees / ha", main="Stand density in self-thinning")
+plot(y,stand[3,]/aplot1, type="l", ylim=c(0,1.1*stand[3,1]/aplot1),lty=1, lwd=2, xlab="time (y)", ylab="No. trees / ha", main=paste("Stand density","\n",paste("Plot area = ",aplot," m2",sep=""),sep=""))
 legend('bottomleft',inset=0.05,c("Lignum","Koivisto: kasvu- ja tuotostaulukot"),col=c('black','darkgreen'),
        lty=1,lwd=2)
 points(ksto$year,ksto$N,type="l",lwd=3,col="darkgreen")
@@ -209,7 +219,7 @@ plot(stand[8,gt0],stand[3,gt0]/aplot1,log="xy",ylim=c(500,20000),type="l", lty=1
 xlab="log(mean Dbh)", ylab="log(No. trees / ha)", main="Self-thinning curve")
 legend('bottomleft',inset=0.05,cex=0.8,c("Lignum",
 expression(paste(N == alpha*bar(D)^{-3/2}," (", N," = Density",", ",bar(D)," = RMS stand diameter",","," Reineke ",1933^(1),")"),"Koivisto: kasvu- ja tuotostaulukot")),col=c('black','red','darkgreen'),lty=1,lwd=2)
-text(0.10,460,cex=0.6,"(1) Here in the context of Koivisto")
+text(0.14,460,cex=0.6,"(1) Here in the context of Koivisto")
 points(ksto$Dbhav/100,91000.0*(ksto$Dbhav)**(-3/2),type="l",lwd=2,col="red")
 points(ksto$Dbhav/100,ksto$N,type="l",lwd=3,col="darkgreen")
 
@@ -279,14 +289,19 @@ for(i in 1:min(Ntrees/pick)) {
 }
 points(y,apply(1-trees[11,mukana,]/trees[7,mukana,],2,mean,na.rm=TRUE),type="l",lwd=2,col="red")
 
+
+
+
 ###Height vs diameter
-plot(100*trees[9,mukana[1],],trees[7,mukana[1],], ylim=c(0,30), xlim=c(0,30), type="l",main=paste("Height vs diameter BH\nevery ",as.character(pick),"th tree",sep=""),
+plot(100*trees[9,mukana[1],],trees[7,mukana[1],], ylim=c(0,30), xlim=c(0,30), type="l",main=paste("Height vs diameter BH\nevery ",as.character(pick),"th tree, dH=f(CR)*dD (blue)",sep=""),
      xlab="Tree diameter (cm)", ylab="Tree height (m)")
 legend('bottomright',inset=0.05,c("Lignum trees","y=x"),col=c('black','red'),lty=1,lwd=2)
 for(i in 2:min(Ntrees/pick)) {
 	points(100*trees[9,mukana[i*pick],],trees[7,mukana[i*pick],], type="l")
 }
-abline(0,1,lwd=2,col="red")
+
+#This is the same as in #Height vs breast height diameter at stand level
+points(100*stand[8,1:ymax],1+cumsum(Hinc)/100,type="l",lwd=2,col="blue")
 
 
 #Mean Branch legth
