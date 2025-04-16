@@ -3,7 +3,7 @@ library(rhdf5)
 
 ExtractFunctions<-function(h5file,outdir){
     if (!dir.exists(outdir)){
-        dir.create(outdir)
+        dir.create(outdir,recursive=TRUE)
     }
     data <- H5Fopen(h5file)
 
@@ -16,7 +16,7 @@ ExtractFunctions<-function(h5file,outdir){
 
 ExtractFunctionFiles<-function(h5file,outdir){
     if (!dir.exists(outdir)){
-        dir.create(outdir)
+        dir.create(outdir,recursive=TRUE)
     }
     data <- H5Fopen(h5file)
 
@@ -29,7 +29,7 @@ ExtractFunctionFiles<-function(h5file,outdir){
 
 ExtractParameterFiles<-function(h5file,outdir){
     if (!dir.exists(outdir)){
-        dir.create(outdir)
+        dir.create(outdir,recursive=TRUE)
     }
     data <- H5Fopen(h5file)
 
@@ -42,7 +42,7 @@ ExtractParameterFiles<-function(h5file,outdir){
 
 ExtractMetaFiles<-function(h5file,outdir){
     if (!dir.exists(outdir)){
-        dir.create(outdir)
+        dir.create(outdir,recursive=TRUE)
     }
     data <- H5Fopen(h5file)
 
@@ -55,7 +55,7 @@ ExtractMetaFiles<-function(h5file,outdir){
 
 ExtractCommandLine<-function(h5file,outdir){
     if (!dir.exists(outdir)){
-        dir.create(outdir)
+        dir.create(outdir,recursive=TRUE)
     }
     data <- H5Fopen(h5file)
 
@@ -66,6 +66,9 @@ ExtractCommandLine<-function(h5file,outdir){
 ## Extract Meta files, parameter and  function files and command line
 ## from HDF5 result file h5file to outdir directory
 ExtractAllFiles<-function(h5file,outdir){
+    if (!dir.exists(outdir)){
+        dir.create(outdir,recursive=TRUE)
+    }
     ExtractCommandLine(h5file,outdir)
     ExtractMetaFiles(h5file,outdir)
     ExtractParameterFiles(h5file,outdir)
