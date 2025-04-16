@@ -1,38 +1,53 @@
+#### Create pdf results from the HDF5 file and move the result files to outdir.
+#### Note that the required packages (filesstrings,rhdf5 and ineq)  will be installed and the installation may
+#### ask for the R package repository location (61 is Sweden).
 #### Usage:
 #### source("/path/to/LignumForest/ResultAnalysis/ForestPlotAndConfig.R",chdir=TRUE)
-#### ForestPlotAndConfig(infile,pick,GYdata="/path/to/LignumForest/ResultAnalysis/",outdir="/path/to/outdir")
-
+#### ForestPlotAndConfig(/path/to/infile,pick,GYdata="/path/to/LignumForest/ResultAnalysis/",outdir="/path/to/outdir")
+if (!require("filesstrings",quietly=TRUE)){
+    print("Installing package filesstrings")
+    install.packages("filesstrings")
+}
+if (!require("rhdf5",quietly=TRUE)){
+    print("Installing package rhdf5")
+    install.packages("rhdf5")
+}
+if (!require("ineq",quietly=TRUE)){
+    print("Installing package ineq")
+    install.packages("ineq")
+}
+library(filesstrings)
 library(rhdf5)
 source("ForestPlotFunction.R")
 source("ExtractSimulationConfig.R")
 
-###Create pdf files with ForestPlot for both the forest plot and the center area
-###Extract configuration files to Config subdirectory
-ForestPlotAndConfig<-function(infile,pick, GYdata = "",outdir="."){
-    h5f<-H5Fopen(infile)
-    ### Retrieve border forest width
-    s<-unlist(h5f$VoxelSpace)
-    s<-strsplit(s,split="\\s+")
-    s<-sapply(s,as.double)
-    b1<-s[length(s)-1]
-    b2<-s[length(s)]
-    ### Retrieve the actual final forest plot area
-    ls<-h5f$VoxelSpaceSizes
-    m<-t(matrix(unlist(ls),nrow=12))
-    dims<-dim(m)
-    rows<-dims[1]
-    cols<-dims[2]
-    area<-m[rows,cols]
-    width<-m[rows,cols-3]
-    length<-m[rows,cols-2]
-    width_c<-width-2.0*b1
-    length_c<-length-2.0*b2
-    area_c<-width_c*length_c
-    cat("PlotWidth(X)",width,"PlotLength(Y)",length,"PlotArea",area,"\n")
-    cat("BorderWidth(X)",b1,"BorderLength(Y)",b2,"\n")
-    cat("CentreWidth(X)",width_c,"CentreLength(Y)",length_c,"CenterArea",area_c,"\n")
-    h5closeAll()
-    ForestPlot(basename(infile),area,pick,GYdata,center="a",outdir)
-    ForestPlot(basename(infile),area_c,pick,GYdata,center="c",outdir)
-    ExtractAllFiles(infile,paste(outdir,"/","Config",sep=""))
+###ForestPlot results for both the forest plot ("a") and its center area ("c").
+###Optionally:
+###1) Move the two files to the outdir. Assume file suffixes used in ForestPlot.
+###2) Extract simulation configuration files to Config subdirectory in the outdir.
+###3) Move simulation HDF5 files to outdir
+###Parameters:
+###infile: HDF5 file with simulation results and configuration
+###pick: select every n:th tree for the result plots
+###GYdata: "ResultAnalysis/" (default), Growth and Yield data files directory
+###outdir: FALSE (default) or directory name. Move pdf result files and HDF5 filrs to  outdir directory
+ForestPlotAndConfig<-function(infile,pick=1, GYdata = "ResultAnalysis/",outdir=FALSE){
+    ForestPlot(infile,pick,GYdata,center="a")
+    ForestPlot(infile,pick,GYdata,center="c")
+    if (!outdir==FALSE){
+        print("Move PDF files")
+        ###ForestPlot file suffixes
+        cat(paste(infile,'.pdf',sep=''),'->',paste(outdir,'/',infile,'.pdf'),"\n")
+        cat(paste(infile,'_c.pdf',sep=''),'->',paste(outdir,'/',infile,'_c.pdf'),"\n")
+        file.move(paste(infile,'.pdf',sep=''),outdir,overwrite=TRUE)
+        file.move(paste(infile,'_c.pdf',sep=''),outdir,overwrite=TRUE)
+        cat("Extract configuration",infile,'->',paste(outdir,'/','Config',sep=''),"\n")
+        ExtractAllFiles(infile,paste(outdir,"/","Config",sep=''))
+        print("Move HDF5 files")
+        cat(infile,'->',outdir,"\n")
+        ###File prefix for trees in XML format  
+        cat(paste('TreesXML_',infile,sep=''),'->',outdir,"\n")
+        file.move(infile,outdir,overwrite=TRUE)
+        file.move(paste('TreesXML_',infile,sep=''),outdir,overwrite=TRUE)
+    }
 }
