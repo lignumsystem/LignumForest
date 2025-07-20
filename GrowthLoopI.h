@@ -723,6 +723,23 @@ namespace LignumForest{
       LignumForest::terminate_escaped_buds = true;
       cout << "Terminate escaped buds " << LignumForest::terminate_escaped_buds << endl;
     }
+
+    ///---
+    ///\par   ///Limiting length of new shoots
+    string iline;
+    ifstream input_file("dhlimit.txt");
+    if (!input_file.is_open()) {
+      cout << "Something wrong with file dhlimit.txt!" << endl;
+      exit(-1);
+    }
+    getline(input_file,iline);
+    getline(input_file,iline);
+    getline(input_file,iline);
+    input_file >> LignumForest::length_limit_year;
+    input_file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    input_file >> LignumForest::g1maxL >> LignumForest::g2maxL;
+    input_file.close();
+
     if (verbose){
       cout << "parseCommandLine end" <<endl;
       printVariables();

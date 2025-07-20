@@ -25,6 +25,11 @@ namespace LignumForest{
   double max_turn_in_architecture_change = 80.0*PI_VALUE/180.0;
   double butt_swell_coeff = 1.0;
   int butt_swell_start = INT_MAX;
+  
+  ///Limiting length of new shoots
+  double g1maxL = 1.0, g2maxL = 1.0; /// max length = 1 m, no effect
+  int length_limit_year = 1000;      /// In effect after 1000 years
+
 }
 
 namespace LignumForest{

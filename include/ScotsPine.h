@@ -8,6 +8,7 @@
 using namespace PineTree;
 using namespace Pine;
 
+//extern double g1maxL, g2maxL;
 
 namespace LignumForest{
   class ScotsPineTree;
@@ -534,6 +535,15 @@ namespace LignumForest{
 	    //Result of the Basic model if no ad_hoc
 	    //The l denotes lambda, fip(ip) denotes relative light
 	    Lnew = l*fip(ip)*adhoc_factor*Lnew;
+	    
+	    if(Pine::L_age > LignumForest::length_limit_year) {
+	      if(go < 2.0 && Lnew > LignumForest::g1maxL) {
+		Lnew = LignumForest::g1maxL;
+	      }
+	      if(go <= 3.0 && go > 1.0 && Lnew > LignumForest::g2maxL) {
+		Lnew = LignumForest::g2maxL;
+	      }
+	    }
 	    // [LBasic2]
 	    ///\endinternal
 	    //	  cout << Lnew << " ";

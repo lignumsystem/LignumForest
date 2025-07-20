@@ -219,5 +219,10 @@ namespace LignumForest{
   ///\note Bud termination is in use
   extern bool terminate_escaped_buds;
   ///@}
+
+  ///Limiting length of new shoots
+  extern double g1maxL, g2maxL;
+  extern int length_limit_year;
+
 }//end namespace
 #endif
