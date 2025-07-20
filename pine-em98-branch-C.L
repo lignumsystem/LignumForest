@@ -121,7 +121,7 @@ B(data,omega,l,phys_age):
      //Note there are no start and end branches
      //These are genrerated in mode 1
      if (omega==1)
-       produce F(l) Roll(roll) B(data,omega,l,phys_age);
+       produce F(l) Roll(roll+(PI_VALUE/1.5)*(ran3(&LignumForest::ran3_seed)-0.5)) B(data,omega,l,phys_age);
      else
        produce F(l) B(data,omega,l,phys_age);
    }
