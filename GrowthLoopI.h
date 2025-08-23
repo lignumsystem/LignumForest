@@ -1146,7 +1146,7 @@ namespace LignumForest{
     double p0p3 = p0||p3;
     //Length (y direction) of the voxels space
     double p2p3 = p2||p3;
-    //LignumForest::TerminateEscapedBuds stores VoxelSpace and CenterStand dimensions.
+    //LignumForest::terminateEscapedBuds stores VoxelSpace and CenterStand dimensions.
     //Set the height (z-coordinate) of upper right corner to infinity, i.e. max supported value by compiler.
     //A bud is then checked against (x,y) coordinates 
     terminate_buds.resize(Point(0,0,0),Point(p0p3,p2p3,std::numeric_limits<double>::max()),width,width);
@@ -1725,7 +1725,7 @@ namespace LignumForest{
 	no_h[(int)k] += 1;
 	if(no_h[(int)k] >= 3){
 	  dead_trees.push_back(k);
-	  cout << "Pushed " << k << " to dead trees, was stagnant" <<endl;
+	  cout << "Pushed " << k << " to dead trees, the tree height growth was practically stagnant 3 successive years" <<endl;
 	}
 	continue;
       }

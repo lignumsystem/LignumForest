@@ -263,7 +263,7 @@ namespace LignumForest{
     /// \sa TREE_DATA_COLUMN_NAMES STAND_DATA_COLUMN_NAMES
     /// \sa hdf5_tree_data hdf5_stand_data hdf5_center_stand_data
     void resizeTreeDataMatrix();
-    /// \brief Intialize trees
+    /// \brief Initialize trees
     ///
     /// Check the options for various models that have effect on growth and act accordingly.
     /// + Mandatory tree initialization with Lignum::InitializeTree
@@ -293,13 +293,13 @@ namespace LignumForest{
     void initializeVoxelSpace();
     ///\brief Initialize \p terminate_buds
     ///
-    ///LignumForest::TerminateEscapedBuds can retain the initial VoxelSpace dimensions
+    ///LignumForest::terminateEscapedBuds can retain the initial VoxelSpace dimensions
     ///as well as the width of the zone where the trees are inspected for runaway branches.
     ///The border forest can be too narrow to prevent branches expanding outside VoxelSpace.
-    ///The default value for the inspection zone is 5m.
     ///\pre VoxelSpace must be initialized
     ///\param width The width of the inspection zone
     ///\sa GrowthLoop::initializeVoxelSpace
+    ///\note The default inspection zone width from the voxel space perimeter is 5 meters measured from the tree position
     ///\todo Consider command line parameter for the inspection zone width
     void initializeEscapedBuds(int width=5);
     /// \brief Read and install functions 
@@ -581,7 +581,7 @@ namespace LignumForest{
     /// \post Pine::mode=0
     void createNewSegments();
     /// \brief Allocation of net photosynthates to growth.
-    ///\
+    ///
     /// Also responsible of keeping record of tree death.
     /// Dead trees are removed from the list of trees, L-systems
     /// and from the vectors of collected data.
@@ -590,14 +590,58 @@ namespace LignumForest{
     /// expansion of existing ones. The tree structure is also updated and
     /// new buds are created.
     ///
-    /// If iterative allocation does not succeed in allocation() (probably
-    /// P - M < 0.0) the tree is considered dead and removed from the tree
-    /// list and \c no_trees is updated
-    /// \sa no_trees
-    /// \sa vtree vlsystem locations
-    /// \sa wsapwood wfoliage wroot ws_after_senescence vdatafile
-    /// \note \p Pine::mode is set to 1 to create new buds after GrowthLoop::allocation()
-    /// \post Pine::mode = 1 
+    /// If the  photosynthates allocation does not succeed in the iterative GrowthLoop::allocation()
+    /// (bracketing fails or P - M < 0.0) the tree is considered dead and removed from the data
+    /// lists
+    ///
+    /// Algorithm in detail:
+    /// + Clear the list of dead trees \c GrowthLoop::allocationAndGrowth::dead_trees
+    /// + Set Pine::mode to 1, i.e. create new segments mode
+    /// + For each tree 
+    ///   + Set sapwood demand at a branching point (LignumForest::SetSapwoodDemandAtJunction())
+    ///   + Call GrowthLoop::allocation()
+    ///   + Check if the tree is dead:
+    ///     + GrowthLoop::allocation() returns \c false or 
+    ///     + Height growth has been stagnant for 3 successive years.
+    ///     + Push the tree to \c GrowthLoop::allocationAndGrowth::dead_trees.
+    /// + For each tree
+    ///   + Calculate Lignum::LGAsf for newly created segments (depends on segment length, P. Kaitaniemi data)
+    ///   + Kill buds that could not create new segments (PineTree::KillBudsAfterAllocation())
+    ///   + Calculate diameter growth using LignumForest::PartialSapwoodAreaDown() and LignumForest::ScotsPineDiameterGrowth2()
+    ///   + Calculate root growth, proportional to new foliage mass \f$ \mathrm{LGPar} \times \mathrm{Wf_{new}}\f$
+    ///   + Update the L-string of the tree
+    ///   + Pass the foliage mass in the mother segments to the terminating buds
+    ///   + Pass the mother segment lengths to the terminating buds
+    ///   + Update the L-string of the tree
+    ///   + Check if LignumForest::is_bud_view_function is \c true (i.e. bud conical growth space check is in use):
+    ///      + Insert the tree into a temporary local Lignum::VoxelSpace
+    ///      + Estimate foliage area density in the local growth space of each bud using LignumForest::SetBudViewFunctor()
+    ///      + Use hard coded 3D cone with heigth = 0.5, cone half angle 0.7 (= 40 degrees) and check points on the cone rim = 12
+    ///   + Set LignumForest::branch_angle with ScotsPineTree::getBranchAngle() for L-system
+    ///   + Create new tree compartments with LSystem::derive()
+    ///   + Synchronise the tree with L-system
+    /// + Remove dead trees from the following lists
+    ///   + GrowthLoop::vtree  *the list of living trees*
+    ///   + GrowthLoop::vlsystem *the list of L-systems for living trees*
+    ///   + GrowthLoop::locations *the list of locations for living trees*
+    ///   + GrowthLoop::wfoliage *foliage mass in the living trees*
+    ///   + GrowthLoop::wsapwood *sapwood mass in the new growth in the living trees*
+    ///   + GrowthLoop::ws_after_senescence *sapwood mass in the living trees, after senescence*
+    ///   + GrowthLoop::wroot *the root mass in the living trees, before new growth*
+    ///   + GrowthLoop::no_h *trees that do not grow in height*
+    ///   + GrowthLoop::h_prev *tree heights from previous time step*
+    ///   + GrowthLoop::vdatafile *data files for trees (deprecated)*
+    /// \sa LignumForest::SetSapwoodDemandAtJunction()
+    /// \sa GrowthLoop::no_trees
+    /// \sa GrowthLoop::vtree GrowthLoop::vlsystem GrowthLoop::locations \c GrowthLoop::allocationAndGrowth::dead_trees
+    /// \sa GrowthLoop::wsapwood GrowthLoop::wfoliage GrowthLoop::wroot GrowthLoop::ws_after_senescence 
+    /// \pre \c GrowthLoop::allocationAndGrowth::dead_trees is empty
+    /// \pre  Pine::mode is set to 1 to create new buds with Lsystem::derie() after GrowthLoop::allocation()
+    /// \post Pine::mode == 1
+    /// \post GrowthLoop::no_trees is the number of growing trees
+    /// \todo GrowthLoop::allocationAndGrowth() encompasses many diverse growth related activities.
+    /// Consider dividing the method into functionally independent parts and implement them
+    /// in distinct methods. These methods can then be called for example in the main loop in the right order.
     void allocationAndGrowth();
     int getNumberOfTrees() {return no_trees;}
     void setYear(const int& y) {year = y;}
@@ -627,7 +671,9 @@ namespace LignumForest{
     vector<TREE*> vtree; ///< Vector of trees. \sa getTrees
     vector<LSYSTEM*> vlsystem; ///< Vector of L-systems, one for each tree
     vector<pair<double,double> > locations; ///< Positions of trees
-    vector<ofstream*> vdatafile;///< Vector of output files (as file streams) for each tree. 
+    ///Vector of output files (as file streams) for each tree.
+    ///\deprecated HDF5 files are in use
+    vector<ofstream*> vdatafile;
     VoxelSpace *vs; ///< The voxel space spanning the forest
     CreateVoxelSpaceData vsdata; ///< VoxelSpace size data
     TerminateEscapedBuds<TS,BUD> terminate_buds;///< Terminate buds grown outside VoxelSpace
