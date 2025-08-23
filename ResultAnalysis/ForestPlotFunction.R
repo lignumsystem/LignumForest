@@ -132,7 +132,7 @@ ymax = max(y, na.rm=TRUE)
 
 
 ###Height
-plot(y,stand[11,], type="l", ylim=c(0,40), lwd=2, xlab="time (y)", ylab="Tree height, nin, mean, max (m)", main=paste("Mean, min and max stand height\nIn the plots: ",mtxt,sep=""))##mean
+plot(y,stand[11,], type="l", ylim=c(0,40), lwd=2, xlab="time (y)", ylab="Tree height, nin, mean, max (m)", main=paste("Mean, min and max stand height\nIn the plots: ",mtxt,sep=""),sub=paste("File: ",infile,sep=""))##mean
 legend('topleft',inset=0.05,c("Lignum mean","Lignum (min, max)"," Vuokila/Väliaho 1980"," Varmola M 1987","Koivisto: kasvu- ja tuotostaulukot"),col=c('black','black','blue','red','darkgreen'),
        lty=c(1,2,1,1,1),lwd=2)
 
