@@ -193,16 +193,12 @@ points(100*stand[8,1:ymax],1+cumsum(Hinc)/100,type="l",lwd=2,col="blue")
 
 ###Density
 aplot1 <- aplot/1e4          #area in ha
-plot(y,stand[3,]/aplot1, type="l", ylim=c(0,1.1*stand[3,1]/aplot1),lty=1, lwd=2, xlab="time (y)", ylab="No. trees / ha", main=paste("Stand density","\n",paste("Plot area = ",aplot," m2",sep=""),sep=""))
-legend('bottomleft',inset=0.05,c("Lignum","Koivisto: kasvu- ja tuotostaulukot"),col=c('black','darkgreen'),
-       lty=1,lwd=2)
-points(ksto$year,ksto$N,type="l",lwd=3,col="darkgreen")
 
 t1 <- stand[1,]
 sdensity <- stand[3,]/aplot1
 plot(t1,sdensity,type="l",lty=1, lwd=2, xlab="Time (y)", ylab="No. trees / ha",ylim=c(0,17000),
-     main="Stand density in self-thinning",sub="Data: Ilvessalo")
-legend('bottomleft',inset=0.05,c("Lignum","MT","VT","CT"),col=c('black','darkgreen','red','brown', title="Forest type"),
+     main="Stand density",sub="Data: Ilvessalo")
+legend('bottomleft',inset=0.05,c("Lignum","MT","VT","CT","Koivisto MT"),col=c('black','darkgreen','red','brown', 'blue', title="Forest type"),
        lty=1,lwd=2)
 t2<-ftdata$Year
 mt<-ftdata$MT
@@ -211,6 +207,8 @@ ct<-ftdata$CT
 lines(t2,mt,col='darkgreen',lty=1,lwd=2)
 lines(t2,vt,col='red',lty=1,lwd=2)
 lines(t2,ct,col='brown',lty=1,lwd=2)
+points(ksto$year,ksto$N,type="l",lwd=3,col="blue")
+
 
 #self thinning plot
 aplot1 <- aplot/1e4          	#area in ha
@@ -281,6 +279,13 @@ for(i in 2:min(Ntrees/pick)) {
 	points(y,100*trees[9,mukana[pick*i],], type="l")
 }
 
+#Tree diameters at Crown Base
+plot(y,100*trees[10,mukana[1],], ylim=c(0,15), type="l",main=paste("Individual tree diameter at Crown Base\nevery ",as.character(pick),"th tree",sep=""),xlab="time (y)", ylab="Tree diameter (cm)")
+for(i in 2:min(Ntrees/pick)) {
+	points(y,100*trees[10,mukana[pick*i],], type="l")
+}
+
+
 #Crown ratio
 plot(y,1-trees[11,mukana[1],]/trees[7,mukana[1],], ylim=c(0,1), type="l", main=paste("Crown ratios and mean\nevery ",as.character(pick),"th tree",sep=""), ylab="Crown ratio",xlab="time (y)",xlim=c(0,ymax))
 legend('bottomleft',inset=0.05,c("Lignum trees","Lignum trees mean"),col=c('black','red'),lty=1,lwd=2)
@@ -288,7 +293,6 @@ for(i in 1:min(Ntrees/pick)) {
 	points(y,1-trees[11,mukana[i*pick],]/trees[7,mukana[i*pick],], type="l")
 }
 points(y,apply(1-trees[11,mukana,]/trees[7,mukana,],2,mean,na.rm=TRUE),type="l",lwd=2,col="red")
-
 
 
 
@@ -321,7 +325,7 @@ legend('topleft',inset=0.05,c("Lignum trees","Lignum trees mean","y=0.055x"),col
 for(i in 2:min(Ntrees/pick)) {
 	points(100^2*trees[10,mukana[i*pick],]^2,2*trees[23,mukana[i*pick],], type="l")
 }
-points(apply((pi/4)*100^2*trees[10,mukana,]^2,2,mean,na.rm=TRUE),apply(2*trees[23,mukana,],2,mean,na.rm=TRUE),type="l",lwd=2,col="red")
+points(apply((pi/4)*100^2*trees[10,,]^2,2,mean,na.rm=TRUE),apply(2*trees[23,,],2,mean,na.rm=TRUE),type="l",lwd=2,col="red")
 abline(0,0.055,col="blue",lwd=2)
 
 
