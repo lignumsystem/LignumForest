@@ -6,7 +6,7 @@
 #include <map>
 #include <SomeFunctors.h>
 ///\file TreeDataAfterGrowth.h
-///\brief Define data structures to be able to write HDF5 data file after simulation.
+///Names and data structures for HDF5 tables after simulation.
 
 namespace LignumForest{
   /// Group name for parameters
@@ -35,12 +35,14 @@ namespace LignumForest{
   const string VOXELSPACESIZESGROUP("/VoxelSpaceSizes/");
   /// File prefix for XML trees.
   const string TREEXML_PREFIX("TreesXML_");
+  ///---
   /// HDF5 Dataset name for command line
   const string COMMAND_LINE_DATASET_NAME("CommandLine");
   /// HDF5 Dataset name for stand level data
   const string STAND_DATA_DATASET_NAME("StandData");
   /// HDF5 dataset name for center stand level data
   const string CENTER_STAND_DATA_DATASET_NAME("CenterStandData");
+  /// HDF5 VoxelSpace dimensions dataset name
   const string VOXELSPACESIZES_DATASET_NAME("VoxelSpaceSizesData");
   /// HDF5 attribute name for stand data column names.
   const string STAND_DATA_COLUMN_ATTRIBUTE_NAME("StandDataColumnNames");
@@ -52,10 +54,12 @@ namespace LignumForest{
     "H_mean","H_min","H_max","StandBasalArea","StandBasalAreaCrownBase","StandStemVol","LAI","Stand_Wf",
     "CrownLimit_mean"
   };
+  /// Column names for stand data
   /// It should be possible to use {} initialization throughout C++
   /// Using vectors in Lignum implementation
   const vector<string> STAND_DATA_COLUMN_NAMES(sdcn.begin(),sdcn.end());
-  /// HDF5 Dataset name Tree level data
+  ///---
+  /// HDF5 Dataset name for individual tree data
   const string TREE_DATA_DATASET_NAME("ForestTreeData");
   /// HDF5 attribute name for tree level data (i.e. the dataset) column names 
   const string TREE_DATA_COLUMN_ATTRIBUTE_NAME("TreeDataColumnNames");
@@ -125,7 +129,16 @@ namespace LignumForest{
   /// \note Technically C++ standard defines vector initialization as with array.
   /// It seems not all compilers have implemented it yet. \sa tdcn.
   const vector<string> TREE_DATA_COLUMN_NAMES(tdcn.begin(),tdcn.end());
-
+  /// HDF5 dataset name for individual dead tree data. 
+  const string DEAD_TREE_DATA_DATASET_NAME="ForestDeadTreeData";
+  /// HDF5 attribute name for individual dead tree  data (i.e. the dataset) column names
+  const string DEAD_TREE_DATA_COLUMN_ATTRIBUTE_NAME("ForestDeadTreeDataColumnNames");
+  /// Column names for individual dead tree data. Expand as necessary.
+  /// Names as for TREE_DATA_COLUMN_NAMES.
+  const array<string,5> dead_tdcn={"TreeId","X","Y","Z","AxisVol"};
+  /// Column names for the HDF5 file dead tree data.
+  const vector<string> DEAD_TREE_DATA_COLUMN_NAMES(dead_tdcn.begin(),dead_tdcn.end());
+  ///---
   ///Tree parameters for the HDF5 file
   ///\sa LGMPD
   const array<string,19> tree_param_names={

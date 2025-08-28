@@ -57,6 +57,8 @@ namespace LignumForest{
     hdf5_file.createFileDataSetsFromDir("{Firmament,Firmament[0-9]}.txt",LignumForest::FIRMAMENTGROUP);
     //The initial Voxel space used
     hdf5_file.createFileDataSetsFromDir(vsfile,LignumForest::VOXELSPACEGROUP);
+    //The max segment length file
+    hdf5_file.createFileDataSetsFromDir(LignumForest::SEGMENT_LENGTH_LIMIT_FILE,LignumForest::ALLPARAMFILEGROUP);
     //Command line
     vector<string> c_vec;
     std::copy( argv, argv+argc,back_inserter(c_vec));
