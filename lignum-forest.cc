@@ -218,10 +218,12 @@ int main(int argc, char** argv)
     ///  + Calculate photosynthesis, respiration and aging of tree compartments. 
     ///  + Create new segments
     ///  + Growth allocation
-    ///  + Prune dead branches from trees
-    ///  + Set radiation use efficiency in new segments (command line argument)
+    ///  + Collect data from trees that died in the allocation step
+    ///  + Remove dead trees from simulation
+    ///  + Check and terminate buds grown outside the Lignum::VoxelSpace
+    ///  + Prune dead branches from living trees
+    ///  + Set radiation use efficiency (RUE) in new segments (command line argument)
     ///    + Use function of shadiness experienced by mother segment (command line argument)
-    ///
     /// It is assumed that parameters and functions affecting segment length and diameter
     ///can be retrieved from the new segment and the Lignum tree.
     /// \sa GrowthLoop::allocationAndGrowth()
@@ -243,6 +245,11 @@ int main(int argc, char** argv)
     //It assumed that parameters and functions affecting segment length and diameter
     ///can be retrieved from the new segment and the Lignum tree 
     gloop.allocationAndGrowth();
+    // collectDeadTreeDataAfterGrowth collects dead tree data for HDF5 file.
+    // Dead tree appears once, the year it has died and removed from simulation
+    gloop.collectDeadTreeDataAfterGrowth(year+1);
+    // Remove dead trees from simulation
+    gloop.removeDeadTreesAllOver();
     //Terminate buds grown out of VoxelSpace
     gloop.terminateEscapedBuds();
     // Prune dead parts from the trees 
@@ -255,10 +262,10 @@ int main(int argc, char** argv)
     ///
     /// \ingroup AMAIN 
     /// @{
-    /// \par Data collection steps 
+    /// \par Data collection from living trees 
     ///  + Evaluate stand metrics every year
     ///  + Collect data for each tree every year
-    ///  + Collect voxel space dimensions with write intervals
+    ///  + Collect Lignum::VoxelSpace dimensions with write intervals
     ///  + Save trees in XML format in HDF5 file with write intervals
     ///
     /// \snippet{lineno} lignum-forest.cc DataCollection
@@ -277,6 +284,16 @@ int main(int argc, char** argv)
     ///\page DATACOLLECTION 5.3 Data collection
     /// @}
     ///
+    // Hard coded harvesting scheme. Define in file or command line if needed in the future
+    // if (year ==  20){
+    //   gloop.harvestForest(50.0);
+    // }
+    // if (year == 40){
+    //   gloop.harvestForest(30.0);
+    // }
+    // if (year == 60){
+    //   gloop.harvestForest(20.0);
+    // }
   } // End of  for(year = 0; ...)
   /// \ingroup AMAIN
   /// @{
