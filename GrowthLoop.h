@@ -248,20 +248,26 @@ namespace LignumForest{
     void createTrees();
     /// \brief Resize data structures for HDF5 file.
     ///
-    ///  Resize data structures for HDF5 file to their right sizes before simulation.
-    /// -# Resize TMatrix 3D array for tree data to be collected during the simulation.
-    /// -# Resize TMatrix 2D arrays for stand and center stand data to be collected during the simulation.    
+    /// Resize data structures for HDF5 file to their right sizes before simulation.
+    /// Data is collected for each year during the simulation.
+    /// -# TMatrix 3D matrix for tree by tree data.
+    /// -# TMatrix 2D matrix for stand data
+    /// -# TMatrix 2D matrix center stand data 
+    /// -# TMatrix 3D matrix for dead trees.
+    /// -# Vector 1D for lambdas after photosynthates allocation
     ///
     /// Data will be stored in an HDF5 file after simulation.
-    /// \pre Simulation years and number of trees at the beginning as well as number of data columns are known
-    /// \post 3D array and 2D array filled with std:nan and can be used to enter tree data
-    ///\note The Year dimension size is iter+1 because collection of initial data before simulation.
-    /// For \c hdf5_tree_data the first 2D slice (year = 0) should contain the intial data for all trees.
+    /// \pre Simulation years and number of trees as well as number of data columns are known
+    /// \post 3D and 2D matrices are filled with \c std:nan and can be used to enter tree data
+    /// \note The \c year dimension size is \c iter+1 because the collection of initial data before simulation.
+    /// For \c hdf5_tree_data the first year = 0 (the first 2D slice) should contain the intial data for all trees.
     /// For \c hdf5_stand_data and \c hdf5_center_stand_data the first row (year = 0) should contain the initial stand data.
-    ///\remark Regarding initial data some columns are meaningless because no data cannot be collected before growth
-    /// \sa createTrees  parseCommandLine
-    /// \sa TREE_DATA_COLUMN_NAMES STAND_DATA_COLUMN_NAMES
-    /// \sa hdf5_tree_data hdf5_stand_data hdf5_center_stand_data
+    /// \remark Regarding initial data some columns are meaningless because no data cannot be collected before growth
+    /// \sa GrowthLoop::createTrees  GrowthLoop::parseCommandLine
+    /// \sa TREE_DATA_COLUMN_NAMES STAND_DATA_COLUMN_NAMES DEAD_TREE_DATA_COLUMN_NAMES
+    /// \sa GrowthLoop::hdf5_tree_data GrowthLoop::hdf5_dead_tree_data
+    /// \sa GrowthLoop::hdf5_stand_data GrowthLoop::hdf5_center_stand_data
+    /// \sa GrowthLoop::lambdav 
     void resizeTreeDataMatrix();
     /// \brief Initialize trees
     ///
@@ -373,24 +379,50 @@ namespace LignumForest{
     /// \sa wsapwood wfoliage and wroot vectors
     /// \sa vtree Tree vector
     void collectDataBeforeGrowth(TREE& t,unsigned int i);
-    /// \brief Collect tree data after growth and update data for HDF5 file.
+    /// \brief Collect tree and stand data 
     ///
-    /// Initial data is collected before growth loop filling the first (0th) year.
-    /// In this case the method should be called parameter \p year = iter+1.<br>
+    /// Collect tree and stand data for HDF5 files.
+    /// Data for the intial state of the forest stand is collected before growth loop filling the first (0th) year.
+    /// Thus the  method should be called parameter \p year = iter+1.<br>
     /// Collect data for each tree for a single year to `tdafter` dictionary (STL data type *map*).
     /// Add a row for each tree in 3D matrix `hdf5_tree_data`.  
     /// Collect forest stand and center stand level aggregate data into 2D arrays `sdafter` and `csdafter` respectively from the forest stand.  
     /// \pre The \p year must denote the end of growth, i.e. the beginning of the next year.
     /// \param year Simulation year (i.e. iteration)
-    /// \param collect_stand If *true* collect forest stand and center stand level aggregate data
+    /// \param collect_stand If \c true collect forest stand and center stand level aggregate data
     /// \post Each tree maintains its position (row) in 3D hdf5_tree_data denoted by TreeId number.
     /// \attention Global variables Pine::L_H (tree height) and LignumForest::global_hcb (height of crown base) are set for the next iteration.
     /// \sa Pine::L_H LignumForest::global_hcb
-    /// \sa GrowthLoop::collectDataBeforeGrowth StandDescriptor::evaluateStandVariables GrowthLoop::resizeTreeDataMatrix
-    /// \sa hdf5_tree_data  hdf5_stand_data hdf5_center_stand_data Data for HDF5 file
-    /// \sa wsapwood wfoliage wroot ws_after_senescence Collect biomasses  
+    /// \sa GrowthLoop::collectDataBeforeGrowth GrowthLoop::resizeTreeDataMatrix StandDescriptor::evaluateStandVariables 
+    /// \sa HDF5 file data: hdf5_tree_data  hdf5_stand_data hdf5_center_stand_data
+    /// \sa Collected biomasses: wsapwood wfoliage wroot ws_after_senescence 
     /// \sa vtree Tree vector 
     void collectDataAfterGrowth(const int year, bool collect_stand=true);
+    /// \brief Collect dead tree data
+    ///
+    /// Collect dead tree data for HDf5 file after growth to get full picture of the total yield.
+    /// \param year Simulation year (i.e. iteration)
+    /// \sa  hdf5_dead_tree_data LignumForest::DEAD_TREE_DATA_COLUMN_NAMES
+    /// \sa GrowthLoop::collectDataAfterGrowth
+    /// \remark Currently stem volume (main axis) collected. Add more data when needed
+    /// and edit LignumForest::DEAD_TREE_DATA_COLUMN_NAMES accordingly.
+    void collectDeadTreeDataAfterGrowth(const int year);
+    /// \brief Remove dead trees from simulation
+    ///
+    /// Remove dead trees from the following lists
+    ///   + GrowthLoop::vtree  *the list of living trees*
+    ///   + GrowthLoop::vlsystem *the list of L-systems for living trees*
+    ///   + GrowthLoop::locations *the list of locations for living trees*
+    ///   + GrowthLoop::wfoliage *foliage mass in the living trees*
+    ///   + GrowthLoop::wsapwood *sapwood mass in the new growth in the living trees*
+    ///   + GrowthLoop::ws_after_senescence *sapwood mass in the living trees, after senescence*
+    ///   + GrowthLoop::wroot *the root mass in the living trees, before new growth*
+    ///   + GrowthLoop::no_h *trees that do not grow in height*
+    ///   + GrowthLoop::h_prev *tree heights from previous time step*
+    ///   + GrowthLoop::vdatafile *data files for trees (deprecated)*
+    ///
+    /// \post GrowthLoop::no_trees is the number of living trees in the simulation
+    void removeDeadTreesAllOver();
     /// \brief Collect VoxelSpace dimensions with regular intervals
     /// \param year Forest age
     /// \param interval Interval year
@@ -517,11 +549,13 @@ namespace LignumForest{
     int getIterations() {return iterations;}
     int getWriteInterval()const{return interval;}
     ///\brief 3D Data array[year][tree][data_cols] for each year for each tree 
-    TMatrix3D<double>& getHDF5TreeData(){return hdf5_tree_data;}
+    const TMatrix3D<double>& getHDF5TreeData()const{return hdf5_tree_data;}
+     ///\brief 3D Data array[year][tree][data_cols] for dead trees 
+    const TMatrix3D<double>& getHDF5DeadTreeData()const {return hdf5_dead_tree_data;}
     ///\brief 2D data array[year][data_cols] for stand level aggregate data
-    TMatrix2D<double>& getHDF5StandData(){return hdf5_stand_data;}
+    const TMatrix2D<double>& getHDF5StandData()const{return hdf5_stand_data;}
     ///\brief 2D data array[year][data_cols] aggregate data for the center part of the stand
-    TMatrix2D<double>& getHDF5CenterStandData(){return hdf5_center_stand_data;}
+    const TMatrix2D<double>& getHDF5CenterStandData()const{return hdf5_center_stand_data;}
     ///\brief Tree parameter values used in simulation.
     ///
     ///Use the first tree to collect the parameters
@@ -595,53 +629,45 @@ namespace LignumForest{
     /// lists
     ///
     /// Algorithm in detail:
-    /// + Clear the list of dead trees \c GrowthLoop::allocationAndGrowth::dead_trees
-    /// + Set Pine::mode to 1, i.e. create new segments mode
+    /// + Clear the list \c GrowthLoop::dead_trees
+    /// + Set Pine::mode to 1, i.e. create new segments mode in the L-system
     /// + For each tree 
     ///   + Set sapwood demand at a branching point (LignumForest::SetSapwoodDemandAtJunction())
     ///   + Call GrowthLoop::allocation()
     ///   + Check if the tree is dead:
     ///     + GrowthLoop::allocation() returns \c false or 
     ///     + Height growth has been stagnant for 3 successive years.
-    ///     + Push the tree to \c GrowthLoop::allocationAndGrowth::dead_trees.
-    /// + For each tree
-    ///   + Calculate Lignum::LGAsf for newly created segments (depends on segment length, P. Kaitaniemi data)
+    ///     + Push the dead tree to \c GrowthLoop::allocationAndGrowth::dead_trees.
+    ///   + Calculate Lignum::LGAsf for newly created segments (depends on segment length as in P. Kaitaniemi data)
     ///   + Kill buds that could not create new segments (PineTree::KillBudsAfterAllocation())
     ///   + Calculate diameter growth using LignumForest::PartialSapwoodAreaDown() and LignumForest::ScotsPineDiameterGrowth2()
-    ///   + Calculate root growth, proportional to new foliage mass \f$ \mathrm{LGPar} \times \mathrm{Wf_{new}}\f$
-    ///   + Update the L-string of the tree
+    ///   + Calculate root growth
+    ///      + Proportional to new foliage mass \f$ \mathrm{LGPar} \times \mathrm{Wf_{new}}\f$
+    ///   + Synchronize the L-string and the tree
     ///   + Pass the foliage mass in the mother segments to the terminating buds
     ///   + Pass the mother segment lengths to the terminating buds
-    ///   + Update the L-string of the tree
-    ///   + Check if LignumForest::is_bud_view_function is \c true (i.e. bud conical growth space check is in use):
+    ///   + Synchronize the L-string and the tree
+    ///   + Check if LignumForest::is_bud_view_function is \c true (i.e. buds' conical growth space check is in use):
     ///      + Insert the tree into a temporary local Lignum::VoxelSpace
     ///      + Estimate foliage area density in the local growth space of each bud using LignumForest::SetBudViewFunctor()
     ///      + Use hard coded 3D cone with heigth = 0.5, cone half angle 0.7 (= 40 degrees) and check points on the cone rim = 12
     ///   + Set LignumForest::branch_angle with ScotsPineTree::getBranchAngle() for L-system
     ///   + Create new tree compartments with LSystem::derive()
     ///   + Synchronise the tree with L-system
-    /// + Remove dead trees from the following lists
-    ///   + GrowthLoop::vtree  *the list of living trees*
-    ///   + GrowthLoop::vlsystem *the list of L-systems for living trees*
-    ///   + GrowthLoop::locations *the list of locations for living trees*
-    ///   + GrowthLoop::wfoliage *foliage mass in the living trees*
-    ///   + GrowthLoop::wsapwood *sapwood mass in the new growth in the living trees*
-    ///   + GrowthLoop::ws_after_senescence *sapwood mass in the living trees, after senescence*
-    ///   + GrowthLoop::wroot *the root mass in the living trees, before new growth*
-    ///   + GrowthLoop::no_h *trees that do not grow in height*
-    ///   + GrowthLoop::h_prev *tree heights from previous time step*
-    ///   + GrowthLoop::vdatafile *data files for trees (deprecated)*
-    /// \sa LignumForest::SetSapwoodDemandAtJunction()
-    /// \sa GrowthLoop::no_trees
-    /// \sa GrowthLoop::vtree GrowthLoop::vlsystem GrowthLoop::locations \c GrowthLoop::allocationAndGrowth::dead_trees
-    /// \sa GrowthLoop::wsapwood GrowthLoop::wfoliage GrowthLoop::wroot GrowthLoop::ws_after_senescence 
+    ///
     /// \pre \c GrowthLoop::allocationAndGrowth::dead_trees is empty
     /// \pre  Pine::mode is set to 1 to create new buds with Lsystem::derie() after GrowthLoop::allocation()
     /// \post Pine::mode == 1
     /// \post GrowthLoop::no_trees is the number of growing trees
-    /// \todo GrowthLoop::allocationAndGrowth() encompasses many diverse growth related activities.
-    /// Consider dividing the method into functionally independent parts and implement them
+    /// \post GrowthLoop::dead_trees contain dead trees
+    /// \todo GrowthLoop::allocationAndGrowth() encompasses diverse growth related activities.
+    /// Consider dividing the method into functionally coherent, independent parts and implement them
     /// in distinct methods. These methods can then be called for example in the main loop in the right order.
+    /// \sa LignumForest::SetSapwoodDemandAtJunction()
+    /// \sa GrowthLoop::collectDeadTreeDataAfterGrowth()
+    /// \sa GrowthLoop::no_trees
+    /// \sa GrowthLoop::vtree GrowthLoop::vlsystem GrowthLoop::locations \c GrowthLoop::allocationAndGrowth::dead_trees
+    /// \sa GrowthLoop::wsapwood GrowthLoop::wfoliage GrowthLoop::wroot GrowthLoop::ws_after_senescence 
     void allocationAndGrowth();
     int getNumberOfTrees() {return no_trees;}
     void setYear(const int& y) {year = y;}
@@ -654,23 +680,26 @@ namespace LignumForest{
     /// \param percentage Percentage of shortest trees to be removed, i.e. harvesting from below.
     /// \post The tree vector `vtree` and associated data vectors updated
     /// \note Other criteria like several harvest times and harvesting based on basal area may follow
-    /// \sa removeTreesAllOver
+    /// \sa GrowthLoop::removeTreesAllOver
     void harvestForest(double percentage);
-    /// \brief Remove trees from the forest stand.
-    /// \param vremove Positions of trees in `vtree` to be removed.
-    /// \pre Tree positions in `vremove` must be in ascending order
-    /// \post The tree vector `vtree` and associated data vectors updated
-    /// \sa harvestForest
-    /// \sa vtree vlsystem locations
-    /// \sa wsapwood wfoliage wroot ws_after_senescence vdatafile
-    void removeTreesAllOver(const vector<unsigned int>& vremove);
     const vector<TREE*>& getTreeVector()const{return vtree;}
     const VoxelSpace* getVoxelSpace()const{return vs;}
     const CreateVoxelSpaceData& getVoxelSpaceData()const{return vsdata;}
+  protected:
+    /// \brief Remove harvested trees from the forest stand.
+    /// \param vremove Positions of trees in `vtree` to be removed.
+    /// \pre Tree *positions*, position  numbers, in `vremove` must be in ascending order
+    /// \post The tree vector `vtree` and associated data vectors updated
+    /// \sa GrowthLoop::harvestForest()
+    /// \sa vtree vlsystem locations
+    /// \sa wsapwood wfoliage wroot ws_after_senescence vdatafile
+    /// \remark Called by GrowthLoop::harvestForest(), not in a public interface
+    void removeHarvestedTreesAllOver(const vector<unsigned int>& vremove);
   private:
     vector<TREE*> vtree; ///< Vector of trees. \sa getTrees
     vector<LSYSTEM*> vlsystem; ///< Vector of L-systems, one for each tree
     vector<pair<double,double> > locations; ///< Positions of trees
+    list<unsigned int> dead_trees;///< Dead tree positions
     ///Vector of output files (as file streams) for each tree.
     ///\deprecated HDF5 files are in use
     vector<ofstream*> vdatafile;
@@ -679,10 +708,14 @@ namespace LignumForest{
     TerminateEscapedBuds<TS,BUD> terminate_buds;///< Terminate buds grown outside VoxelSpace
     StandDescriptor<TREE> stand; ///< Class to handle and print stand level quantities
     BorderForest border_forest;  ///< Homogeneous forest surrounding forest of individual trees.
-    /// 3D array[years][ntrees][ndata_cols] for trees in the stand,
-    /// dimensions will be known after trees are generated.
-    /// \sa resizeTreeDataMatrix()
-    TMatrix3D<double> hdf5_tree_data; 
+    /// 3D array[years][ntrees][ndata_cols] for trees in the stand.
+    /// Matrix dimensions will be known after trees are generated.
+    /// \sa GrowthLoop::resizeTreeDataMatrix()
+    TMatrix3D<double> hdf5_tree_data;
+    /// 3D array[years][ntrees][ndata_cols] for dead trees in the stand.
+    /// Data of a dead tree appears once only, the year it is dead and removed from the stand.
+    /// \sa GrowthLoop::resizeTreeDataMatrix()
+    TMatrix3D<double> hdf5_dead_tree_data;
     TMatrix2D<double> hdf5_stand_data; ///< 2D array[years][ndata_cols] for stand level data \sa stand
     TMatrix2D<double> hdf5_center_stand_data; ///< 2D array[years][ndata_cols] for center stand level data \sa center_stand
     StandDescriptor<TREE> center_stand; ///< To deal with center part of stand \sa setTreeLocations
@@ -738,14 +771,16 @@ namespace LignumForest{
     double treeM; ///< Respiration of tree. \warning The same warning as for treeP \sa TreeP
     summing bs;///< Mean branch length
     DCLData dcl;///< Diameter and heigth at the crown base.
-    /// \brief This functor class returns crown volume of a tree
+    /// \brief Returns crown volume of a tree
     ///
     /// Class CrownVolume declared and defined in stl-lignum/TreeFunctor.h
     /// and stl-lignum/TreeFunctorI.h.
+    /// \sa Lignum::CrownVolume
     CrownVolume<TS,BUD> cv;
-    /// \brief This functor class returns stem volume of a tree
+    /// \brief Returns stem volume of a tree (main axis)
     ///
-    /// Class MainAxisVolume Defined in stl-lignum/TreeFunctor.h
+    /// Class MainAxisVolume defined in stl-lignum/TreeFunctor.h
+    /// \sa Lignum::MainAxisVolume
     MainAxisVolume<TS,BUD> mav;
     string metafile; ///< Regular expression for MetaFiles \sa metafile_q
     deque<string> metafile_q; ///<Metafiles possibly many in use in sorted order.

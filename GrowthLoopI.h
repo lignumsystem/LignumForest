@@ -725,11 +725,11 @@ namespace LignumForest{
     }
 
     ///---
-    ///\par   ///Limiting length of new shoots
+    ///\par Limiting length of new shoots
     string iline;
-    ifstream input_file("dhlimit.txt");
+    ifstream input_file(LignumForest::SEGMENT_LENGTH_LIMIT_FILE);
     if (!input_file.is_open()) {
-      cout << "Something wrong with file dhlimit.txt!" << endl;
+      cout << "Could not open: " <<  LignumForest::SEGMENT_LENGTH_LIMIT_FILE << endl;
       exit(-1);
     }
     getline(input_file,iline);
@@ -861,6 +861,8 @@ namespace LignumForest{
     hdf5_stand_data.init(std::nan(""));
     hdf5_center_stand_data.resize(iter+1,STAND_DATA_COLUMN_NAMES.size());
     hdf5_center_stand_data.init(std::nan(""));
+    hdf5_dead_tree_data.resize(iter+1,ntrees,DEAD_TREE_DATA_COLUMN_NAMES.size());
+    hdf5_dead_tree_data.init(std::nan(""));
     lambdav.resize(static_cast<unsigned int>(ntrees),std::nan(""));
   }
 
@@ -1620,7 +1622,97 @@ namespace LignumForest{
     unsigned int size = lambdav.size();
     lambdav.resize(size,std::nan(""));
   }
+  
+  template<class TREE, class TS, class BUD, class LSYSTEM>
+  void GrowthLoop<TREE,TS,BUD,LSYSTEM>::collectDeadTreeDataAfterGrowth(const int year)
+  {
+    for (auto it=dead_trees.begin(); it != dead_trees.end(); advance(it,1)){
+      //Map data name to its value
+      map<string,double> dead_tree_data;
+      TREE* t = vtree[*it];
+      double tree_id =  GetValue(*t,TreeId);
+      Point p = GetPoint(*t);
+      double axis_vol = mav(*t);
+      dead_tree_data["TreeId"]=tree_id;
+      dead_tree_data["X"] = p.getX();
+      dead_tree_data["Y"] = p.getY();
+      dead_tree_data["Z"] = p.getZ();
+      dead_tree_data["AxisVol"]=axis_vol;
+      //Retrieve data and insert to 3d data table 
+      for (unsigned int i=0; i < DEAD_TREE_DATA_COLUMN_NAMES.size(); i++){
+	hdf5_dead_tree_data[year][tree_id][i]=dead_tree_data[DEAD_TREE_DATA_COLUMN_NAMES[i]];
+      }
+    }
+  }
 
+  template<class TREE, class TS, class BUD, class LSYSTEM>
+  void GrowthLoop<TREE,TS,BUD,LSYSTEM>::removeDeadTreesAllOver()
+  {
+    //Now, dead trees are removed from everywhere
+    auto It = vtree.begin();
+    auto Is = vlsystem.begin();
+    auto Il = locations.begin();
+    //Vectors for data collected before new growth must be updated 
+    auto Iws = wsapwood.begin();
+    auto Iwf = wfoliage.begin();
+    auto Iwr = wroot.begin();
+    auto Iws_after = ws_after_senescence.begin();
+    auto If =  vdatafile.begin();
+    bool also_vdatafile = false;          //vdatafile vector may be empty
+    if(vdatafile.size() > 0)
+      also_vdatafile = true;
+    auto In = no_h.begin();
+    auto Ih = h_prev.begin();
+
+    auto I = dead_trees.begin();
+    unsigned int previous = 0;
+    while(I != dead_trees.end())
+      {
+	unsigned int this_advance = *I - previous;
+	advance(It, this_advance);
+	advance(Is, this_advance);
+	advance(Il, this_advance);
+	if(also_vdatafile)
+	  advance(If, this_advance);
+	advance(In, this_advance);
+	advance(Ih, this_advance);
+	//Vectors for data before new growth
+	advance(Iws,this_advance);
+	advance(Iwf,this_advance);
+	advance(Iwr,this_advance);
+	advance(Iws_after,this_advance);
+	
+	delete *It;   //locations were not created by new
+	delete *Is;
+	if(also_vdatafile)
+	  delete *If;
+
+
+	cout << "Dead tree " << GetValue(**It,TreeId) << " at location " << Il->first << " " << Il->second << " was deleted in year "
+	     << year << endl;
+
+	vtree.erase(It);
+	vlsystem.erase(Is);
+	locations.erase(Il);
+	//Vectors  for data  before new  growth must  also be  udated to
+	//maintain the integrity of  the positions (indices) of trees to
+	//these vectors
+	wsapwood.erase(Iws);
+	wfoliage.erase(Iwf);
+	wroot.erase(Iwr);
+	ws_after_senescence.erase(Iws_after);
+	if(also_vdatafile)
+	  vdatafile.erase(If);
+	no_h.erase(In);
+	h_prev.erase(Ih);
+
+	previous = *I + 1;
+
+	I++;
+	no_trees--;
+      }
+  }
+  
   template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::collectVoxelSpaceData(const int year, const int interval)
   {
@@ -1710,13 +1802,12 @@ namespace LignumForest{
   template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::allocationAndGrowth()
   {
-    list<unsigned int> dead_trees;
     dead_trees.clear();
     //Create new buds by making derive with mode == 1 (global variable in L system)
     Pine::mode = 1;
     
     for (unsigned int k = 0; k < (unsigned int)no_trees; k++){
-      cout << "Allocation loop with k: " << k << " No trees " << no_trees <<endl; 
+      cout << "Allocation loop with tree: " << k << " Number of trees " << no_trees <<endl; 
       TREE* t = vtree[k];
       LSYSTEM* l = vlsystem[k];
 
@@ -1731,9 +1822,11 @@ namespace LignumForest{
       /// \remark This is for Pipe model calculations:
       /// \endinternal
       if(!allocation(*t,bracket_verbose)){
+	//Iteration failed
+	//Save position for deletion from lists for growing trees
+	dead_trees.push_back(k);       //iteration failed, this tree is dead
 	cout << "In GrowthLoop<TREE, TS,BUD,LSYSTEM>::allocationAndGrowth():" <<endl;
 	cout << "   GrowthLoop<TREE, TS,BUD,LSYSTEM>:allocation failed()" <<endl;
-	dead_trees.push_back(k);       //iteration failed, this tree is dead
 	cout << "Pushed " << k << " to dead trees" <<endl;
 	continue;
       }
@@ -1741,8 +1834,11 @@ namespace LignumForest{
 	cout << L_age << " " << k << " " << no_h[(int)k] << endl;
 	no_h[(int)k] += 1;
 	if(no_h[(int)k] >= 3){
+	  //Iteration failed
+	  //Save position for deletion from lists for growing trees
 	  dead_trees.push_back(k);
-	  cout << "Pushed " << k << " to dead trees, the tree height growth was practically stagnant 3 successive years" <<endl;
+	  cout << "Tree height growth stagnant 3 successive years" <<endl;
+	  cout << "Pushed " << k << " to dead trees" << endl;
 	}
 	continue;
       }
@@ -1808,72 +1904,7 @@ namespace LignumForest{
       LignumForest::branch_angle = t->getBranchAngle();        //this global variable goes to pine-em98.L
       l->derive();
       l->lstringToLignum(*t,1,PBDATA);
-    }  //for (unsigned int k = 0; k < ...
-
-    //Now, dead trees are removed from everywhere
-    typename vector<TREE*>::iterator It = vtree.begin();
-    typename vector<LSYSTEM*>::iterator Is = vlsystem.begin();
-    vector<pair<double,double> >::iterator Il = locations.begin();
-    //Vectors for data collected before new growth must be updated 
-    vector<double>::iterator Iws = wsapwood.begin();
-    vector<double>::iterator Iwf = wfoliage.begin();
-    vector<double>::iterator Iwr = wroot.begin();
-    vector<double>::iterator Iws_after = ws_after_senescence.begin();
-    vector<ofstream*>::iterator If =  vdatafile.begin();
-    bool also_vdatafile = false;          //vdatafile vector may be empty
-    if(vdatafile.size() > 0)
-      also_vdatafile = true;
-    typename vector<int>::iterator In = no_h.begin();
-    typename vector<double>::iterator Ih = h_prev.begin();
-
-    list<unsigned int>::iterator I = dead_trees.begin();
-    unsigned int previous = 0;
-    while(I != dead_trees.end())
-      {
-	unsigned int this_advance = *I - previous;
-	advance(It, this_advance);
-	advance(Is, this_advance);
-	advance(Il, this_advance);
-	if(also_vdatafile)
-	  advance(If, this_advance);
-	advance(In, this_advance);
-	advance(Ih, this_advance);
-	//Vectors for data before new growth
-	advance(Iws,this_advance);
-	advance(Iwf,this_advance);
-	advance(Iwr,this_advance);
-	advance(Iws_after,this_advance);
-	
-	delete *It;   //locations were not created by new
-	delete *Is;
-	if(also_vdatafile)
-	  delete *If;
-
-
-	cout << "Dead tree at location " << Il->first << " " << Il->second << " was deleted in year "
-	     << year << endl;
-
-	vtree.erase(It);
-	vlsystem.erase(Is);
-	locations.erase(Il);
-	//Vectors  for data  before new  growth must  also be  udated to
-	//maintain the integrity of  the positions (indices) of trees to
-	//these vectors
-	wsapwood.erase(Iws);
-	wfoliage.erase(Iwf);
-	wroot.erase(Iwr);
-	ws_after_senescence.erase(Iws_after);
-	if(also_vdatafile)
-	  vdatafile.erase(If);
-	no_h.erase(In);
-	h_prev.erase(Ih);
-
-	previous = *I + 1;
-
-	I++;
-	no_trees--;
-      }
-	  
+    }  //for (unsigned int k = 0; k < ...	  
   }
 
   template<class TREE, class TS,class BUD, class LSYSTEM>
@@ -2610,11 +2641,11 @@ namespace LignumForest{
     //Sort the positions in ascending order (default operator <)
     std::sort(vremove.begin(),vremove.end());
     //Remove trees and update data vectors
-    removeTreesAllOver(vremove);
+    removeHarvestedTreesAllOver(vremove);
   }
 
   template<class TREE, class TS,class BUD, class LSYSTEM>
-  void GrowthLoop<TREE, TS,BUD,LSYSTEM>::removeTreesAllOver(const vector<unsigned int>& vremove)
+  void GrowthLoop<TREE, TS,BUD,LSYSTEM>::removeHarvestedTreesAllOver(const vector<unsigned int>& vremove)
   {
     cout << "Trees to be removed" << endl;
     std::copy(vremove.begin(),vremove.end(),ostream_iterator<int>(cout, " "));
