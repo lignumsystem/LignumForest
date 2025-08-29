@@ -1681,16 +1681,12 @@ namespace LignumForest{
 	advance(Iwf,this_advance);
 	advance(Iwr,this_advance);
 	advance(Iws_after,this_advance);
-	
+	cout << "Dead tree " << GetValue(**It,TreeId) << " at location " << Il->first << " " << Il->second << " was deleted in year "
+	     << year << endl;
 	delete *It;   //locations were not created by new
 	delete *Is;
 	if(also_vdatafile)
 	  delete *If;
-
-
-	cout << "Dead tree " << GetValue(**It,TreeId) << " at location " << Il->first << " " << Il->second << " was deleted in year "
-	     << year << endl;
-
 	vtree.erase(It);
 	vlsystem.erase(Is);
 	locations.erase(Il);
