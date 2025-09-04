@@ -30,7 +30,8 @@ source("ExtractSimulationConfig.R")
 ###infile: HDF5 file with simulation results and configuration
 ###pick: select every n:th tree for the result plots
 ###GYdata: "ResultAnalysis/" (default), Growth and Yield data files directory
-###outdir: FALSE (default) or directory name. Move pdf result files and HDF5 filrs to  outdir directory
+###outdir: FALSE (default) or directory name. If directory name move pdf result files
+###        and HDF5 files to  outdir directory
 ForestPlotAndConfig<-function(infile,pick=1, GYdata = "ResultAnalysis/",outdir=FALSE){
     ForestPlot(infile,pick,GYdata,center="a")
     ForestPlot(infile,pick,GYdata,center="c")
