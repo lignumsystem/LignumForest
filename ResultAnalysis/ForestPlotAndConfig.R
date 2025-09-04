@@ -23,19 +23,19 @@ source("ExtractSimulationConfig.R")
 
 ###ForestPlot results for both the forest plot ("a") and its center area ("c").
 ###Optionally:
-###1) Move the two files to the outdir. Assume file suffixes used in ForestPlot.
+###1) Move the two ForestPlot result files to the outdir. Assume file suffixes used in ForestPlot.
 ###2) Extract simulation configuration files to Config subdirectory in the outdir.
 ###3) Move simulation HDF5 files to outdir
 ###Parameters:
 ###infile: HDF5 file with simulation results and configuration
 ###pick: select every n:th tree for the result plots
 ###GYdata: "ResultAnalysis/" (default), Growth and Yield data files directory
-###outdir: FALSE (default) or directory name. If directory name move pdf result files
-###        and HDF5 files to  outdir directory
+###outdir: FALSE (default) or directory name. If directory name string move the pdf result files,
+###        extract and move simulation configuration files and move HDF5 files to  outdir directory
 ForestPlotAndConfig<-function(infile,pick=1, GYdata = "ResultAnalysis/",outdir=FALSE){
     ForestPlot(infile,pick,GYdata,center="a")
     ForestPlot(infile,pick,GYdata,center="c")
-    if (!outdir==FALSE){
+    if (is.character(outdir)){
         print("Move PDF files")
         ###ForestPlot file suffixes
         cat(paste(infile,'.pdf',sep=''),'->',paste(outdir,'/',infile,'.pdf'),"\n")

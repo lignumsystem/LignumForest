@@ -140,8 +140,9 @@ external binaries and required link libraries. The option `-T` understands many 
 
 ### Documentation
 
-The introductionary presentation is in [GENERAL_DESCRIPTION.md](GENERAL_DESCRIPTION.md).
+The introductionary presentation will appear in [GENERAL_DESCRIPTION](GENERAL_DESCRIPTION.md).
 
+Simulation results are saved in [HDF5 files](HDF5FILES.md).
 
 The Reference Guide for the LignumForest will be based on comments and other information
 available in the software. Extraction of the comments, rendition of the software content and 
@@ -166,6 +167,6 @@ To use Doxyfile the following three programs are needed:
 
   + doxygen: generate the document 
   + dot: used by `doxygen` to generate graphs for class hierarchies and function calls.
-  + doxywizard: GUI to browse, edit and optionally run Doxyfile. 
+  + doxywizard: GUI to browse, to edit and optionally to run Doxyfile. 
     
-On macOS these are easiest to install with MacPorts (or some other software package system). 
+On macOS these are easiest to install with MacPorts.

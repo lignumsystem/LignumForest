@@ -55,7 +55,7 @@ use `ResultAnalysis/ForestPlotAndConfig.R`, for example:
 	>
 	
 The example creates data files in *ResultsDir* (*outdir=ResultsDir*) using every 5th tree (*pick*=5). 
-See the file `ForestPlotAndConfig.R` how it collects and use several other result analysis files 
+See the file `ForestPlotAndConfig.R` how it collects and uses several other result analysis files 
 as a single batch.
 
 ### Trees
