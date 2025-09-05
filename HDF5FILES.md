@@ -44,14 +44,15 @@ R and Python have packages (*rhdf5* and *h5py* respectively) implementing HDF5 A
 HDF5 files and file contents.
 
 ## Extract data from HDF5 files
+The examples assume simulations are done in the *LignumForest* working directory.
 
 ### Simulation results 
 To extract simulation configuration data and create the pdf result files
 use `ResultAnalysis/ForestPlotAndConfig.R`, for example:
 	
 	R
-	>source('path/to/ResultAnalysis/ForestPlotAndConfig.R',chdir=TRUE')
-	>ForestPlotAndConfig('path/to/SimulationResults.h5,pick=5,GYdata='path/to/ResultAnalysis',outdir='ResultsDir')
+	>source('ResultAnalysis/ForestPlotAndConfig.R',chdir=TRUE)
+	>ForestPlotAndConfig('SimulationResults.h5,pick=5,GYdata='ResultAnalysis',outdir='ResultsDir')
 	>
 	
 The example creates data files in *ResultsDir* (*outdir=ResultsDir*) using every 5th tree (*pick*=5). 
@@ -64,10 +65,11 @@ Trees are saved as XML strings in user defined intervals. To extract trees use
 
 	R
 	>source('ResultAnalysis/ExtractXML.R')
+	>setwd('ResultsDir')
 	>ExtractXML('SimulationResults.h5','TreesXML_SimulationResults.h5',c(20,40,60))
 	>
 
-The example extracts and creates XML tree files for the years 20,40 and 60. 
-See `ExtractXML.R` for details.
+The example extracts and creates XML tree files for the shortest, median and the longest trees
+for the years 20,40 and 60. See `ExtractXML.R` for details.
 
 
