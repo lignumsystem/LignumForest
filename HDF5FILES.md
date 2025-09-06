@@ -1,43 +1,59 @@
 # HDF5 files
-## HDF5 files for simulation results.
 
 After simulation one HDF5 file is created for simulation results
-and one HDF5 file for the all trees as XML strings.  An HDF5 file
-is self-documenting and the groups and datasets can be retrieved
-following the hierarchical tree-like structure of group and dataset names. 
+and one HDF5 file for trees as XML strings.  An HDF5 file
+is a self-documenting tree-like collection of groups and datasets.
 
-HDF5 groups and datasets for simulation results contain the simulation configuration
+### Simulation results
+HDF5 file for simulation results contains the simulation configuration
 including the program command line, data collected from individual trees each simulation year
-as well as aggregate stand level data.The 2D and 3D datasets have also attribute
-names for data columns.
+as well as aggregate stand level data. In short, all data needed to repeat
+the simulation is compiled. The 2D and 3D datasets have also attribute names for data columns 
+and are essential for the self-documentation. 
 
-- /AllFunctionFiles: *Group for function files*. Function files are saved as strings.
-   Function files under AllFunctions have suffix *.fun*.
-- /AllFunctions: *Group for functions*. Functions are saved as HDF5 2D tables.
-- /AllMetaFiles: *Group for Lignum MetaFiles*. MetaFiles are saved as strings, traditionally *MetaFile* prefix.
-- /AllParameterFiles *Group for parameter files*. Parameter files are saved *as is* strings.
-  - /AllParameterFiles/Tree\*.txt Tree parameter file(s) with traditional *Tree* prefix .
-  - /AllParameterFiles/dhlimit.txt Define growth limit for first and second order branches.
-- /AllParameters: *Group for parameters*. Parameter files are saved as HDF5 2D tables.
-- /CenterStandData: *HDF5 2D table* for aggregate center stand data
-- /CommandLine: *Command line* used saved as a string
-- /Firmament/Firmament\*.txt: *Firmament configuration* saved as a string. Traditional file prefix *Firmament*. 
-- /ForestDeadTreeData: *HDF5 3D table* for data from dead trees.
-- /ForestTreeData: *HDF5 3D table* for data from growing trees
-- /Parameters/TreeParameters: *Tree parameters* (denoted by relevant Lignum::LGMPD names) as HDF5 1D array
-- /StandData: *HDF5 2D array* for aggregate stand data
-- /TreeFunctions: *Group for functions* in a tree. Function files are save as HDF5 2D tables
-- /VoxelSpace/VoxelSpace\*.txt: *The initial voxel space file*. Traditional file prefix *VoxelSpace*.
-- /VoxelSpaceSizes/VoxelSpaceSizesData: *HDF5 2D data for voxel space expansion* during simulation years.
+#### Command line
+- <I> /CommandLine</I>: Command line string used.
 
-Trees are saved in a different HDF5 file as XML strings and grouped by simulation years. The file
-name has the prefix *TreesXML_* appended with the file name for the simulation results. See `lignum-forest `
-command line for details. Dataset names are based on unique tree identification tags. 
-Trees are collected by user defined intervals in years. For example:
+#### Stand data
+- <I>/ForestTreeData</I>: HDF5 3D table for data from growing trees
+- <I>/ForestDeadTreeData</I>: HDF5 3D table for data from dead trees.
+- <I>/StandData</I>: HDF5 2D table for aggregate stand data
+- <I>/CenterStandData</I>: HDF5 2D table for center stand data.
 
-- /TreeXML: Root group for XML trees
-- /TreeXML/10: Group for trees collected simulation year 10
-- /TreeXML/20/Tree_967: XML string for tree simulation year 20 with tree identification tag 967
+#### Functions and parameters
+- <I>/AllFunctionFiles</I>: Group for function files with the traditional file suffix <I>.fun</I>. Function files are saved as strings.
+- <I>/AllMetaFiles</I>: Group for Lignum MetaFiles. MetaFiles are saved as strings, assuming traditional *MetaFile* file prefix.
+- <I>/AllParameterFiles</I>: Group for parameter files. Parameter files are saved as strings.
+  - <I>/AllParameterFiles/Tree\*.txt</I>: Tree parameter file(s) assuming the traditional *Tree* file prefix .
+  - <I>/AllParameterFiles/dhlimit.txt</I>: The file to define growth limit for the first and second order branches.
+
+#### Firmament
+- <I>/Firmament/Firmament\*.txt</I>: Firmament configuration saved as a string assuming the traditional *Firmament* file prefix. 
+
+#### Voxel space
+- <I>/VoxelSpace/VoxelSpace\*.txt</I>: The initial voxel space file assuming the traditional *VoxelSpace* file prefix.
+- <I>/VoxelSpaceSizes/VoxelSpaceSizesData</I>: HDF5 2D table for voxel space expansion during simulation years.
+
+#### Supplementary data
+The supplementary data duplicate their corresponding files saved and can be removed from the HDF5 file later.
+
+- <I>/AllFunctions</I>: Group for functions. Functions are saved as HDF5 2D tables.
+- <I>/TreeFunctions</I>: Group for functions in a tree. Function files are save as HDF5 2D tables
+- <I>/AllParameters</I>: Group for parameters. Parameter values are saved as HDF5 2D tables.
+- <I>/Parameters/TreeParameters</I>: Tree parameters (denoted by relevant Lignum::LGMPD names) as HDF5 1D array.
+
+### Trees
+Trees are saved in an HDF5 file as XML strings and grouped by simulation years. The file
+name is the file name for simulation results prefixed with *TreesXML_*.
+
+Dataset names for trees are based on unique tree identification tags. Trees are collected 
+by user defined intervals in years, for example:
+
+- <I>/TreeXML</I>: Root group for XML trees
+- <I>/TreeXML/10</I>: Group for trees collected simulation year 10
+- <I>/TreeXML/20/Tree_967</I>: XML string for tree simulation year 20 with tree identification tag 967
+
+See `lignum-forest ` command line for details. 
 
 The HDF5 files are meant to be analysed with R, Python or some other high level language or tool.
 R and Python have packages (*rhdf5* and *h5py* respectively) implementing HDF5 API to read, write and examine
