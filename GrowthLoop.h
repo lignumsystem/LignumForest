@@ -1,6 +1,6 @@
-#ifndef GROWTH_LOOP_H
 /// \file GrowthLoop.h
-/// \brief Implements the growth loop for LignumForest
+/// \brief GrowthLoop class for LignumForest
+#ifndef GROWTH_LOOP_H
 #define GROWTH_LOOP_H
 #include <cmath>
 #include <cstdio>
@@ -33,6 +33,9 @@
 #include <TreeDataAfterGrowth.h>
 #include <CreateVoxelSpaceData.h>
 #include <TerminateEscapedBuds.h>
+
+using namespace lignumxml;
+
 namespace LignumForest{
 
   ///Maximum value for *LGPxi* in tree segment when \f$ \xi \f$ increment is in effect
@@ -60,7 +63,7 @@ namespace LignumForest{
     }
   };
 
-  /// \brief Implement the LignumForest growth loop
+  /// \brief Implementation the LignumForest growth loop
   /// \tparam TREE Tree
   /// \tparam TS Tree segment
   /// \tparam BUD Bud

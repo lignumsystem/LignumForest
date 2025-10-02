@@ -1,3 +1,5 @@
+/// \file CopyDumpCfTree.h
+/// \brief Insert copies of Scots pine in the voxel space
 #ifndef COPYDUMPCFTREE_H
 #define COPYDUMPCFTREE_H
 
@@ -5,6 +7,8 @@
 #include <VoxelSpace.h>
 
 namespace LignumForest{
+  ///\brief Insert copies of Scots pine
+  ///
   ///For a sequence (vector) of tree  locations move and dump the tree to
   ///specified locations in the voxel space.
   template <class TS, class BUD>

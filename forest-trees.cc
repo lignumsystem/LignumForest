@@ -1,3 +1,5 @@
+/// \file forest-trees.cc
+/// \brief FindTreeFiles and FindTreeWithProbability implementation
 #include <ForestTrees.h>
 #include <cmath>
 

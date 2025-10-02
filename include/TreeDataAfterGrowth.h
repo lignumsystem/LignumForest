@@ -5,8 +5,8 @@
 #include <utility>
 #include <map>
 #include <SomeFunctors.h>
-///\file TreeDataAfterGrowth.h
-///Names and data structures for HDF5 tables after simulation.
+/// \file TreeDataAfterGrowth.h
+/// \brief Names and data structures for HDF5 tables after simulation.
 
 namespace LignumForest{
   /// Group name for parameters

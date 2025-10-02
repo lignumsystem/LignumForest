@@ -1,10 +1,14 @@
+/// \file FindForestBoundingBox.h
+/// \brief Determine and resize bounding box
+///
+/// Determine and resize bounding box for trees and forest
 #ifndef FINDFORESTBOUNDINGBOX_H
 #define FINDFORESTBOUNDINGBOX_H
 #include <Lignum.h>
 using namespace std;
 namespace LignumForest{
   template <class TREE, class TS, class BUD>
-  ///Find the bounding box for a single tree
+  ///\brief Find the bounding box for a single tree
   class ForestBoundingBoxIndividualTrees{
   public:
     BoundingBox operator()(BoundingBox bb, TREE* t)
@@ -25,7 +29,7 @@ namespace LignumForest{
     }
   };
 
-  ///Find the bounding box for a single tree 
+  ///\brief Find the bounding box for a single tree 
   template <class TS, class BUD>
   class ForestBoundingBoxTreeCopies{
   public:
@@ -58,10 +62,17 @@ namespace LignumForest{
   };
 
 
-  ///Resize the bounding box 
+  ///\brief Resize the bounding box for a tree
   class ResizeBoundingBox{
   public:
+    ///\brief Constructor
+    ///\param tp Tree point
+    ///\param b Bounding box
     ResizeBoundingBox(const Point& tp, BoundingBox& b):tree_point(tp),box_tree(b){}
+    ///\brief Resize bounding box
+    ///\param bb Bounding box
+    ///\param p Reference (x,y) point 
+    ///\retval bb Resized bounding box
     BoundingBox operator()(BoundingBox bb,pair<double,double> p)
     {
       Point minimum = box_tree.getMin();
@@ -93,12 +104,17 @@ namespace LignumForest{
       //     cout << bb<<endl;
       return bb;
     }
-    const Point& tree_point; 
-    BoundingBox& box_tree;
+    const Point& tree_point; ///< Tree point
+    BoundingBox& box_tree;  ///< Bounding box
   };
+  ///\brief Find the bounding box for conifer forest 
+  ///
   ///Find the bounding box  for conifer forest applying FindCfBoundingBox
   ///for a single tree and then using the bounding box found and the tree
-  ///locations resize the found bounding box 
+  ///locations resize the found bounding box
+  ///\param tree Tree
+  ///\param locations Tree locations
+  ///\return Bounding box
   template <class TS, class BUD>
   BoundingBox FindForestBoundingBox(Tree<TS,BUD>& tree, const vector<pair<double,double> >& locations)
   {
@@ -108,7 +124,13 @@ namespace LignumForest{
     return box;
   }
 
-  //Find the bounding box for conifer forest applying FindCfBoundingBox for a single tree.
+  ///\brief Find the bounding box for conifer forest 
+  ///
+  ///Find the bounding box for conifer forest applying FindCfBoundingBox for a single tree.
+  ///\param vtree Vector of trees
+  ///\param locations Tree locations
+  ///\param lower_left Voxel space lower left corner (origo)
+  ///\param upper_right VoxelSpace upper right corner
   template <class TREE, class TS, class BUD>
   BoundingBox FindForestBoundingBox(vector<TREE*>& vtree, vector<pair<double,double> >& locations,
 				    const Point& lower_left, const Point& upper_right)

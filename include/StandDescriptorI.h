@@ -1,9 +1,11 @@
 #ifndef STANDDESCRIPTORI_H
 #define STANDDESCRIPTORI_H
 #include <StandDescriptor.h>
-///\file StandDescriptorI.h
-///\brief Implementation of StandDescriptor functors.
-///\deprecated Use HDF5 files for analysis
+/// \file StandDescriptorI.h
+/// \brief Collect stand level data implementation
+///
+/// Implementation of StandDescriptor functors.
+/// \deprecated Use HDF5 files for analysis
 namespace LignumForest{
   template<class TREE>
   void StandDescriptor<TREE>::evaluateStandVariables(vector<TREE*> vt, vector<pair<double,double> >& loc)

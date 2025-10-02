@@ -1,3 +1,5 @@
+/// \file BorderForest.h
+/// \brief Border forest radiation extinction 
 #ifndef BORDERFOREST_H
 #define BORDERFOREST_H
 #include <iterator>
@@ -5,7 +7,8 @@
 using namespace Lignum;
 
 namespace LignumForest{
-  ///\brief Border forest extinction
+  ///\brief Border forest radiation extinction
+  ///
   ///BorderForest realizes the effect of forest outside the stand on radiation
   ////calculation. At the moment "green box" with Lambert Beer extinction
   ///in it is assumed.

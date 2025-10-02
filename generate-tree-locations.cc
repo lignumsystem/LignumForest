@@ -1,7 +1,8 @@
 #include <TreeLocations.h>
 #include <LignumForestGlobals.h>
 using namespace LignumForest;
-///\file generate-tree-locations.cc
+/// \file generate-tree-locations.cc
+/// \brief GenerateLocations implementation
 //extern int LignumForest::ran3_seed;   //is a global variable
 namespace LignumForest{
   ///\brief Tree locations  Nonstationary Poisson process.

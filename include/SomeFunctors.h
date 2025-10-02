@@ -1,9 +1,40 @@
+/// \file SomeFunctors.h
+/// \brief Some useful functors and functions
+///
+/// \arg \c ForwardScotsPineQin
+/// \arg \c SetScotsPineSegmentApical
+/// \arg \c SetScotsPineSegmentSf{
+/// \arg \c SetScotsPineSegmentNeedleAngle
+/// \arg \c summing
+/// \arg \c Branchmean
+/// \arg \c SetStarMean
+/// \arg \c DumpScotsPineSegment
+/// \arg \c InsertSegmentToVoxel
+/// \arg \c InsertSegmentsToVoxels
+/// \arg \c DumpScotsPineTreeFunctor
+/// \arg \c DumpScotsPineTree
+/// \arg \c SetScotsPineSegmentQabs
+/// \arg \c SetScotsPineTreeQabsFunctor
+/// \arg \c BranchInformation
+/// \arg \c SurfaceAreaOfNewSegments
+/// \arg \c CollectVerticalDistributionOfFip
+/// \arg \c CollectSegmentDiameters
+/// \arg \c SegmentProductionBalance
+/// \arg \c SetRh
+/// \arg \c Sum2ndOrderBranchesSegments
+/// \arg \c UnDumpScotsPineSegment
+/// \arg \c UnDumpScotsPineTreeFunctor
+/// \arg \c UnDumpScotsPineTree
+/// \arg \c CollectTreePositions
+/// \arg \c SetRadiationUseEfficiency
 #ifndef SOME_FUNCTORS_H
 #define SOME_FUNCTORS_H
 #include <sstream>
 #include <Lignum.h>
 #include <ScotsPine.h>
 #include <VoxelSpace.h>
+
+using namespace voxelspace;
 
 namespace LignumForest{
   ///Propagate up the Qin to newly created segments and buds.
@@ -33,6 +64,8 @@ namespace LignumForest{
     }
   };
 
+  ///\brief Sets the variable apical
+  ///
   ///Sets the variable apical, that creates the length difference between new segment
   ///on the basis of whether its apical (apical = 1) or lateral (apical = function of
   ///Qin of mother, that has been propagated to Qin of the new segment (by ForwardScotsPineQin())
@@ -71,6 +104,8 @@ namespace LignumForest{
 
 
 
+  ///\brief Specific leaf  area for Scots pine
+  ///
   ///Specific leaf  area for Scots pine  is a function  of relative light
   ///and set once for the newly created segments after the calculation of
   ///the light climate and the use of ForwardScotsPineQin. 
@@ -85,8 +120,10 @@ namespace LignumForest{
     }
   };
 
-  ///Set the needle angle once when  the segment is created as a function
-  ///of light
+  ///\brief Set the needle angle
+  ///
+  ///Set the needle angle once when the segment is created
+  ///as a function of light
   class SetScotsPineSegmentNeedleAngle{
   public:
     void operator()(TreeCompartment<ScotsPineSegment,ScotsPineBud>* tc)const
@@ -120,10 +157,12 @@ namespace LignumForest{
     int n_br; ///< Number of branches 
   };
   
-  ///\brief Calculate data for mean branch.
+  ///\brief Calculate data for mean branch descritption .
   class Branchmeans{
   public:
-    /// The operator to be used  with Lignum::Accumulate and LignumForest::summing
+    /// \brief Branch means
+    ///
+    ///The operator to be used  with Lignum::Accumulate and LignumForest::summing
     /// \param id The identity element for Accumulate
     /// \param ts The tree segment for Accumulate
     /// \remark Implemented in branchfunctor.cc
@@ -154,8 +193,7 @@ namespace LignumForest{
 
 
 
-  ///A quick hack to try to  compute starSum and then star mean for Scots
-  ///pine.
+  ///\brief Compute starSum and then star mean for Scots pine.
   ///
   ///This  is esseantially copy-paste from VoxelSpaceI.h  but I just
   ///take the  LGAstarm precomputed for  the segment to be  assigned into
@@ -182,7 +220,7 @@ namespace LignumForest{
     }
   }
 
-  ///Insert segment to  voxel. This is to compare  light methods 2
+  ///\brief Insert segment to  voxel. This is to compare  light methods 2
   ///and 4 with method 3.
   inline 
   void InsertSegmentToVoxel(VoxelBox &b, ScotsPineSegment& ts,double num_parts)
@@ -207,7 +245,7 @@ namespace LignumForest{
     }
   }
 
-  ///This functor inserts  segments to voxels to compare  light methods 2
+  ///\brief Insert  segments to voxels to compare  light methods 2
   ///and 4 with 3. Recall to  calculate mean qabs and mean qin by calling
   ///VoxelSpace::calculateMeanQabsQin().
   template <class TS, class BUD>
@@ -231,7 +269,7 @@ namespace LignumForest{
 	      VoxelBox& box = space.getVoxelBox(p1);
 	      InsertSegmentToVoxel(box,*cfts, num_parts);
 	    }
-	    catch (OutOfVoxelSpaceException e){
+	    catch (voxelspace::OutOfVoxelSpaceException e){
 	      ostringstream error;
 	      Point b = e.getBox();
 	      Point p = e.getPoint();
@@ -312,7 +350,9 @@ namespace LignumForest{
     //1 but one may want to experiment)
   };
 
-  ///Call this in the growth loop instead of DumpCfTree, num_parts is the
+  ///\brief Call this in the growth loop
+  ///
+  ///Call this in the growth loop instead of DumpCfTree, \p num_parts is the
   ///number of parts  the segment is divided into (usually  1 but one may
   ///want to experiment)
   inline void DumpScotsPineTree(VoxelSpace &s, 
@@ -462,6 +502,8 @@ namespace LignumForest{
 
 
 
+  ///\brief Evaluate the surface area of the woody part
+  ///
   ///Evaluate the surface area of the woody part (excluding end discs) of
   ///new segments (that have foliage)
   class SurfaceAreaOfNewSegments{
@@ -480,14 +522,17 @@ namespace LignumForest{
 
   };
 
-  ///Vertical distribution of  fip(ip) in segments The vector  v has Tree
-  ///age  positions  representing  the  vertical  division  of  the  tree
-  ///into intervals  of mean annual growth).
-  ///Usage is simply:<br>
-  ///   pair<vector<pair<double,int> >,double> p;<br>
-  ///   Accumulate(tree,v,CollectVerticalDistributionOfFip());<br>
-  ///where the  p.first is the vector  for cumulative fips  and number of
-  ///their observations and p.second the height interval When printing to
+  ///\brief Vertical distribution of  fip(ip) in segments.
+  ///
+  ///The vector \p v has Tree age  positions  representing  the  vertical  division  of  the  tree
+  ///into intervals  of mean annual growth).<br>
+  ///Usage:
+  ///\code{.cc}
+  ///   pair<vector<pair<double,int> >,double> p;
+  ///   Accumulate(tree,v,CollectVerticalDistributionOfFip());
+  ///\endcode
+  ///where the  `p.first` is the vector  for cumulative fips  and number of
+  ///their observations and `p.second` the height interval When printing to
   ///the  file  remember  to  divide  cumulative "fips"  with  number  of
   ///observations.
   class CollectVerticalDistributionOfFip{
@@ -587,6 +632,8 @@ namespace LignumForest{
   };
 
 
+  ///\brief Evaluate the surface area of the woody part
+  ///
   ///Evaluate the surface area of the woody part (excluding end discs) of
   ///new segments (that have foliage)
   class SetRh{
@@ -644,6 +691,8 @@ namespace LignumForest{
   };
 
 
+  ///\brief Undump Scots pine segment
+  ///
   ///UnDumpScotsPineSegment  is   the  inverse  to  DumpScotsPineSegment,
   ///instead of adding foliage remove it
   inline void UnDumpScotsPineSegment(VoxelBox &b, ScotsPineSegment& ts,double num_parts,
@@ -723,6 +772,8 @@ namespace LignumForest{
   };
 
 
+  ///\brief Undump Scots pine tree
+  ///
   ///UnDumpScotsPineTree is the "inverse" to DumpCfTree in VoxelSpaceI.h and VoxelVoxI.h,
   ///it removes the values of this tree from the voxels
   inline void UnDumpScotsPineTree(VoxelSpace &s, 
@@ -755,7 +806,9 @@ namespace LignumForest{
     }
   };
 
-  ///Set the radiation use efficiency (rue) of new segments (age = 0) on the basis of shadiness of their
+  ///\brief Set the radiation use efficiency (RUE) 
+  ///
+  ///Set the radiation use efficiency (RUE) of new segments (age = 0) on the basis of shadiness of their
   ///mother. It is measured as Qin / QinMax, QinMax = maximum Qin in the forest =
   ///diffuseBallSensor() reading of Firmament (it is the same for all trees in the forest).
   template<class TS,class BUD>

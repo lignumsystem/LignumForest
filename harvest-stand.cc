@@ -1,11 +1,9 @@
 #include <HarvestStand.h>
-//Stand harvest: remove a location with probability 'r' to
-//get the wanted stand density 
-//rpos boolean vector denoting if a position is to be removed
-//r probability to be removed
-//return: 
-//rpos vector of boolean values denoting if the position is to
-//be removed or not
+/// \file harvest-stand.cc
+/// \brief HarvestStand and ClearGap implementation
+
+///Remove a location with probability 'r' to
+///get the wanted stand density 
 int  HarvestStand(vector<bool>& rpos, double r)
 {
   int r_seed = 1;
@@ -21,7 +19,7 @@ int  HarvestStand(vector<bool>& rpos, double r)
   return removed;
 }
 
-//Clear gap:  remove all trees that  are within the given  area of the
+//Remove all trees that  are within the given  area of the
 //tree located at point p.
 //v vector of tree locations
 //rpos  boolean vector denoting if a position is to be removed

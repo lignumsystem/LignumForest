@@ -2,8 +2,8 @@
 #define CREATE_VOXELSPACE_DATA_H
 #include <TMatrix3D.h>
 #include <VoxelSpace.h>
-///\file CreateVoxelSpaceData.h
-
+/// \file CreateVoxelSpaceData.h
+/// \brief Collect voxel space data for HDF5 file
 namespace LignumForest{
   ///\brief Collect voxel space data
   ///

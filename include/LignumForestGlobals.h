@@ -1,9 +1,9 @@
 #ifndef CROWNDENSITYGLOBALS_H
 #define CROWNDENSITYGLOBALS_H
-///\file LignumForestGlobals.h
-///Global variables in in L-systems and in LignumForest.\footnote{This file gives examples of Doxygen grouping}
+/// \file LignumForestGlobals.h
+/// \brief Global variables in in L-systems and in LignumForest.
 ///
-///To cut mutual dependency with CrownDensity global
+///To remove mutual dependency with CrownDensity global
 ///variables created in CrownDensity are moved to LignumForest
 ///in LignumForest namespace,
 ///\sa globalvariables.cc
@@ -13,7 +13,7 @@
 #include <ParametricCurve.h>
 #include <Firmament.h>
 #include <VoxelSpace.h>
-
+using namespace voxelspace;
 
 ///\brief Pine namespace
 ///

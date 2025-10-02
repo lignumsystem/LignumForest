@@ -1,3 +1,5 @@
+/// \file GenerateAxiom.h
+/// \brief Generate L-system axiom from Lignum tree
 #ifndef GENERATE_AXIOM_H
 #define GENERATE_AXIOM_H
 #include <Lignum.h>
@@ -5,9 +7,11 @@
 using namespace std;
 
 namespace LignumForest{
-  ///Track SB() and EB() balance
+  ///\brief Track SB() and EB() balance
   static int level = 0;
-  ///Generate the beginning of the axiom. The beginning is designed  for the
+  ///\brief Generate the beginning of the axiom.
+  ///
+  ///The beginning is designed  for the
   ///ScotsPine used in LignumForest
   void GenerateBeginAxiom(fstream& file)
   {
@@ -17,7 +21,7 @@ namespace LignumForest{
     file << "produce " << flush;
   }
 
-  ///End of Axiom adds the semicolon and right curly brace
+  ///\brief End of Axiom adds the semicolon and right curly brace
   void GenerateEndAxiom(fstream& file)
   {
     file << ";" << endl << "}" << flush;
@@ -31,7 +35,9 @@ namespace LignumForest{
     GenerateEndAxiom(file);
   }
 
-  ///Generate  axiom. The  idea  is to  move  to Turtle  with MoveTo  and
+  ///\brief Generate  axiom from Lignum tree
+  ///
+  ///The  idea  is to  move  to Turtle  with MoveTo  and
   ///SetHead commands. This is how we do not have to calculate rotations.
   ///\note Declare  MoveTo(double,double,double) and
   ///SetHead(double,double,double) modules manually in the L-system.
