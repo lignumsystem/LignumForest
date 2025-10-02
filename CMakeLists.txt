@@ -32,6 +32,8 @@
 # Divide the command line into practical parts for debugging from Arguments -> '+'.
 # -------------------------------------
 cmake_minimum_required(VERSION 3.30)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # cmake 3.23 for Xcode 13 recommends the policy CMP0114 (warning output)
 #cmake_policy(SET CMP0114 NEW)
 #cmake_policy(SET CMP0175 NEW)
@@ -82,6 +84,7 @@ if(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin")
   #find_package(Qt4 COMPONENTS QtOpenGL QtXml QtGui QtCore REQUIRED)
   # The following lines find Qt5 headers and libraries, qmake must be in PATH
   find_package(Qt5 COMPONENTS Xml Core  REQUIRED)
+  #find_package(Qt6 COMPONENTS Xml Core  REQUIRED)
   #HSF5 for  collecting simulation results
   find_package(HDF5 COMPONENTS C CXX HL REQUIRED)
   #Simple visualization tool in macOS
@@ -149,6 +152,7 @@ if(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin")
   target_link_libraries(lignum-forest
     #HDF5::HDF5 Qt4::QtOpenGL Qt4::QtXml Qt4::QtGui Qt4::QtCore
     HDF5::HDF5 Qt5::Xml Qt5::Core
+    #HDF5::HDF5 Qt6::Xml Qt6::Core
     GLUT::GLUT OpenGL::GLU OpenGL::GL
     Visual L voxel sky LGM cxxadt
   )
