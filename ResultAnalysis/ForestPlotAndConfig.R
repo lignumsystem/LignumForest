@@ -33,6 +33,8 @@ source("ExtractSimulationConfig.R")
 ###outdir: FALSE (default) or directory name. If directory name string move the pdf result files,
 ###        extract and move simulation configuration files and move HDF5 files to  outdir directory
 ForestPlotAndConfig<-function(infile,pick=1, GYdata = "ResultAnalysis/",outdir=FALSE){
+    ###Add '/' to ensure directory path
+    GYdata <- paste(GYdata,"/",sep="")
     ForestPlot(infile,pick,GYdata,center="a")
     ForestPlot(infile,pick,GYdata,center="c")
     if (is.character(outdir)){
