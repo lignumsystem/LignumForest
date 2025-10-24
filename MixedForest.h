@@ -1,3 +1,5 @@
+/// \file MixedForest.h
+/// \brief Mixed forest stand not active
 #ifndef MIXED_FOREST_H
 #define MIXED_FOREST_H
 

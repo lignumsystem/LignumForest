@@ -3,7 +3,8 @@
 #include <string>
 #include <glob.h>
 #include <LignumForestGlobals.h>
-///\file  GrowthLoopI.h
+/// \file  GrowthLoopI.h
+/// \brief GrowthLoop class implementation
 ///
 ///GrowthLoopI.h runs completely in voxel space.
 ///Changes marked with **run-voxel**.
@@ -15,8 +16,8 @@ namespace Pine{
 }
 
 using namespace Pine;
-
 using namespace LignumForest;
+using namespace lignumxml;
 // extern int LignumForest::ran3_seed; ///<Initialized in GrowthLoopI.h
 // extern double LignumForest::H_0_ini; ///<Initialized in GrowthLoopI.h
 // extern double LignumForest::H_var_ini;///<Initialized in GrowthLoopI.h

@@ -1,5 +1,7 @@
 ## @file generatelocations.py
-## Generate tree positions and generate forest plot file that can be used in LignumForest.
+## @brief Generate tree positions
+###
+## generate tree positions and forest plot file that can be used in LignumForest.
 ## Given the forest plot size, border forest width and the forest density
 ## generate tree positions in a rectangular lattice. Other geometries
 ## can be implemented as needed.

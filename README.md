@@ -1,4 +1,4 @@
-## LignumForest
+# LignumForest
 LignumForest is a project for simulating a growing tree community using individual LIGNUM trees. The LIGNUM conifer trees and other components of this project have been used for the calculations of publications
 - R. Sievänen, J. Perttunen, E. Nikinmaa, and P. Kaitaniemi. Toward extension of a single tree functional- structural model of scots pine to stand level: effect of the canopy of randomly distributed, identical trees on development of tree structure. Functional Plant Biology, 35(9/10):964–975, 2008.
 - R. Sievänen, P. Raumonen, J. Perttunen, E. Nikinmaa, and P. Kaitaniemi. A study of crown development mechanisms using a shoot-based tree model and segmented terrestrial laser scanning data. Annals of Botany, 122(3):423–434, 2018.
@@ -8,6 +8,7 @@ Other publications that are referred to in this document are
 - Perttunen J, Sievänen R, Nikinmaa E. 1998. LIGNUM: a model combining the structure and the functioning of trees. Ecological Modelling 108: 189–198.
 
 
+## Compilation
 ### CMake for macOS and Unix/Linux Makefile build system
 
 To create Makefile build system with CMake first create the
@@ -40,13 +41,14 @@ For LignumForest Makefile build system for Release (optimised, no debug informat
     make install
 
 In both cases `make install` will move `lignum-forest` to LignumForest directory
-where there are two example  shell scripts to run the program:
+where there are two example shell scripts to run the program:
 	
     run-lignum-forest.sh
-
+	run-lignum-forest.slurm
+	
 Command line options and their  short documentation can be obtained by
 running `./lignum-forest`  without any  command line parameters.  See also
-LignumForest::Usage().
+LignumForest::GrowthLoop::usage().
 
 The main growth loop for LignumForest is implemented in *lignum-forest.cc*.
 
@@ -138,7 +140,7 @@ Then with `dot` create image file with desired file format. For example in the *
 The output file *LignumForest.pdf* contains the visual presentation of the target dependenices including
 external binaries and required link libraries. The option `-T` understands many well known image file formats.
 
-### Documentation
+## Documentation
 
 The introductionary presentation will appear in [GENERAL_DESCRIPTION](GENERAL_DESCRIPTION.md).
 
@@ -165,8 +167,8 @@ The result will be *refman.pdf* that can be opened with a pdf reader.
 
 To use Doxyfile the following three programs are needed:
 
-  + doxygen: generate the document 
-  + dot: used by `doxygen` to generate graphs for class hierarchies and function calls.
-  + doxywizard: GUI to browse, to edit and optionally to run Doxyfile. 
+  + `doxygen`: generate the document 
+  + `dot`: used by `doxygen` to generate graphs for class hierarchies and function calls.
+  + `doxywizard`: GUI to browse, to edit and optionally to run Doxyfile. 
     
 On macOS these are easiest to install with MacPorts.

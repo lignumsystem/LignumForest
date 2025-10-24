@@ -1,7 +1,8 @@
 /// \file lignum-forest.cc 
-///The main program for the LignumForest.\footnote{This file gives examples of Doxygen grouping}
+/// \brief The main program for the LignumForest.
 ///
-///Main program growth loop generates now only HDF5 files for result analysis.<br>
+///Main program growth loop\footnote{This file gives examples of Doxygen grouping}
+///generates now only HDF5 files for result analysis.<br>
 ///Growth loop steps
 ///+ Initialize global variables
 ///+ Read command line
@@ -10,11 +11,39 @@
 ///+ Save simulation data to HDF5 files.
 ///
 
-///\page cmakefileforest Compile LignumForest
+/// \dir ../c++adt General purpose classes and functions
+
+/// \dir ../c++adt/include General purpose classes and functions
+
+/// \dir ../Firmament Firmament model for radiation calculation
+
+/// \dir ../Firmament/include Firmament model for radiation calculation
+
+/// \dir ../stl-lignum Lignum model and generic algorithms
+
+/// \dir ../stl-lignum/include Lignum model and generic algorithms
+
+/// \dir ../stl-voxelspace Voxel space model
+
+/// \dir ../stl-voxelspace/include Voxel space model and radiation calculations
+
+/// \dir ../LEngine L-system framework
+
+/// \dir ../LEngine/include L-system implementation 
+
+/// \dir ../XMLTree  Lignum XML file format
+
+/// \dir include LignumForest Scots pine forest stand with independent trees  
+
+/// \dir ResultAnalysis R and Python data analysis 
+
+///\page cmakefileforest CMakeLists.txt file for LignumForest
 ///Use CMake to compile LignumForest. The binary after compilation is called `lignum-forest`
 ///With CMake all the compilation work is done in a designated compilation directory using CMakeLists.txt files.
+///
 ///There are several L-system files to experiment with tree architecture. Check LSYSTEMFILE and LSYSTEMSRC variables
 ///in CMakeLists.txt before compilation. 
+///
 ///\attention In compilation `make install` is required to copy `lignum-forest` to LignumForest working directory. 
 ///\deprecated The Qt `qmake` build tool is obsolete. See the README.md file for details.
 ///\par CMakeLists.txt
@@ -69,7 +98,7 @@
 
 using namespace Pine;
 using namespace LignumForest;
-
+using namespace lignumxml;
 
 ///\defgroup AMAIN LignumForest main program
 ///@{
@@ -127,8 +156,9 @@ int main(int argc, char** argv)
   ///   + Firmament
   ///   + Initial VoxelSpace
   ///   + Voxel space size evolution
-   /// + Create HDF5 file for XML trees
-  /// + Create HDF5 group for XML trees
+  ///   + Create HDF5 file for XML trees
+  ///   + Create HDF5 group for XML trees
+  ///
   ///\snippet{lineno} lignum-forest.cc HDF5Init
   // [HDF5Init]
   string hdf5fname;

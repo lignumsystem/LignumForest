@@ -3,8 +3,8 @@
 #include <Pine.h>
 #include <VoxelSpace.h>
 #include <LignumForestGlobals.h>
-///\file ScotsPine.h
-///\brief Implementation of ScotsPineTree, ScotsPineSegment and ScotsPineBud
+/// \file ScotsPine.h
+/// \brief ScotsPineTree, ScotsPineSegment and ScotsPineBud
 using namespace PineTree;
 using namespace Pine;
 
@@ -611,7 +611,7 @@ namespace LignumForest{
 		  try{
 		    vb = LignumForest::space_occupancy.getVoxelBox(end_p);
 		  }
-		  catch(Lignum::OutOfVoxelSpaceException& e) {
+		  catch(voxelspace::OutOfVoxelSpaceException& e) {
 		    out_of_space = true;
 		  }
 

@@ -1,11 +1,9 @@
+/// \file harvest-forest-stand.cc
+/// \brief HarvestForestStand and RemoveDeadTrees implementation
 #include <sstream>
 #include <ScotsPine.h>
 #include <HarvestForestStand.h>
-//and for pine, see also pine9bp.L in lsys.
 
-namespace Pine{
-  template <class TS, class BUD, class N = LGMAD, class F=LGMdouble> class LSystem;
-}
 
 namespace LignumForest{ 
   ///Stand harvest when the trees are individuals: remove a location with

@@ -1,14 +1,16 @@
 #ifndef PALUBICKI_FUNCTORS_H
 #define PALUBICKI_FUNCTORS_H
 #include <Lignum.h>
-///\file Palubicki_functors.h
-///\brief Functors accoring to Self-organizing tree models for image synthesis
+/// \file Palubicki_functors.h
+/// \brief Functors according to Self-organizing tree models for image synthesis
 ///
 ///W. Palubicki and K. Horel and S. Longay and
 ///A. Runions and B. Lane and R. Mech and P. Prusinkiewicz. 2009.
 ///*Self-organizing tree models for image synthesis* ACM Transactions on
 ///Graphics 28 58:1-10.
 namespace LignumForest{
+  ///\brief Extended Borchert-Honda model(EBH)
+  ///
   ///This is according to W. Palubicki and K. Horel and S. Longay and
   ///A. Runions and B. Lane and R. Mech and P. Prusinkiewicz. 2009.
   ///Self-organizing tree models for image synthesis ACM Transactions on

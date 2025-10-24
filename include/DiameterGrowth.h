@@ -1,14 +1,21 @@
+/// \file DiameterGrowth.h
+/// \brief Scots pine diameter growth
 #ifndef DIAMETERGROWTH_H
 #define DIAMETERGROWTH_H
 #include <Lignum.h>
 #include <ScotsPine.h>
 
 namespace LignumForest{
+  /// \brief Partial sapwood for diameter growth
+  ///
   /// PartialSapwoodAreaDown makes it possible  to pass sapwood down based
   /// on the  gravelius order of  the segments. The percentage  of sapwood
   /// down is defined in the ParametricCurve given in the constructor.
   ///
-  /// Usage: AccumulateDown(tree,DiameterGrowthData,PartialSapwoodAreaDown(ParametricCurve),DiameterGrowth())
+  /// Usage:
+  /// \code{.cc}
+  /// AccumulateDown(tree,DiameterGrowthData,PartialSapwoodAreaDown(ParametricCurve),DiameterGrowth())
+  /// \endcode
   ///
   /// PartialSapwoodAreaDown is the user defined "add and assign" operator
   /// that is  called by  AccumulateDown at each  branching point.   `d1` is
@@ -56,8 +63,11 @@ namespace LignumForest{
     const ParametricCurve& fsapwdown;
   };
 
-  ///This is must be the same as DoScotsPineDiameterGrowth method, but we
-  ///can't change the segment's dimensions.
+  ///\brief Try diameter gorwth
+  ///
+  ///TryScotsPineDiameterGrowth must be the same as DoScotsPineDiameterGrowth method,
+  ///but segment's dimensions are not changed.
+  ///\sa DoScotsPineDiameterGrowth 
   class TryScotsPineDiameterGrowth{
   public:
     DiameterGrowthData& operator()(DiameterGrowthData& data, TreeCompartment<ScotsPineSegment,
@@ -135,6 +145,11 @@ namespace LignumForest{
     }
   };
 
+  ///\brief Do diameter growth
+  ///
+  ///DoScotsPineDiameterGrowth must be the same as TryScotsPineDiameterGrowth method,
+  ///but allocation \f$ P-M-G=0 \f$ segment's dimensions are changed.
+  ///\sa TryScotsPineDiameterGrowth
   class DoScotsPineDiameterGrowth{
   public:
     DiameterGrowthData& operator()(DiameterGrowthData& data,TreeCompartment<ScotsPineSegment,

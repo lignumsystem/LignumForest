@@ -5,14 +5,15 @@
 #include <mathsym.h>
 #include <vector>
 #include <utility> 
-///\file TreeLocations.h
-///\brief Genrate forest plot tree locations
+/// \file TreeLocations.h
+/// \brief Generate tree locations in forest stand
 using namespace std;
 using namespace cxxadt;
 
 namespace LignumForest{
-  /// Representation of a circular gap: <<x,y>,r>
-  /// where x,y is the center of gap of raius r
+  /// \brief Representation of a circular gap: <<x,y>,r>
+  ///
+  /// (x,y) is the center of the gap of radius r
   typedef pair<pair<double,double>,double> ForestGap;
 
   /// \brief Generate tree locations

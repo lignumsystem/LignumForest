@@ -1,5 +1,6 @@
 #include <BorderForest.h>
 #include <Nearby.h>
+using namespace voxelspace;
 namespace LignumForest{
 
   double BorderForest::getBorderForestExtinction(const Point& p0, const PositionVector& dir,

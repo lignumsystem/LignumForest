@@ -1,3 +1,5 @@
+/// \file ForestFunctor.h
+/// \brief Forest functors for growth
 #ifndef FOREST_FUNCTORS_H
 #define FOREST_FUNCTORS_H
 

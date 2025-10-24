@@ -1,3 +1,9 @@
+/// \file CalculateLight.h
+/// \brief Radiation calculations
+///
+/// Two functors for Scots pine
+/// \arg \c EvaluateRadiationForCfTreeSegmentInVoxelSpace
+/// \arg \c AccumulateOpticalDepth
 #ifndef CALCULATE_LIGHT_H
 #define CALCULATE_LIGHT_H
 #include <Lignum.h>

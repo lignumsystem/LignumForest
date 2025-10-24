@@ -1,3 +1,5 @@
+/// \file CalculateLightI.h
+/// \brief Radiation calculations implementation
 #ifndef CALCULATE_LIGHTI_H
 #define CALCULATE_LIGHTI_H
 /* #include <Lignum.h> */

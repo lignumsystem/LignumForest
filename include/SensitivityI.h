@@ -1,7 +1,9 @@
 #ifndef SENSITIVITYI_H
 #define SENSITIVITYI_H
 #include <Sensitivity.h>
-///\file SensitivityI.h
+/// \file SensitivityI.h
+/// \brief Print tree data for sensitivity analysis impelmentation
+/// \deprecated Use HDF5 files for data analysis
 namespace LignumForest{
 template <class TS,class BUD>
 void Sensitivity<TS,BUD>::printHeader(const string& file_name)

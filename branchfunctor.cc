@@ -1,3 +1,5 @@
+/// \file branchfunctor.cc
+/// \brief Branchmeans implementation
 #include <SomeFunctors.h>
 namespace LignumForest{
   ///Branch data for Gravelius order 2

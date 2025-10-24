@@ -6,8 +6,8 @@
 #include <Lignum.h>
 #include <ScotsPine.h>
 #include <VoxelSpace.h>
-///\file Space.h
-///\brief This file contains stuff about space colonization etc.
+/// \file Space.h
+/// \brief Space colonization for collition detection
 
 namespace LignumForest{
   ///\brief https://en.wikipedia.org/wiki/Spherical_sector

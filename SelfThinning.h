@@ -1,3 +1,5 @@
+/// \file SelfThinning.h
+/// \brief Self thinning model not active
 #ifndef SELFTHINNING_H
 #define SELFTHINNING_H
 

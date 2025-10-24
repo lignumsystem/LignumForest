@@ -1,10 +1,12 @@
 #ifndef SENSITIVITY_H
 #define SENSITIVITY_H
 #include <Lignum.h>
-///\file Sensitivity.h
-///Print tree data for sensitivity analysis
-///\deprecated Use HDF5 files for analysis
+/// \file Sensitivity.h
+/// \brief Print tree data for sensitivity analysis
+/// \deprecated Use HDF5 files for analysis
 namespace LignumForest{
+  ///\brief Tree data for sensitivity analysis
+  ///\deprecated Use HDF5 files for analysis
   template <class TS,class BUD>
   class Sensitivity{
   public:

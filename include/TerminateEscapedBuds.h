@@ -2,7 +2,8 @@
 #define TERMINATE_ESCAPED_BUDS_H
 #include <RectangularCuboid.h>
 #include <Lignum.h>
-///\file TerminateEscapedBuds.h 
+/// \file TerminateEscapedBuds.h
+/// \brief Terminate buds not inside voxel space
 namespace LignumForest{
   ///\brief Terminate tree buds that are not inside VoxelSpace.
   ///
