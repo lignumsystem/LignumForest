@@ -73,4 +73,9 @@ ExtractAllFiles<-function(h5file,outdir){
     ExtractMetaFiles(h5file,outdir)
     ExtractParameterFiles(h5file,outdir)
     ExtractFunctionFiles(h5file,outdir)
+    data <- H5Fopen(h5file)
+    stri <-data$Firmament
+    writeLines(stri[[1]],paste(outdir,'/',"Firmament.txt",sep=""))
+    stri <- data$VoxelSpace
+    writeLines(stri[[1]],paste(outdir,'/',"VoxelSpace.txt",sep=""))
 }
