@@ -13,6 +13,9 @@ library(ineq)
 #########                          If center = "c", center of plot, any other character all trees, the extent
 #########                          of the excluded area is read from the VoxelSpace of the hdf5 file.
 #########                          In the case of center of plot the name of output file is infile_c.pdf
+#########         Wfall = "n"      If plots Wf vs tree diameter and height are shown (Wfall = "Y")
+#########         Gini = "n"       If plots of Gini coefficient and Lorennz curve are shown (Gini = "Y")
+
 
 
 #The Lignum forest simulation results are stored in a file in the HDF5 File Format
@@ -63,7 +66,7 @@ in_center <- function(x,y, pX, pY, dx, dy) {
 	x >= dx & x <= pX-dx & y >= dy & y <= pY-dy	
 }
 
-ForestPlot <- function(infile, pick, GYdata = "", center = "a") {
+ForestPlot <- function(infile, pick, GYdata = "", center = "a", WFall = "n", Gini = "n") {
 
 
 d <- H5Fopen(infile)
@@ -279,6 +282,7 @@ for(i in 2:min(Ntrees/pick)) {
 	points(y,100*trees[9,mukana[pick*i],], type="l")
 }
 
+
 #Tree diameters at Crown Base
 plot(y,100*trees[10,mukana[1],], ylim=c(0,15), type="l",main=paste("Individual tree diameter at Crown Base\nevery ",as.character(pick),"th tree",sep=""),xlab="time (y)", ylab="Tree diameter (cm)")
 for(i in 2:min(Ntrees/pick)) {
@@ -316,9 +320,8 @@ for(i in 2:min(Ntrees/pick)) {
 }
 
 
-
 ###Foliage mass vs cross-sectional area at crown base
-plot((pi/4)*100^2*trees[10,mukana[1],]^2,2*trees[23,mukana[1],], ylim=c(0,10), xlim=c(0,150), type="l",
+plot((pi/4)*100^2*trees[10,mukana[1],]^2,2*trees[23,mukana[1],], ylim=c(0,15), xlim=c(0,200), type="l",
      main=paste("Foliage mass vs stem cross sectional area at crown base\nevery ",as.character(pick),"th tree",sep=""),
      xlab="Stem cross section area at crown base  (cm2)", ylab="Foliage mass (kg DM)")
 legend('topleft',inset=0.05,c("Lignum trees","Lignum trees mean","y=0.055x"),col=c('black','red','blue'),lty=1,lwd=2)
@@ -328,7 +331,25 @@ for(i in 2:min(Ntrees/pick)) {
 points(apply((pi/4)*100^2*trees[10,,]^2,2,mean,na.rm=TRUE),apply(2*trees[23,,],2,mean,na.rm=TRUE),type="l",lwd=2,col="red")
 abline(0,0.055,col="blue",lwd=2)
 
+if(WFall == "Y") {
+	###Foliage mass vs diameter at breast height
+	plot(100*trees[9,mukana[1],],2*trees[23,mukana[1],], ylim=c(0,15), xlim=c(0,30), type="l",
+     main=paste("Foliage mass vs DBH\nevery ",as.character(pick),"th tree",sep=""),
+     xlab="Diameter at breast height (cm)", ylab="Foliage mass (kg DM)")
 
+	for(i in 2:min(Ntrees/pick)) {
+		points(100*trees[9,mukana[i*pick],],2*trees[23,mukana[i*pick],], type="l")
+	}
+
+	###Foliage mass vs tree height
+	plot(trees[7,mukana[1],],2*trees[23,mukana[1],], ylim=c(0,15), xlim=c(0,30), type="l",
+     main=paste("Foliage mass vs tree height\nevery ",as.character(pick),"th tree",sep=""),
+     xlab="Tree height (m)", ylab="Foliage mass (kg DM)")
+	for(i in 2:min(Ntrees/pick)) {
+		points(trees[7,mukana[i*pick],],2*trees[23,mukana[i*pick],], type="l")
+	}
+
+}
 
 #Height and diameter distributions
 h <- trees[7,mukana,ymax]
@@ -338,14 +359,15 @@ db <- trees[9,mukana,ymax]
 hist(db[h>0.9*stand[12,ymax]], main=paste("Distribution of BH diameter at age ", as.character(max(y)),sep=""), xlab="Diameter (cm)")
 ##
 
-plot(y,apply(trees[7,mukana,],2,gini),ylim=c(0,1),type="l", lwd=2,xlab="time (y)", ylab= "Gini coefficient", main="Gini coeff., solid = height, dashed = base diameter") 
-points(y,apply(trees[8,mukana,],2,gini),type="l", lwd=2, lty=2)
+if(Gini == "Y") {
+	plot(y,apply(trees[7,mukana,],2,gini),ylim=c(0,1),type="l", lwd=2,xlab="time (y)", ylab= "Gini coefficient", 	main="Gini coeff., solid = height, dashed = base diameter") 
+	points(y,apply(trees[8,mukana,],2,gini),type="l", lwd=2, lty=2)
 
-lc <- Lc(na.omit(trees[7,mukana,ymax]))
-plot(lc$p,lc$p-lc$L, type="l", lwd=2, main="Difference of Lorenz curve of tree heights (solid) and\ndiameters (dashed) to all equal", xlab="Cumulative % of trees from smallest to largest", ylab="Cumulative % total height or diameter",ylim=c(0,0.5))
-lc <- Lc(na.omit(trees[8,mukana,ymax]))
+	lc <- Lc(na.omit(trees[7,mukana,ymax]))
+	plot(lc$p,lc$p-lc$L, type="l", lwd=2, main="Difference of Lorenz curve of tree heights (solid) and\ndiameters 	(dashed) to all equal", xlab="Cumulative % of trees from smallest to largest", ylab="Cumulative % total height 	or diameter",ylim=c(0,0.5))
+	lc <- Lc(na.omit(trees[8,mukana,ymax]))
 points(lc$p,lc$p-lc$L, type="l",lwd=2,lty=2)
-
+}
 
 
 #P / Af
