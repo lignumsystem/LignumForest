@@ -9,8 +9,9 @@ if (!require("filesstrings",quietly=TRUE)){
     install.packages("filesstrings")
 }
 if (!require("rhdf5",quietly=TRUE)){
-    print("Installing package rhdf5")
-    install.packages("rhdf5")
+    print("Installing packages BiocManager and rhdf5")
+    install.packages("BiocManager")
+    BiocManager::install("rhdf5")
 }
 if (!require("ineq",quietly=TRUE)){
     print("Installing package ineq")
