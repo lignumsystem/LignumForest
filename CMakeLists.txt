@@ -58,7 +58,6 @@ set(LSYSTEMSRC  pine-em98-branch-C.cpp)
 ExternalProject_Add(lignum-core
 SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/..
 DOWNLOAD_COMMAND "")
-
 #The '*.cmake' files for dependencies are preproduced with 'cmake' configuration
 #for 'lignum-core' (see lignum-core/CMakeLists.txt).  
 include(../c++adt/lib/cxxadt.cmake)
@@ -117,7 +116,7 @@ set(SOURCE_FILES lignum-forest.cc
   src/CreateVoxelSpaceData.cc
 )
 
-# Rebuild L system compiler with custom command for 'l2c'
+# Rebuild L system with custom command for 'l2c'
 add_custom_command(
 OUTPUT ${CMAKE_CURRENT_LIST_DIR}/${LSYSTEMSRC}
 DEPENDS ${CMAKE_CURRENT_LIST_DIR}/${LSYSTEMFILE}
