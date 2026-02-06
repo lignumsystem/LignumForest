@@ -12,7 +12,7 @@ using namespace std;
 using namespace cxxadt;
 
 namespace LignumForest{
-  ///\bref Remove a location with probability \p r to
+  ///\brief Remove a location with probability \p r
   ///
   ///Remove a location with probability 'r' to get the wanted stand density
   ///\param v Boolean vector to denote removal
@@ -89,7 +89,7 @@ namespace LignumForest{
 	}
       }
     }
-    return locations.size();
+    return static_cast<unsigned int>(locations.size());
   }
 
 }//End namespace LignumForest
