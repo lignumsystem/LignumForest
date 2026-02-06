@@ -3,7 +3,7 @@
 /// \file LignumForestGlobals.h
 /// \brief Global variables in in L-systems and in LignumForest.
 ///
-///To remove mutual dependency with CrownDensity global
+///\note To remove mutual dependency with CrownDensity global
 ///variables created in CrownDensity are moved to LignumForest
 ///in LignumForest namespace,
 ///\sa globalvariables.cc
@@ -15,22 +15,82 @@
 #include <VoxelSpace.h>
 using namespace voxelspace;
 
-///\brief Pine namespace
+//This seems to be a convinient way to group items.
+//First, define groups and subgroups with brief descriptions.
+//Then add items to groups with *addtogroup* (multiple items)
+//or *ingroup* (single item).
+//
+//The groups will appear in the order they appear for Doxygen
+//or Doxygen can sort the groups (SORT_GROUP_NAMES = YES).
+/// \defgroup GLOBALGROUP Global variables
+/// \brief Global variables in LignumForest.
 ///
-///L-system global variables needed in communication between L-system and Lignum tree,
-///hence in the Pine namespace. See for example pine-em98.L and in its derivatives
-///like pine-em98-branch-C.L
+///Global variables passing information between LignumForest and L-systems
+///and for various experiments to model and adjust forest growth.
+/// @{
+/// \defgroup GROWTHMODE Growth mode
+/// \brief Variables for growth mode change experiment
+/// \defgroup GROWTHSPACE Growth space
+/// \brief Variables for growth space experiment
+///
+/// Three growth space occupancy models.
+///
+/// \defgroup BUDSPACE Bud space
+/// \brief Variables for the bud growth sector clearance experiment
+/// \defgroup BUDTERMINATION Bud termination
+/// \brief Variables to cease buds not in VoxelSpace
+///
+/// Buds grown outside the \e original VoxelSpace are marked Lignum::DEAD.
+///
+/// \defgroup BUTTSWELL Butt swell
+/// \brief Variables for butt swell model
+/// \defgroup SHAPE Crown and stem shape
+/// \brief Variables for crown and stem shape experiments
+/// \defgroup INITIALSAPLINGS Initial saplings
+/// \brief Variables for initial saplings
+///
+/// Initial sapling (i.e. tree) length and length variation.
+///
+/// \defgroup INITIALBUDS Initial buds
+/// \brief Variables for buds in the initials saplings
+///
+/// Variables for minimum and maximum number of buds, bud effect on crowding, brancing angle
+/// and variation in branching angle.
+///
+/// \defgroup LSYSTEM  L-system
+/// \brief Variables for L-system
+///
+/// L-system global variables needed in communication between L-system and Lignum tree.
+/// These variables are in Pine namespace. See for example \e pine-em98-branch-C.L.
+///
+/// \defgroup RANDOM Randomness
+/// \brief Variables for randomness
+///
+/// \defgroup ALLOCATION Resource allocation
+/// \brief Variables for resource allocation experiments
+///
+/// Extended Borchert–Honda and Radiation use efficiency models.
+///
+/// \defgroup SEGMENTLIMIT Segment length limit
+/// \brief Variables limiting growth in new segments experiment
+///
+/// Impose max length for first and second order branch segments.
+/// First branch segments and second branch segments can have different max lengths.
+/// Main axis and higher branches are \e not affected. The model behaviour is defined
+/// in the file LignumForest::SEGMENT_LENGTH_LIMIT_FILE.
+/// \attention Be careful not to set too low values of max segment lengths.
+/// Undesired effects may occur through low foliage mass.
+///
+/// \defgroup DEPRECATED Deprecated variables
+/// \brief Variables not used
+/// \attention The Fip, effect of relative light, and effect of Gravielius order on segment length
+/// are read from MetaFiles.
+/// @}
 
-///\defgroup LIGNUMFORESTGLOBALGROUP LignumForest global variables
-///\brief Global variables
-///
-///Global variabls for various experiments to model and adjust forest growth
+///\brief L-system namespace
 namespace Pine{
-  ///\ingroup LIGNUMFORESTGLOBALGROUP
-  ///\defgroup A_LSYSTEMGLOBALGROUP Variables in L-system
-  ///L-system global variables needed in communication between L-system and Lignum tree.
-  ///These variables are in Pine namespace.
-  ///@{
+  /// \addtogroup LSYSTEM
+  /// @{
   ///\brief Tree age
   extern double L_age;
   ///\brief Tree height
@@ -40,38 +100,39 @@ namespace Pine{
   ///\brief Number of buds as a function of foliage mass
   extern ParametricCurve fnbuds;
   ///\brief Adjust number of buds
-  ///Adjust the number of buds returned by \p fnbuds with relative light
+  ///
+  ///Adjust the number of buds returned by \p LignumForest::fnbuds with relative light
   extern ParametricCurve fnbudslight;
   ///\brief Number of buds as function of relative light
+  ///
   ///\note Used the reset number of buds to zero in L system if f(ip) = 0.
   extern ParametricCurve fipbud;
   ///\brief Set architecture change on/off
   extern bool is_architecture_change;
   ///\brief Set architecture change year
   extern int architecture_change_year;
-  ///@}
+  /// @}
 }
 
 
 ///\brief LignumForest namespace
 ///
 ///Global variables used in LignumForest initialized by GrowthLoop.
+///
 ///To cut mutual dependency with CrownDensity global
-///variables from CrownDensity were moved to LignumForest
+///variables from CrownDensity are moved to LignumForest
 ///and explicitely referred with LignumForest namespace.
 namespace LignumForest{
-  ///\ingroup LIGNUMFORESTGLOBALGROUP 
-  ///\defgroup B_HEIGHTVARS Variables for initial sapling height
+  ///\addtogroup INITIALSAPLINGS 
   ///@{
   ///\brief Initial height ot trees
   extern double H_0_ini;
   ///\brief Variation of initial tree height
   extern double H_var_ini;
   ///@}
-  ///\ingroup LIGNUMFORESTGLOBALGROUP 
-  ///\defgroup C_INITIALSAPLINGBUDVARS Variables for buds in the initial saplings
+  ///\addtogroup INITIALBUDS
   ///@{
-  ///\brief Set bud variation on or off \sa rel_bud
+  ///\brief Set bud variation on or off \sa LignumForest::rel_bud
   extern bool bud_variation;
   ///\brief The effect of crowding on buds
   ///
@@ -93,10 +154,9 @@ namespace LignumForest{
 }
 
 namespace LignumForest{
-  ///\ingroup LIGNUMFORESTGLOBALGROUP
-  ///\defgroup D_RANDOMVARS Variables for randomness
+  ///\addtogroup RANDOM
   ///@{
-  ///\brief Seed for ran3 function
+  ///\brief Seed for `ran3` function
   extern int ran3_seed;
   ///\brief Random component in segment length.
   ///
@@ -105,13 +165,14 @@ namespace LignumForest{
   ///\brief Ad hoc lengthening experiment of shoots at crown base.
   ///\sa CrownDensity::adoc
   extern bool is_adhoc;
-  ///\brief Function for ad hoc lengthening experiment of shoots at crown base.
+  ///\brief Function for *ad hoc* lengthening experiment of shoots at crown base.
   ///\sa LignumForest::is_adhoc
   extern ParametricCurve adhoc;
   ///@}
-  
-  ///\brief Variable for EBH model is needed e.g. in bybranches.cc-
+  ///\addtogroup ALLOCATION
+  ///@{
   ///
+  ///\brief EBH model is used e.g. in bybranches.cc
   ///\todo Not (yet) used in LignumForest
   ///\note GrowthLoop.h has growthloop_ebh_mode as a class data member
   ///\note GrowthLoopI.h sets `ebh_mode` in when parsing command line
@@ -119,32 +180,17 @@ namespace LignumForest{
   ///\brief Radiation use efficiency experiment
   ///\attention Not (yet) used in LignumForest
   extern LGMdouble max_rueqin;
-  ///\ingroup LIGNUMFORESTGLOBALGROUP
-  ///\defgroup E_RELATIVELIGHT Variables for segment length functions
-  ///@{
-  ///\brief Relative light and Gravelius order functions
-  ///
-  ///\attention The Fip, effect of relative light, and effect of Gravielius order
-  ///on segment length are in use but are read from MetaFiles.
-  ///\brief Fip function, effect of relative light on segment
-  ///\deprecated Fip functions are read from MetaFiles 
-  extern ParametricCurve fip_mode;
-  ///\brief Gravelius order function f(go) effecting segment length after mode change
-  ///\deprecated Gravelius order functions are read from MetaFiles
-  extern ParametricCurve fgo_mode;
   ///@}
-  ///\ingroup LIGNUMFORESTGLOBALGROUP
-  ///\defgroup F_GROWTHMODE Variables for growth mode change 
+  ///\addtogroup GROWTHMODE
   ///@{
   ///\brief Reinitialize trees
   ///
-  ///Reread MetaFiles and reinitialize trees.
-  ///\brief Set mode change on/off
+  ///Set mode change on/off to rereade
+  ///MetaFiles and reinitialize trees.
   ///\sa GrowthLoop::insertModeChangeYears()
   extern bool is_mode_change;
   ///@}
-  ///\ingroup LIGNUMFORESTGLOBALGROUP
-  ///\defgroup G_GROWTHSPACE Variables for growth space 
+  ///\addtogroup GROWTHSPACE
   ///@{
   ///\brief Additional Firmament for  VoxelSpace `LignumForest::space_occupancy`.
   ///\sa LignumForest::space_occupancy
@@ -152,18 +198,17 @@ namespace LignumForest{
   ///\brief Additional VoxelSpace for space occupancy
   ///\sa sky::dummy_firm
   extern VoxelSpace space_occupancy;
-  ///\brief Three options \p space0, \p space1 and \p space2, for three space occupancy model experiments
   ///\name Space occupancy models
+  ///\brief Select one of the three options \p space0, \p space1 or \p space2 for the space occupancy model experiment.
   ///@{
   extern bool space0;
   extern bool space1;
   extern bool space2;
-  ///\brief Look ahead distance for a bud  in \p space2 model
+  ///\brief Look ahead distance for a bud  in \p LignumForest::space2 model
   extern double space2_distance;
   ///@}
   ///@}
-  ///\ingroup  LIGNUMFORESTGLOBALGROUP
-  ///\defgroup H_STEMSHAPE Variables for crown and stem shape 
+  ///\addtogroup SHAPE
   ///@{
   ///\brief Height crown base
   extern double global_hcb;
@@ -171,17 +216,27 @@ namespace LignumForest{
   ///\attention The class GrowthLoop has dDb as data member 
   extern double dDb;
   ///@}
-
-  ///\ingroup LIGNUMFORESTGLOBALGROUP
-  ///\defgroup Z_OBSELETE Variables not in use
+  ///\addtogroup DEPRECATED 
   ///@{
+  ///\brief Height functionn experiment in use or not
   ///\deprecated Not used in LignumForest
-  ///\todo Renmove from LignumForest
+  ///\todo Remove from LignumForest
   extern bool is_height_function;
   ///@}
-  
-  ///\ingroup LIGNUMFORESTGLOBALGROUP
-  ///\defgroup I_BUDVIEW Variables for bud lookahead view 
+  ///\addtogroup DEPRECATED 
+  ///@{
+  ///\brief Fip function
+  ///
+  ///Effect of relative light on segment length
+  ///\deprecated Fip functions are read from MetaFiles 
+  extern ParametricCurve fip_mode;
+  ///\brief Gravelius order function
+  ///
+  ///Gravelius order effect on segment length 
+  ///\deprecated Gravelius order functions are read from MetaFiles
+  extern ParametricCurve fgo_mode;
+  ///@}
+  ///\addtogroup BUDSPACE
   ///@{
   ///\brief Bud view function
   ///
@@ -193,8 +248,7 @@ namespace LignumForest{
   ///\sa bud_vew_f
   extern bool is_bud_view_function;
   ///@}
-  ///\ingroup LIGNUMFORESTGLOBALGROUP
-  ///\defgroup J_BUTTSWELL Variables for butt swell
+  ///\addtogroup BUTTSWELL
   ///@{
   ///\brief Butt swell model in diameter growth.
   ///
@@ -209,27 +263,21 @@ namespace LignumForest{
   ///\sa ScotsPineSegment::aging() GrowthLoop::usage()  GrowthLoop::parseCommanLine() LignumForest::butt_swell_coeff
   extern int butt_swell_start;
   ///@}
-  ///\ingroup LIGNUMFORESTGLOBALGROUP
-  ///\defgroup K_BUDTERMINATION Variables to terminate runaway buds
-  ///Terminate buds grown out of VoxelSpace.
+  ///\addtogroup BUDTERMINATION
   ///@{
   ///\brief Variable for command line 
   ///
-  ///Boolean flag. Terminate buds grown out of VoxelSpace, default False.
-  ///The command line option `-terminate_buds` sets the value to True.
-  ///\note Bud termination should be in use
+  ///Boolean flag. Terminate buds grown out of the *original* VoxelSpace, default False.
+  ///The command line option `-terminate_buds` sets the value to *true*.
+  ///\sa GrowthLoop<TREE,TS,BUD,LSYSTEM>::terminateEscapedBuds().
   extern bool terminate_escaped_buds;
   ///@}
-  ///\ingroup LIGNUMFORESTGLOBALGROUP
-  ///\defgroup L_LIMIT_SEGMENT_LENGTH Variables for segment length limit
-  ///Limiting length growth in new shoots by imposing max length for first and second branch segments.
-  ///First branch segments and second branch segments can have different max lengths.
-  ///Main axis and higher branches are \e not affected. The model behaviour is defined
-  ///in the file LignumForest::SEGMENT_LENGTH_LIMIT_FILE.
+  ///\addtogroup SEGMENTLIMIT 
   ///@{
-  ///\brief File defining max segment length model behaviour. File sets values for LignumForest::g1maxL, LignumForest::g2maxL
+  ///\brief File defining max segment length model behaviour.
+  ///
+  ///File sets values for LignumForest::g1maxL, LignumForest::g2maxL
   ///and LignumForest::length_limit_year.
-  ///\attention Be careful not to set too low values of max segment lengths. Undesired effects may occur through low foliage mass.
   const string SEGMENT_LENGTH_LIMIT_FILE="dhlimit.txt";
   ///First branch segments max length. Use unrealistic high value to have no effect.
   extern double g1maxL;
