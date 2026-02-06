@@ -62,6 +62,6 @@ namespace LignumForest{
 	v.insert(v.end(),pair<double,double>(xVal[i],yVal[i]));
       }
     ///\par Finally: return number of positions actually created (the first argument)
-    nTrees = v.size();
+    nTrees = static_cast<int>(v.size());
   }
 }//End namespace LignumForest
