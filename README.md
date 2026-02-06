@@ -1,38 +1,26 @@
 # LignumForest
-LignumForest is a project for simulating a growing tree community using individual LIGNUM trees. The LIGNUM conifer trees and other components of this project have been used for the calculations of publications
-- R. Sievänen, J. Perttunen, E. Nikinmaa, and P. Kaitaniemi. Toward extension of a single tree functional- structural model of scots pine to stand level: effect of the canopy of randomly distributed, identical trees on development of tree structure. Functional Plant Biology, 35(9/10):964–975, 2008.
-- R. Sievänen, P. Raumonen, J. Perttunen, E. Nikinmaa, and P. Kaitaniemi. A study of crown development mechanisms using a shoot-based tree model and segmented terrestrial laser scanning data. Annals of Botany, 122(3):423–434, 2018.
+LignumForest is a project for simulating a growing tree community using individual LIGNUM trees. 
+The main growth loop for LignumForest is implemented in *lignum-forest.cc*.
+Simulation results are saved in [HDF5 files](HDF5FILES.md).
 
-Other publications that are referred to in this document are
-- Perttunen J, Sievänen R, Nikinmaa R, Salminen H, Saarenmaa H, Väkevä J. 1996. LIGNUM: a tree model based on simple structural units. Annals of Botany 77: 87–98.
-- Perttunen J, Sievänen R, Nikinmaa E. 1998. LIGNUM: a model combining the structure and the functioning of trees. Ecological Modelling 108: 189–198.
+## CMake build system
 
+### CMake for Makefile build system
+Create Makefile build system for the *lignum-core* system. 
+See the [README](https://github.com/lignumsystem/lignum-core/blob/master/README.md)
+and the *CMakeLists.txt* file in *lignum-core* for details.
 
-## Compilation
-### CMake for macOS and Unix/Linux Makefile build system
+To create Makefile build system for LignumForest to compile 
+`lignum-forest` binary for debugging:
 
-To create Makefile build system with CMake first create the
-build tree  directory and  then with `cmake`  the Unix  Makefile build
-system itself. To build the Lignum core system:
-
-	cd lignum-core
-	mkdir build
-	cd build 
-	cmake .. 
-	make install
-	
-See also *lignum-core* [README](https://github.com/lignumsystem/lignum-core/blob/master/README.md).
-
-To create LignumForest Makefile build system for debug and compile `lignum-forest` binary 
-type:
-
+	git clone https://github.com/lignumsystem/LignumForest.git #Download the software
     cd LignumForest
-    mkdir debug
+    mkdir debug 
     cd  debug
     cmake .. -DCMAKE_BUILD_TYPE=Debug
     make install 
 
-For LignumForest Makefile build system for Release (optimised, no debug information) type:
+Makefile build system for release (optimised code, no debug information):
 
     cd LignumForest
     mkdir release
@@ -40,8 +28,8 @@ For LignumForest Makefile build system for Release (optimised, no debug informat
     cmake .. -DCMAKE_BUILD_TYPE=Release
     make install
 
-In both cases `make install` will move `lignum-forest` to LignumForest directory
-where there are two example shell scripts to run the program:
+The `make install`command will copy `lignum-forest` to LignumForest directory
+where there are two shell scripts to run the program:
 	
     run-lignum-forest.sh
 	run-lignum-forest.slurm
@@ -50,13 +38,10 @@ Command line options and their  short documentation can be obtained by
 running `./lignum-forest`  without any  command line parameters.  See also
 LignumForest::GrowthLoop::usage().
 
-The main growth loop for LignumForest is implemented in *lignum-forest.cc*.
-
 > [!IMPORTANT]
-> It is important to type `make install` to also move `lignum-forest` to
+> It is important to type `make install` to move `lignum-forest` to
 > directory above to be used by the scripts to run simulatations.
 > Typing just `make` the `lignum-forest` program remains in the compilation directory.
-
 
 To recompile `lignum-forest` type:
 
@@ -64,97 +49,92 @@ To recompile `lignum-forest` type:
 	make install
 	
 > [!IMPORTANT]
-> CMake tracks by default file changes only in the current project (e.g. LignumForest in this case). 
+> CMake tracks by default file changes only in the current project (LignumForest in this case). 
 > To let CMake  follow all file dependencies correctly `make clean` is mandatory before recompilation. 
 > After `make clean` CMake will have correct build tree from previous software  build.
 
 > [!NOTE]
 > To remove all CMake  configurations and compilation work just
-> remove the build  tree directory (i.e. *debug*,  *release* or *xcode*)
-> and recreate the build tree directory.
-
-CMake  projects   are   configured  with   *CMakeLists.txt*
-files. For  this CMake  has an  extensive set  of CMake  variables and
-built-in functions that can be set in CMakeLists.txt files or given in
-command line.
-
-The best way to  learn CMake is by  studying examples.
-lignum-core and LignumForest provide  CMakeLists.txt file examples how
-to create libraries, find and integrate external libraries (Qt, HDF5),
-create and use external binaries (`l2c` to compile L-system files) and
-setup the final product with its dependenices.
-
-> [!NOTE]
-> It seems Qt4 is becoming difficult maintain in MacPorts. It does not compile on M1 Apple Silicon. 
->Also Qt `qmake` is becoming obsolete; Qt project has switched to CMake since Qt6.
+> remove the build  directory (i.e. *debug*,  *release* or *xcode*)
+> and recreate it.
 
 ### CMake for Xcode
 
-For Xcode IDE create the Xcode project file:
-
+#### Create Xcode project 
+Create the Xcode project file:
+	
+	cd LignumForest
     mkdir xcode
     cd xcode
     cmake .. -G Xcode
 
-Open  Xcode  IDE  from  Terminal. Alternatively open  the  Xcode  project  file
-`lignum-forest.xcodeproj` from XCode:
+Open the project file in Xcode:
      
-	 open lignum-forest.xcodeproj
+	 open LignumForest.xcodeproj
 
-Build the `lignum-forest` Product in  Xcode for debugging.  It will appear
-in *xcode/Debug*  directory:
-
-	Xcode -> Product (in the menu bar) -> Build For -> Running/Testing/Profiling
-
-See  also that: 
+#### Build lignum-forest binary
+First set Scheme to `lignum-forest`:
 
 	Xcode -> Product (in the menu bar) -> Scheme 
 
-is set  to `lignum-forest` to allow Run: 
+Build the `lignum-forest` binary in  Xcode for Testing. It will appear
+in the *xcode/Debug*  directory:
 
-	Xcode -> Product (in the menu bar) -> Run
+	Xcode -> Product (in the menu bar) -> Build For -> Running/Testing/Profiling
+
+Xcode tracks source file dependencies during the build process. To install 
+`lignum-forest` to LignumForest working directory select the `install` Scheme
+and build:
+
+	Xcode -> Product (in the menu bar) -> Build 
 	
-to debug the program. Xcode IDE itself tracks file dependencies.
+#### Debugging the program
+Copy necessary function files and parameter files (*.fun* and *.txt* suffixes)
+to *xcode/Debug*  where the `lignum-forest` binary is  located. 
+`lignum-forest` assumes that the configuration files 
+are found in the working directory. 
 
-Copy necessary \*.fun  function files and \*.txt parameter files to
-*xcode/Debug*  where   the  `lignum-forest`  is  located   in  this  case.
-Otherwise  hard coded  files names  in the  program are  not found  by
-`lignum-forest`. You can also copy `lignum-forest` to LignumForest project
-directory instead and load the binary to Xcode from there. 
+Make sure that Scheme is set to `lignum-forest`:
+
+	Xcode -> Product (in the menu bar) -> Scheme 
 
 Set command  line parameters for  `lignum-forest` in Xcode:
 
 	Xcode -> Product (in the menu  bar) -> Scheme ->  Edit Scheme -> Arguments.
 
-Divide the command line into practical parts for debugging from `Arguments -> '+'`.
+Divide the lengthy command line into practical parts for debugging from `Arguments -> '+'`.
 
-### CMake for LignumForest dependency graph
+Set the breakpoints in source files. To debug the program:
 
-CMake allows to generate `graphviz` output file to show all library and executable dependencies of the project.
-Then with `dot` create image file with desired file format. For example in the *release* directory type:
+	Xcode -> Product (in the menu bar) -> Run
+
+Alternatively, load the `lignum-forest` binary to Xcode from the LignumForest directory:
+
+	Xcode -> Debug (in the menu bar) -> Debug Executable
+
+### LignumForest project dependency graph
+CMake can generate Graphviz file representing library and binary dependencies in the project 
+using the Dot language grammar. After that create an image file using `dot`. 
+In the *LignumForest* directory create the *graphviz* build directory:
 	
 	mkdir graphviz
-	cmake ..   --graphviz=graphviz/LignumForest.dot
-	dot -Tpdf -Kneato -Goverlap=prism  graphviz/LignumForest.dot  -o  LignumForest.pdf
+	cd graphviz
+	cmake ..   --graphviz=LignumForest.dot
+	dot -Tpdf -Kneato -Goverlap=prism  LignumForest.dot  -o  LignumForest.pdf
 	
-The output file *LignumForest.pdf* contains the visual presentation of the target dependenices including
-external binaries and required link libraries. The option `-T` understands many well known image file formats.
+The file *LignumForest.pdf* contains the visual presentation of the Graphviz file. 
+The option `-T` supports many well known image file formats.
 
-## Documentation
-
+## Software documentation
 The introductionary presentation will appear in [GENERAL_DESCRIPTION](GENERAL_DESCRIPTION.md).
 
-Simulation results are saved in [HDF5 files](HDF5FILES.md).
-
-The Reference Guide for the LignumForest will be based on comments and other information
-available in the software. Extraction of the comments, rendition of the software content and 
-architecture, generation of the structure of the document and formatting the document to html 
-and LaTeX will be done by `doxygen`. To generate the documentation run `doxygen` in LignumForest directory:
+The Reference Guide for the LignumForest will be based on Doxygen typesetting and other information
+available for the software. To generate the documentation run `doxygen` in the LignumForest directory:
     
     doxygen Doxyfile 2> errors.txt
      
 Doxyfile is the configuration file for `doxygen`. The documentation will appear in DoxygenDoc directory. 
-Errors and warnings will appear in *errors.txt*. To see html version of the document type (on macOS):
+Errors and warnings will appear in *errors.txt*. To read html version of the document type (macOS):
 
     open DoxygenDoc/html/index.html
     
@@ -162,13 +142,27 @@ To generate LaTeX version go to latex subdirectory and use make:
 
     cd DoxygenDoc/latex
     make all
+	open refman.pdf
     
 The result will be *refman.pdf* that can be opened with a pdf reader.
 
-To use Doxyfile the following three programs are needed:
+> [!TIP]
+> Doxyfile default values for graphs may result too large uninformative figures.
+> Reduce for example DOT_GRAPH_MAX_NODES = 10 and MAX_DOT_GRAPH_DEPTH = 3 
+> for more concise graphs and network diagrams easier to understand figures.
 
-  + `doxygen`: generate the document 
-  + `dot`: used by `doxygen` to generate graphs for class hierarchies and function calls.
-  + `doxywizard`: GUI to browse, to edit and optionally to run Doxyfile. 
-    
-On macOS these are easiest to install with MacPorts.
+## Litterature to cite
+The LIGNUM conifer trees and other components of this project have been used for the calculations 
+in the following publications:
+
+- R. Sievänen, J. Perttunen, E. Nikinmaa, and P. Kaitaniemi. Toward extension of a single tree functional-structural model 
+of Scots pine to stand level: effect of the canopy of randomly distributed, identical trees on development of tree structure. 
+Functional Plant Biology, 35(9/10):964–975, 2008.
+- R. Sievänen, P. Raumonen, J. Perttunen, E. Nikinmaa, and P. Kaitaniemi. A study of crown development mechanisms 
+using a shoot-based tree model and segmented terrestrial laser scanning data. 
+Annals of Botany, 122(3):423–434, 2018.
+
+To refer to the core model of LIGNUM in general use:
+
+- Perttunen J, Sievänen R, Nikinmaa R, Salminen H, Saarenmaa H, Väkevä J. 1996. LIGNUM: a tree model based on simple structural units. Annals of Botany 77: 87–98.
+- Perttunen J, Sievänen R, Nikinmaa E. 1998. LIGNUM: a model combining the structure and the functioning of trees. Ecological Modelling 108: 189–198.
