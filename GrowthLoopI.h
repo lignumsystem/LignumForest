@@ -827,8 +827,8 @@ namespace LignumForest{
       if(to_file) {
 	//Create, open and add data file for the tree
 	ostringstream data_file;
-	unsigned int  n = datafile.find_last_of('.');
-	if ( n == 0){
+	std::size_t n = datafile.find_last_of('.');
+	if ( n == std::string::npos){
 	  //No suffix by the user
 	  data_file << datafile << "-" << p.first <<"-"<<p.second << ".txt";
 	}
@@ -856,13 +856,13 @@ namespace LignumForest{
   {
     int iter = getIterations();
     int ntrees = getNumberOfTrees();
-    hdf5_tree_data.resize(iter+1,ntrees,TREE_DATA_COLUMN_NAMES.size());
+    hdf5_tree_data.resize(iter+1,ntrees,static_cast<int>(TREE_DATA_COLUMN_NAMES.size()));
     hdf5_tree_data.init(std::nan(""));
-    hdf5_stand_data.resize(iter+1,STAND_DATA_COLUMN_NAMES.size());
+    hdf5_stand_data.resize(iter+1,static_cast<int>(STAND_DATA_COLUMN_NAMES.size()));
     hdf5_stand_data.init(std::nan(""));
-    hdf5_center_stand_data.resize(iter+1,STAND_DATA_COLUMN_NAMES.size());
+    hdf5_center_stand_data.resize(iter+1,static_cast<int>(STAND_DATA_COLUMN_NAMES.size()));
     hdf5_center_stand_data.init(std::nan(""));
-    hdf5_dead_tree_data.resize(iter+1,ntrees,DEAD_TREE_DATA_COLUMN_NAMES.size());
+    hdf5_dead_tree_data.resize(iter+1,ntrees,static_cast<int>(DEAD_TREE_DATA_COLUMN_NAMES.size()));
     hdf5_dead_tree_data.init(std::nan(""));
     lambdav.resize(static_cast<unsigned int>(ntrees),std::nan(""));
   }
@@ -870,7 +870,7 @@ namespace LignumForest{
   template<class TREE, class TS,class BUD, class LSYSTEM>
   TMatrix2D<double> GrowthLoop<TREE,TS,BUD,LSYSTEM>::getHDF5TreeParameterData()
   {
-    TMatrix2D<double> tree_parameters(1,TREE_PARAMETER_NAMES.size(),0.0);
+    TMatrix2D<double> tree_parameters(1,static_cast<int>(TREE_PARAMETER_NAMES.size()),0.0);
     map<string,double> tree_pvalues;
     if (!vtree.empty()){
       TREE* t = vtree[0];
@@ -1620,7 +1620,7 @@ namespace LignumForest{
       }
     }
     ///\remark Reinitialize the `lambdav` for the next growth cycle.
-    unsigned int size = lambdav.size();
+    unsigned int size = static_cast<unsigned int>(lambdav.size());
     lambdav.resize(size,std::nan(""));
   }
   
@@ -1749,10 +1749,9 @@ namespace LignumForest{
     PropagateUp(t,alku,SetSapwoodDemandAtJunction());
   }
 
-  template<class TREE, class TS,class BUD, class LSYSTEM>
-  bool GrowthLoop<TREE, TS,BUD,LSYSTEM>::allocation(TREE& t, bool verbose)
+  template <class TREE,class TS,class BUD,class LSYSTEM> template <class FSEGMENTLENGTH>
+  bool GrowthLoop<TREE,TS,BUD,LSYSTEM>::allocation(TREE& t, bool verbose)
   {
-    
     try{
       /// \par The growth function G
       ///
@@ -1767,7 +1766,7 @@ namespace LignumForest{
       ///\snippet{lineno} GrowthLoopI.h GFUNCTION
       // [GFUNCTION]
       DiameterGrowthData data;
-      LGMGrowthAllocator2<TS,BUD,LignumForest::SetScotsPineSegmentLength,
+      LGMGrowthAllocator2<TS,BUD,FSEGMENTLENGTH,
 			  LignumForest::PartialSapwoodAreaDown,LignumForest::ScotsPineDiameterGrowth2,DiameterGrowthData>
 	G(t,data,PartialSapwoodAreaDown(GetFunction(t,SPSD)));
       Bisection(0.0,100.0,G,0.01,verbose); 
@@ -1795,9 +1794,8 @@ namespace LignumForest{
     return true;
   }
 
-
-  template<class TREE, class TS,class BUD, class LSYSTEM>
-  void GrowthLoop<TREE, TS,BUD,LSYSTEM>::allocationAndGrowth()
+  template <class TREE, class TS, class BUD,class LSYSTEM> template <class FSEGMENTLENGTH>
+  void GrowthLoop<TREE,TS,BUD,LSYSTEM>::allocationAndGrowth()
   {
     dead_trees.clear();
     //Create new buds by making derive with mode == 1 (global variable in L system)
@@ -1818,7 +1816,7 @@ namespace LignumForest{
       // [PipeModel]
       /// \remark This is for Pipe model calculations:
       /// \endinternal
-      if(!allocation(*t,bracket_verbose)){
+      if(!allocation<FSEGMENTLENGTH>(*t,bracket_verbose)){
 	//Iteration failed
 	//Save position for deletion from lists for growing trees
 	dead_trees.push_back(k);       //iteration failed, this tree is dead
@@ -2494,7 +2492,7 @@ namespace LignumForest{
 
     //Maybe not the best place to do this but ...
     if(eero) {
-      unsigned int n_trees = vtree.size();
+      unsigned int n_trees = static_cast<unsigned int>(vtree.size());
 
       if(n_trees > 0) {
 	vector<pair<unsigned int, LGMdouble> > sort_vector(n_trees);

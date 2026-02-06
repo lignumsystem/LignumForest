@@ -29,15 +29,15 @@
 
 /// \dir ../LEngine L-system framework
 
-/// \dir ../LEngine/include L-system implementation 
+/// \dir ../LEngine/include L-system framework implementation 
 
 /// \dir ../XMLTree  Lignum XML file format
 
-/// \dir include LignumForest Scots pine forest stand with independent trees  
+/// \dir ../LignumForest/include Scots pine forest stand with independent trees  
 
 /// \dir ResultAnalysis R and Python data analysis 
 
-///\page cmakefileforest CMakeLists.txt file for LignumForest
+///\page cmakefileforest CMakeLists.txt for LignumForest
 ///Use CMake to compile LignumForest. The binary after compilation is called `lignum-forest`
 ///With CMake all the compilation work is done in a designated compilation directory using CMakeLists.txt files.
 ///
@@ -47,7 +47,7 @@
 ///\attention In compilation `make install` is required to copy `lignum-forest` to LignumForest working directory. 
 ///\deprecated The Qt `qmake` build tool is obsolete. See the README.md file for details.
 ///\par CMakeLists.txt
-///\include CMakeLists.txt
+///\include{lineno} CMakeLists.txt
 ///\page cmakefileforest
 
 ///\page runscriptforest Run LignumForest 
@@ -155,7 +155,7 @@ int main(int argc, char** argv)
   ///   + Functions
   ///   + Firmament
   ///   + Initial VoxelSpace
-  ///   + Voxel space size evolution
+  ///   + VoxelSpace size evolution
   ///   + Create HDF5 file for XML trees
   ///   + Create HDF5 group for XML trees
   ///
@@ -247,15 +247,26 @@ int main(int argc, char** argv)
     ///  + Calculate radiation climate for trees
     ///  + Calculate photosynthesis, respiration and aging of tree compartments. 
     ///  + Create new segments
+    ///    + Forward Qin to new segments and buds from mother segments
+    ///      + Calclulate relative light (Lignum::LGAip = Lignum::LGAQin / Lignum::TreeQinMax) for terminating buds
+    ///    + Set segment needle angle
+    ///    + Set segment apicality
+    ///    + Calculate vigour indices in tree segments and buds
+    ///    + Set Lignum::TreeQinMax in the Firmament
+    ///    + Calculate path length from the base of the tree to each segment
+    ///    + Depending on the command line:
+    ///      + Calculate space colonization model
+    ///      + Calculate Extended Borchert-Honda model
     ///  + Growth allocation
+    ///    + It is assumed that parameters and functions affecting segment length and diameter
+    ///      can be retrieved from the segment and the Lignum tree.
     ///  + Collect data from trees that died in the allocation step
     ///  + Remove dead trees from simulation
     ///  + Check and terminate buds grown outside the Lignum::VoxelSpace
     ///  + Prune dead branches from living trees
-    ///  + Set radiation use efficiency (RUE) in new segments (command line argument)
-    ///    + Use function of shadiness experienced by mother segment (command line argument)
-    /// It is assumed that parameters and functions affecting segment length and diameter
-    ///can be retrieved from the new segment and the Lignum tree.
+    ///  + Depending on the command line:
+    ///    + Set radiation use efficiency (RUE) in new segments
+    ///    + Use function of shadiness experienced by mother segment
     /// \sa GrowthLoop::allocationAndGrowth()
     /// \sa Lignum::LGMGrowthAllocator2 and Lignum::LGMGrowthAllocator2::operator()()
     /// \sa LignumForest::SetScotsPineSegmentLength
@@ -271,10 +282,22 @@ int main(int argc, char** argv)
     //Currently data collection in photosynthesisRespirationTreeAging
     //before new growth and tree aging
     gloop.photosynthesisRespirationTreeAging();
+    //For new segments and buds:
+    //Forward Qin to new segments from mother segments
+    //Forward Qin to new buds from mother segments
+    //Calclulate relative light (LGAQip/TreeQinMax) for new buds
+    //Set segment needle angle
+    //Set segment apicality
+    //Calculate vigour indices in a tree segments and buds
+    //Set TreeQinMax in the Firmament
+    //Calculate path length from the base of the tree to each segment
+    //Depending on the command line:
+    //Calculate space colonization
+    //Calculate Extended Borchert-Honda model
     gloop.createNewSegments();
     //It assumed that parameters and functions affecting segment length and diameter
-    ///can be retrieved from the new segment and the Lignum tree 
-    gloop.allocationAndGrowth();
+    //can be retrieved from the new segment and the Lignum tree 
+    gloop.allocationAndGrowth<SetScotsPineSegmentLength>();
     // collectDeadTreeDataAfterGrowth collects dead tree data for HDF5 file.
     // Dead tree appears once, the year it has died and removed from simulation
     gloop.collectDeadTreeDataAfterGrowth(year+1);
@@ -282,7 +305,7 @@ int main(int argc, char** argv)
     gloop.removeDeadTreesAllOver();
     //Terminate buds grown out of VoxelSpace
     gloop.terminateEscapedBuds();
-    // Prune dead parts from the trees 
+    // Prune dead parts (branches) from the trees 
     gloop.prune();
     // RUE: radiation use efficiency
     gloop.radiationUseEfficiency();
@@ -295,7 +318,7 @@ int main(int argc, char** argv)
     /// \par Data collection from living trees 
     ///  + Evaluate stand metrics every year
     ///  + Collect data for each tree every year
-    ///  + Collect Lignum::VoxelSpace dimensions with write intervals
+    ///  + Collect voxelspace::VoxelSpace dimensions with write intervals
     ///  + Save trees in XML format in HDF5 file with write intervals
     ///
     /// \snippet{lineno} lignum-forest.cc DataCollection

@@ -450,19 +450,20 @@ namespace LignumForest{
     /// Find value of the \f$ \lambda  \f$ parameter that makes available resources, \f$P-M\f$, to match
     /// demand of growth, \f$G\f$, with the aid of iteration, i.e. \f$P - M = G(\lambda)\f$.
     ///
-    /// \retval true if \f$\exists \lambda\f$  s.t. \f$P-M-G(\lambda) = 0\f$
-    /// \retval false otherwise
+    /// \tparam FSEGMENTLENGTH Functor or function for segment length.
+    /// The functor or function takes one parameter \f$ \lambda \f$ to adjust segment length.
     /// \tparam TREE Lignum tree
     /// \param t Lignum tree 
     /// \param verbose Verbose output
-    // \param fip_mode \deprecated Function fip(ip) after growth mode change, not used
-    // \param fgo_mode \deprecated Function fgo(go) after growth mode change, not used
     /// \exception TreeGrowthAllocatorException  Exception caught if \f$P < M \f$
     /// \exception BisectionBracketException Exception caught if no \f$ \lambda \f$ s.t. \f$ P-M-G(\lambda) < 0\f$
     /// \exception BisectionMaxIterationException  Exception caught if  \f$ P-M-G(\lambda) = 0\f$
     ///                                             not found after cxxadt::MAX_ITER iterations
+    /// \retval true if \f$\exists \lambda\f$  s.t. \f$P-M-G(\lambda) = 0\f$
+    /// \retval false otherwise
     /// \sa vtree
     /// \remark If the return value is *false* the tree \p t is considered dead and will be removed from tree vector.
+    template <class FSEGMENTLENGTH>
     bool allocation(TREE& t,bool verbose);
     /// \brief Set radiation use efficiency (rue) in new segments
     /// Set the radiation use efficiency (rue) of new segments (age = 0) on the basis of shadiness
@@ -658,6 +659,8 @@ namespace LignumForest{
     ///   + Create new tree compartments with LSystem::derive()
     ///   + Synchronise the tree with L-system
     ///
+    /// \tparam FSEGMENTLENGTH Functor or function for segment length.
+    /// The functor or function takes one parameter \f$ \lambda \f$ to adjust segment length.
     /// \pre \c GrowthLoop::allocationAndGrowth::dead_trees is empty
     /// \pre  Pine::mode is set to 1 to create new buds with Lsystem::derie() after GrowthLoop::allocation()
     /// \post Pine::mode == 1
@@ -670,7 +673,8 @@ namespace LignumForest{
     /// \sa GrowthLoop::collectDeadTreeDataAfterGrowth()
     /// \sa GrowthLoop::no_trees
     /// \sa GrowthLoop::vtree GrowthLoop::vlsystem GrowthLoop::locations \c GrowthLoop::allocationAndGrowth::dead_trees
-    /// \sa GrowthLoop::wsapwood GrowthLoop::wfoliage GrowthLoop::wroot GrowthLoop::ws_after_senescence 
+    /// \sa GrowthLoop::wsapwood GrowthLoop::wfoliage GrowthLoop::wroot GrowthLoop::ws_after_senescence
+    template <class FSEGMENTLENGH>
     void allocationAndGrowth();
     int getNumberOfTrees() {return no_trees;}
     void setYear(const int& y) {year = y;}
