@@ -2,7 +2,7 @@
 #PLEASE NOTE that the following parameters are now functions of light
 #LGPlr (flr.fun) , LGPsf (fsf.fun) , LGPaf (faf.fun), LGPna (fna.fun)
 #and LGPapical (fapical.fun)
-LGPlr 0.012
+LGPlr 0.01
 LGPsf 28
 LGPms 0.024
 LGPmr 0.24
@@ -16,10 +16,11 @@ LGPrhoW 200
 LGPmf 0.24
 LGPss 0.07
 LGPapical 0.9
-LGPxi 0.57
+LGPxi 0.6
 LGPaf 2
 LGPq 0.95
 LGPsr 1.33
 LGPlen_random 0.5
 LGPe1 112.872
 LGPe2 30
+
