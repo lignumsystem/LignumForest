@@ -1,5 +1,5 @@
 #ad hoc limits of segment lengths
 #start year
 #order1 order2
-0
+100
 0.3 0.25
