@@ -223,7 +223,10 @@ namespace LignumForest{
     cout << "-fsapwdown <file>  Part of the sapwood going down in a tree as a function of Gravelius order." <<endl;
     cout << "-butt_swell_coeff <value>  Adjustment coefficient (between 0 and 1) for the butt swell model." <<endl;
     cout << "-butt_swell_start <value>  Tree age to start butt swell." <<endl;
-    cout << "-terminate_buds    Terminate buds grown out of VoxelSpace (set status DEAD)" <<endl;
+    cout << "-terminate_buds    Terminate buds grown out of VoxelSpace (set status DEAD)" << endl;
+    cout << "-apicalReduction <file> Reduce apicality in older trees" <<endl
+	 <<                     "The <file> implements this in ParametricCurve in [0,1]." << endl
+	 <<                     "Check the segment length function matches the semantics in ParametricCurve." <<endl;
     cout << endl;
   }
   // [Usagex]
@@ -701,6 +704,7 @@ namespace LignumForest{
     }
     ///---
     ///\par Parse butt swell coefficent
+    clarg.clear();
     if (ParseCommandLine(argc,argv,"-butt_swell_coeff",clarg)){
       double bsc = atof(clarg.c_str());
       if (bsc < 0.0 || bsc > 1.0){
@@ -713,6 +717,7 @@ namespace LignumForest{
     }
     ///---
     ///\par Parse butt swell start year
+    clarg.clear();
     if (ParseCommandLine(argc,argv,"-butt_swell_start",clarg)){
       double bss = atoi(clarg.c_str());
       LignumForest::butt_swell_start = bss;
@@ -720,6 +725,7 @@ namespace LignumForest{
     }
     ///---
     ///\par Check terminate escaped buds option
+    clarg.clear();
     if (CheckCommandLine(argc,argv,"-terminate_buds")){
       LignumForest::terminate_escaped_buds = true;
       cout << "Terminate escaped buds " << LignumForest::terminate_escaped_buds << endl;
@@ -741,6 +747,26 @@ namespace LignumForest{
     input_file >> LignumForest::g1maxL >> LignumForest::g2maxL;
     input_file.close();
 
+    ///---
+    ///\par Apicality reduction experiment for older trees
+    ///Apicality reduction is a function implemented
+    ///as a ParametricCurve in a file. This can be interpreted as a "crown tax"
+    ///where the segment in a better relative position will not receive all
+    ///possible resources but some are allocated elsewhere. The "tax" can be be based
+    ///for example in on relative light position or Gravelius order. 
+    ///\note Make sure the segment length functor for GrowthLoop::allocationAndGrowth
+    ///type template matches the semantics of the ParametricCurve
+    ///\sa LignumForest::REDUCE_APICAL LignumForest::REDUCE_APICAL_AGE LignumForest::TREE_CROWN_TOP
+    ///\sa LignumForest::REDUCE_APICAL_FILE
+    clarg.clear();
+    if (ParseCommandLine(argc,argv,"-apicalReduction",clarg)){
+      LignumForest::REDUCE_APICAL=true;
+      LignumForest::REDUCE_APICAL_FILE=clarg;
+      cout << "Apical reduction Year " << LignumForest::REDUCE_APICAL_AGE << endl
+	   << "Crown top " << LignumForest::TREE_CROWN_TOP << endl
+	   << "File " << LignumForest::REDUCE_APICAL_FILE << endl;
+    }
+    
     if (verbose){
       cout << "parseCommandLine end" <<endl;
       printVariables();
@@ -798,7 +824,8 @@ namespace LignumForest{
       pair<double,double> p = locations[i];
       LSYSTEM *l = new LSYSTEM();
       ///\par Default functions
-      ///Hard coded default functions that should exist in the run directory
+      ///\attention Hard coded default functions in the constructor should exist in the working directory
+      ///\note The \p fsapwdownfile function file must be given in command line
       ///\internal
       ///\snippet{lineno} GrowthLoopI.h DFun
       // [DFun]

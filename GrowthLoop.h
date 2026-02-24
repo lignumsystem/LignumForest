@@ -33,7 +33,7 @@
 #include <TreeDataAfterGrowth.h>
 #include <CreateVoxelSpaceData.h>
 #include <TerminateEscapedBuds.h>
-
+#include <ApicalDominance.h>
 using namespace lignumxml;
 
 namespace LignumForest{
@@ -155,7 +155,7 @@ namespace LignumForest{
     ~GrowthLoop();
     ///\brief Initialization based on command line
     ///
-    /// \attention Not implemented
+    /// \deprecated  Not implemented
     /// \sa The sequence of parseCommandLine resolveCommandLineAttributes initializTrees
     /// \sa initializeGrowthLoop in the LignumForest::main program      
     void initialize(int argc, char** argv);
@@ -205,14 +205,15 @@ namespace LignumForest{
     ///Parse command line arguments.
     ///\param argc Number arguments
     ///\param argv Command line arguments
-    ///\attention Some hard coded file names as default values.
+    ///\attention Some default values are hard coded file names that must be present.
     ///\attention Command line accepts Glob expressions. The special characters require
-    ///protection with quote characters (`'`). These speacial characters include for example
-    ///curly braces (`{` and `}`). cxxadt::ParseCommanLine() returns the Glog expression as it is.
+    ///protection with quote (') characters . These special characters include for example
+    ///curly braces (`{`, `}`). cxxadt::ParseCommanLine() returns the Glob expression as it is.
     ///The actual parsing of the Glob expression must be done where the expression is needed.
     ///\sa GrowthLoop::checkCommandLine
     ///\sa CheckCommandLine ParseCommandLine
     ///\sa GrowthLoop::insertMetaFiles
+    ///\todo Implement the hard coded file names as global variables in LignumForestGlobals.h
     void parseCommandLine(int argc, char** argv);
     ///\brief Currently checks `eero` from command line
     ///\post If `eero` = *true* then `bud_variation` = *false*
@@ -228,26 +229,25 @@ namespace LignumForest{
     }
     /// \brief Create trees of the forest stand.
     ///
-    /// For each tree to be inserted in the \c vtree tree vector
-    /// +# Create a tree
-    /// +# Create corresponding L-system
-    /// +# Create and set the tree ID (simply the position in the tree vector)
-    /// +# Initialize no_h and h_prev to zero
-    /// +# Initialize wspawood, wfoliage, wroot, ws_after_senescence to zero
+    ///For each tree to be inserted in the \c vtree tree vector
+    ///-# Create a tree
+    ///-# Create corresponding L-system
+    ///-# Create and set the tree ID (simply the position in the tree vector)
+    ///-# Initialize no_h and h_prev to zero
+    ///-# Initialize wspawood, wfoliage, wroot, ws_after_senescence to zero
     ///
-    /// Create trees in predefined locations. Create also L-systems, data vectors and vector of file streams.
-    /// Position of a tree in a tree vector defines its position in all othe vectors
-    /// \pre Tree locations have been generated
-    /// \pre Hard coded function files for ScotsPineTree constructor must exist in the working directory
-    /// \note *fsapwdown*  function file must be given in command line
-    /// \note The command line option `-generateLocations \<num\>` will override all other forest generation options
-    /// \deprecated \c to_file  Using HDF5 files instead
-    /// \todo Remove open output file stream to so called *target tree* (data for all trees for every year in HDF5 file)
-    /// \sa setTreeLocations
-    /// \sa locations Tree positions
-    /// \sa vtree vlsystem Vector of trees and their respective L-systems
-    /// \sa no_h h_prev wsapwood wfoliage wroot ws_after_senescence Data vectors
-    /// \sa vdatafile Tree output file streams
+    ///Create trees in predefined locations. Create also L-systems, data vectors and vector of file streams.
+    ///Position of a tree in the tree vector GrowthLoop::vtree defines its position in all othe vectors
+    ///\pre Tree locations have been generated.
+    ///\pre Hard coded function files for ScotsPineTree constructor must exist in the working directory.
+    ///\note The command line option `-generateLocations <num>` will override all other forest generation options
+    ///\deprecated \c to_file  Using HDF5 files instead
+    ///\todo Remove open output file stream to so called *target tree* (data for all trees for every year in HDF5 file)
+    ///\sa setTreeLocations
+    ///\sa locations Tree positions
+    ///\sa vtree vlsystem Vector of trees and their respective L-systems
+    ///\sa no_h h_prev wsapwood wfoliage wroot ws_after_senescence Data vectors
+    ///\sa vdatafile Tree output file streams
     void createTrees();
     /// \brief Resize data structures for HDF5 file.
     ///
