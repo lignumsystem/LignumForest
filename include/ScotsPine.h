@@ -212,19 +212,22 @@ namespace LignumForest{
 
   };
 
-  ///ScotsPineSegment    
+  ///\brief ScotsPineSegment    
   class ScotsPineSegment: public PineSegment<ScotsPineSegment,ScotsPineBud>{
-    ///The SetValue  for LGPsf  changes the specific  leaf area to  be a
-    ///function instead of being  single tree level parameter. That's why
-    ///no  value argument.<br>
-    ///The data from P Kaitaniemi suggesta following model for \f$ sf \mathit{(m2/kgC)}\f$<br>
-    ///    \f$ sf = 200.0/(5.8307 + 5.3460 \times \mathit{relative_height} + \mathit{omega} + 27.0*\mathit{length}\f$
+    ///\brief The SetValue  for LGPsf  changes the specific  leaf area to  be a
+    ///model function instead of being  single tree level parameter.
+    ///
+    ///The data from P Kaitaniemi suggesta the following model for \f$ s_f \mathit{(m2/kgC)}\f$:
+    ///    \f[
+    ///       s_f = 200.0/(5.8307 + 5.3460 \times H_\mathit{rel} + \mathit{go} + 27.0*L
+    ///    \f]
     ///Specific  leaf  area depends  on  the  relative  height of  the
-    ///segment in a tree, its gravelius order and its length.
-    ///SetScotsPineSegmentSf() only.
+    ///segment in a tree, segment gravelius order and segment length.
     ///\param ts Tree segment
     ///\param name LGPAsf
-    ///\attention SetValue for LGPsf is  meant to  be used  with functor
+    ///\return Previous value for specific leaf area
+    ///\attention This unconventional SetValue has no value argument. Thus SetValue for LGPsf is  meant to  be used  with functor.
+    ///\sa SetScotsPineSegmentSf()
     friend LGMdouble SetValue(ScotsPineSegment& ts, LGMAD  name){    //a bit unconventional SetValue
       double sf_old = GetValue(ts,name);
       if (name == LGAsf){
@@ -315,6 +318,7 @@ namespace LignumForest{
     }
   
   public:
+    ///\brief Constructor 
     ///\attention LGAQabs initialized to 1.0 due to usage (anything != 0.0 would do)
     ///\sa ScotsPineSegment::photosynthesis
     ScotsPineSegment(const Point& p,const PositionVector& d,
@@ -339,7 +343,9 @@ namespace LignumForest{
     ///
     ///Heartwood formation after SPHwStart years (Bjorklund, Silva Fennica).<br>
     ///Butt swell model \f$\mathit{BSW}\f$ adds sapwood senescence thus adding to sapwood requirement:
-    ///\f[\mathit{BSW} = c\times\mathit{LGPq}\times(1.0 - r/0.2)^2.0\f]
+    ///\f[
+    ///\mathit{BSW} = c\times\mathit{LGPq}\times(1.0 - r/0.2)^2.0
+    ///\f]
     ///where \f$c\f$ is the adjustment coeffient, \f$\mathit{LGPq}\f$ is the segment shortening tree parameter
     ///and \f$ 0.0 < r < 0.2\f$ is the relative height position of the segment midpoint in the tree.
     ///\pre For the butt swell model to take effect the tree age must be over a treshold value.
@@ -379,31 +385,39 @@ namespace LignumForest{
   };
 
 
-  ///\brief Adjust lengths \f$ L \f$ for newly created segments.
-  ///
-  ///Segment length models to allocate resources.
-  ///Choose and adapt appropriate models with command line options.
-  ///Currently the functor captures the following experiments.
-  ///-# Basic model where \f$ L = \lambda \times f_{ip} \times f_{go} \times f_{vi} \f$
-  ///-# EBH model to distribute resources. Mutually exclusive with Basic model.
-  ///-# Ad hoc submodel (ParametricCurve) based on relative height to have variability
-  ///   in segment lengths (even for segments with similar conditions)
-  ///-# Space occupancy submodel to set segment length 0  if segment in already occupied space
-  ///-# Hard coded random effect in branches (both Basic and EBH model)
-  ///-# Growth mode and architecture mode change in Basic model:
-  ///    -# Architecture mode change tries to generate in L-system flat branches arranged in a plane.
-  ///    -# Growth mode change applies new functions and tree parameters.
-  ///    -# Growth mode and architecture mode are independent from each other.
-  ///
-  ///It is assumed that paramters and functions affecting a segment length can be
-  ///retrieved from the new segment or from the Lignum tree.
+  ///\brief Adjust dimensions for newly created segments.
+  //
+  //\par Segment length models to allocate resources.
+  //Choose and adapt appropriate models with command line options.
+  //Currently the functor captures the following experiments.
+  //-# Basic model where \f$ L = \lambda \times f_{ip} \times f_{go} \times f_{vi} \f$
+  //-# Growth mode and architecture mode change in Basic model:
+  //    -# Architecture mode change tries to generate in L-system flat branches arranged in a plane.
+  //    -# Growth mode change applies new functions and tree parameters.
+  //    -# Growth mode and architecture mode are independent from each other.
+  //
+  //-# EBH model to distribute resources. Mutually exclusive with Basic model.
+  //-# Ad hoc submodel (ParametricCurve) based on relative height to have variability
+  //   in segment lengths (even for segments with similar conditions)
+  //-# Space occupancy submodel to set segment length 0  if segment in already occupied space
+  //-# Hard coded random effect in branches (both Basic and EBH model)
+  //
+  //\par Segment diameter and foliage
+  //Set segment diameters for heartwood, sapwood and foliage. Notice:
+  //- Segment radius,\p LGAR, is a function of relative light \sa PineTree::SPFAF
+  //- Needle mass, \p LGAWf, now proportional to segment length \sa PineTree::SPFLR 
+  //\par Functions and parameters
+  //It is assumed that parameters and functions affecting a segment dimensions can be
+  //retrieved from the new segment or from the Lignum tree.
   //\sa SetScotsPineSegmentLength::operator(TreeCompartment<ScotsPineSegment,ScotsPineBud>*)
-  ///\sa Usage 
+  //\sa Usage 
   class SetScotsPineSegmentLength{
   public:
-    ///\param lamda Lambda to iterate segment length
+    ///\brief Constructor
+    ///\param lambda Lambda to iterate segment length
+    ///\post \p LignumForest::space_occupancy resetted
     ///\deprecated fgo and fip should be set explicitely
-    SetScotsPineSegmentLength(double lamda):l(lamda)  
+    SetScotsPineSegmentLength(double lambda):l(lambda)  
     {LignumForest::space_occupancy.resetOccupiedTry();}
     SetScotsPineSegmentLength(const SetScotsPineSegmentLength& sl)
       :l(sl.l){}
@@ -411,31 +425,47 @@ namespace LignumForest{
       l = sl.l;
       return *this;
     }
-    ///\brief Functor to set segment new length.
+    ///\brief Functor to set segment dimensions and foliage
     ///
     ///Experiment with various methods and mechanisms to set segment length. Set command line options to set appropriate global variables.
+    ///\pre  Functions and paramters can be retrieved from the tree or from the new segment
     ///\param tc Tree compartment
-    ///\note LignumForest::is_mode_change`and LignumForest::mode_change_year are global variables and trigger the growth mode change.
-    ///\note  Pine::is_architecture_change LignumForest::architecture_change_year are global variables and trigger architecture change in L-system.
+    ///\retval tc Tree compartment
+    ///\note LignumForest::is_mode_change is global variables and trigger the growth mode change.
+    ///\note  Pine::is_architecture_change and Pine::architecture_change_year are global variables and trigger architecture change in L-system.
     ///\note LignumForest::is_random_length is a global variable.
-    ///\note Functions and parameters are set during tree initialization and are reset when growth
-    ///mode change is activated.
+    ///\note Functions and parameters are set during tree initialization and are reset to new files and values when growth mode change is activated.
     ///\sa Usage
     TreeCompartment<ScotsPineSegment,ScotsPineBud>* 
     operator()(TreeCompartment<ScotsPineSegment,ScotsPineBud>* tc)const
-    { ///\par Steps in setting segment length 
+    { 
       if (ScotsPineSegment* ts = dynamic_cast<ScotsPineSegment*>(tc)){
 	if (GetValue(*ts,LGAage) == 0.0){
 	  double go =  GetValue(*ts,LGAomega); 
 	  double Lnew = 0.0;
+	  ///\par Steps in setting segment length 
 	  ///\par Vigour index
-	  ///\remark For side branches the *growth vigour* is the function of vigour index *vi* (TreePhysiology),e.g.:
+	  ///For side branches the *vigour index* (Tree Physiology) is needed:
+	  ///\sa Lignum::TreePhysiologyVigourIndex
+	  ///\internal
+	  ///\snippet{lineno} ScotsPine.h VigorIndex
+	  // [VigorIndex]
+	  double vi = GetValue(*ts,LGAvi);
+	  // [VigorIndex]
+	  ///\remark The *growth vigour* effect on segment length is a function of vigor index \f$ \mathit{f(vi)} \f$, for example
 	  ///\f[
 	  ///\mathit{f(vi)} = (1-a)f(\mathit{vi}) = (1-0.2)(0.15+0.85\mathit{vi}) = 0.8(0.15+0.85\mathit{vi})
 	  ///\f]
-	  double vi = GetValue(*ts,LGAvi);
+	  ///\endinternal
 	  ///\par  Growth functions
-	  ///It is assumed that trees know their functions and parameters at any time in simulation.
+	  ///It is assumed that trees know their functions and parameters at any time in simulation:
+	  ///Functions and parameters for Basic model can be be queried from the tree:
+	  /// -# \p fgo: Segment length as a function of Gravelius order
+	  /// -# \p fip: Segment length as a function of relative light
+	  /// -# \p fvi: Segment length as a function of Vigor index, i.e. *growth vigor*
+	  /// -# \p faf: Initial foliage for Scots pine segment as a function of relative light
+	  /// -# \p flr: Segmment radius as a function of relative light
+	  /// -# \p getApical: Function to set apicality [0,1] for new segments, 1 for others
 	  ///\internal
 	  ///\snippet{lineno} ScotsPine.h SFunc
 	  // [SFunc]
@@ -464,11 +494,13 @@ namespace LignumForest{
 	    //	    double Lnew =  max<double>(0.0,1.0-(go-1.0)*q);
 	  } else {
 	    ///\par  EBH model
+	    ///
 	    ///The implementation is according to W. Palubicki and K. Horel and S. Longay and
 	    ///A. Runions and B. Lane and R. Mech and P. Prusinkiewicz. 2009.
 	    ///*Self-organizing tree models for image synthesis.* ACM Transactions on
-	    ///Graphics 28 58:1-10. Length growth is according to
-	    ///Extended Borchert-Honda model, EBH_resource is share [0,1] of total
+	    ///Graphics 28 58:1-10.
+	    ///
+	    ///Length growth is according to Extended Borchert-Honda model, EBH_resource is share [0,1] of total
 	    ///intercepted radiation that has been distributed according to their function.
 	    ///\note EBH overrides Basic model
 	    ///\internal
@@ -482,7 +514,7 @@ namespace LignumForest{
 	  //	  cout << "Lnew1 Lnew2 Lnew3 Lnew4 Lnew5  " << Lnew << " ";
 	  ///\par Ad hoc model
 	  ///Ad hoc addition to segment elongation model.
-	  ///Calculate `adhoc_factor`for segment length in branches 
+	  ///Calculate \p adhoc_factor for segment length in branches 
 	  ///\internal
 	  ///\snippet{lineno} ScotsPine.h ADHOC
 	  // [ADHOC]
@@ -527,7 +559,7 @@ namespace LignumForest{
 	  //If basic model (no EBH) add f(ip) and  *ad_hoc* to Lnew
 	  if(GetValue(dynamic_cast<ScotsPineTree&>(GetTree(*ts)), SPis_EBH) < 1.0) {
 	    ///\par Full Basic model
-	    ///Ad hoc and Relative light additions to Basic segment elongation
+	    ///Ad hoc and Relative light additions to Basic segment elongation.
 	    ///Default value for `adhoc_factor` is 1
 	    ///\internal
 	    ///\snippet{lineno} ScotsPine.h LBasic2
@@ -535,7 +567,6 @@ namespace LignumForest{
 	    //Result of the Basic model if no ad_hoc
 	    //The l denotes lambda, fip(ip) denotes relative light
 	    Lnew = l*fip(ip)*adhoc_factor*Lnew;
-	    
 	    if(Pine::L_age > LignumForest::length_limit_year) {
 	      if(go < 2.0 && Lnew > LignumForest::g1maxL) {
 		Lnew = LignumForest::g1maxL;
@@ -565,6 +596,7 @@ namespace LignumForest{
 	    LGMdouble rp = GetValue(GetTree(*ts),LGPlen_random);
 	    //cout << "IN SEGMENT_RANDOM_LENGTH " << rp << endl;
 	    ///\par  Optional random segment length variation
+	    ///
 	    ///Set the segment length \f$L_r\f$ randomly around the deterministic length \f$L\f$:
 	    ///\f[
 	    ///L_r = L + (r_p/0.5)\times(\mathit{ran3}(s)-0.5)
@@ -576,7 +608,7 @@ namespace LignumForest{
 	    ///\note Negative seed value \f$s\f$ for \f$\mathit{ran3}\f$ initializes the sequence for that value.
 	    ///      Any positive value generates one random number from the sequence.
 	    /// \sa The command line argument -segLenVar and LignumForest::is_random_length.
-	    ///\todo Condider changing \f$\mathit{ran3}\f$ to STL library *std::uniform_real_distribution*
+	    ///\todo Condider changing \f$\mathit{ran3}\f$ to STL library \p std::uniform_real_distribution
 	    ///(in the header *random*).
 	    ///\internal
 	    ///\snippet{lineno} ScotsPine.h RANDOM
@@ -587,8 +619,8 @@ namespace LignumForest{
 	    // [RANDOM]
 	    ///\endinternal
 	  }
-
 	  ///\par  Space occupancy
+	  ///
 	  ///Optional Space occupance models study voxels around segment
 	  ///and set segment lengths off (i.e. to 0) if the growth space is occupied.
 	  ///Otherwise no effect on segment length.
@@ -638,6 +670,7 @@ namespace LignumForest{
 		    }
 		  }
 		  ///\par  Growth space check
+		  ///
 		  ///Neighbourhood voxels collected. Set segment length to 0 if growth space (voxel) occupied
 		  ///\internal
 		  ///\snippet{lineno} ScotsPine.h SCHECK
@@ -663,8 +696,9 @@ namespace LignumForest{
 	    } //if(go > 1) {
 	  } //if(LignumForest::space0 || LignumForest::space1 || LignumForest::space2) { 
 	  ///\par Segment length consistency
+	  ///
 	  ///Check that segment length \f$L \geq 0\f$, \f$ L \geq \mathit{LGPmin} \f$ and not too thin.
-	  ///\attention The check for segment thickness is hard coded as PineTree::SPFLR function
+	  ///\attention The check for segment thickness is implemented in PineTree::SPFLR function
 	  ///\internal
 	  ///\snippet{lineno} ScotsPine.h LCHECKS
 	  // [LCHECKS]
@@ -692,9 +726,9 @@ namespace LignumForest{
 	  SetValue(*ts,LGARh,0.0);
 	  //Initial heartwood
 	  SetValue(*ts,LGARh,sqrt((GetValue(GetTree(*ts),LGPxi)*GetValue(*ts,LGAAs))/PI_VALUE));
-	  //Initial foliage for Scots pine: LGPAf is a function of light
+	  //Initial foliage for Scots pine: LGPAf is a function of relative light
 	  const ParametricCurve& faf = GetFunction(dynamic_cast<ScotsPineTree&>(GetTree(*ts)),SPFAF);
-	  //	  SetValue(*ts,LGAWf,faf(ip)*GetValue(*ts,LGASa));
+	  //SetValue(*ts,LGAWf,faf(ip)*GetValue(*ts,LGASa));
 	  //Needle mass now proportional to segment length
 	  SetValue(*ts,LGAWf,faf(ip)*Lnew);   
 	  //Remember the initial foliage!!
