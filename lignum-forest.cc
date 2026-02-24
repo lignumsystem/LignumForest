@@ -137,9 +137,9 @@ int main(int argc, char** argv)
   //Generate tree locations either on the fly or from a file
   gloop.setTreeLocations();
   //Create trees to locations set above
-  cout << "CREATE TREES" <<endl;
+  cout << "Create trees" <<endl;
   gloop.createTrees();
-  cout << "CREATE TREES DONE" << endl;
+  cout << "Create trees done" << endl;
   gloop.printTreeLocations(0);
   // [InitForest]
   ///\page CREATEFORESTSTAND 2. Forest stand
@@ -166,6 +166,7 @@ int main(int argc, char** argv)
   LGMHDF5File hdf5_trees(TREEXML_PREFIX+hdf5fname);
   hdf5_trees.createGroup(TXMLGROUP);
   LignumForest::CreateHDF5File hdf5datafile(hdf5fname,gloop.getVoxelFile(),gloop.getMetaFiles());
+  cout << "createConfigurationDataSets" <<endl;
   hdf5datafile.createConfigurationDataSets(argc,argv);
   // [HDF5Init]
   ///\page HDF5FILES 3. HDF5 files
@@ -183,7 +184,9 @@ int main(int argc, char** argv)
   ///\snippet{lineno} lignum-forest.cc InitForestGrowth
   // [InitForestGrowth]
   //InitializeTrees reads in/sets a number of parameters and functions for each tree
+  cout << "INITIALIZE trees" << endl;
   gloop.initializeTrees();
+  
   //Resize the 3D and 2D data arrays for HDF5 file to right dimensions.
   //Simulation years and number of trees are known
   gloop.resizeTreeDataMatrix();
@@ -210,7 +213,7 @@ int main(int argc, char** argv)
   ///\page GROWTHLOOP 5. Growth loop
   ///@}
   for(int year = 0; year < gloop.getIterations(); year++) {
-    cout << "GROWTH LOOP YEAR " << year <<endl;
+    cout << "GROWTH LOOP BEGIN YEAR " << year <<endl;
     if(gloop.getNumberOfTrees() < 1) {
       cout << "Number of trees left " << gloop.getNumberOfTrees() << " Stop." << endl;
       //Do not stop abruptly, continue to the end of loop and then write data
@@ -294,12 +297,14 @@ int main(int argc, char** argv)
     //Depending on the command line:
     //Calculate space colonization
     //Calculate Extended Borchert-Honda model
+    cout << "New growth" << endl;
     gloop.createNewSegments();
     //It assumed that parameters and functions affecting segment length and diameter
-    //can be retrieved from the new segment and the Lignum tree 
-    gloop.allocationAndGrowth<SetScotsPineSegmentLength>();
+    //can be retrieved from the new segment and the Lignum tree
+    gloop.allocationAndGrowth<ReduceApicalityWithFip>();
     // collectDeadTreeDataAfterGrowth collects dead tree data for HDF5 file.
     // Dead tree appears once, the year it has died and removed from simulation
+    cout << "Pruning dead trees" << endl;
     gloop.collectDeadTreeDataAfterGrowth(year+1);
     // Remove dead trees from simulation
     gloop.removeDeadTreesAllOver();
@@ -322,7 +327,8 @@ int main(int argc, char** argv)
     ///  + Save trees in XML format in HDF5 file with write intervals
     ///
     /// \snippet{lineno} lignum-forest.cc DataCollection
-    // [DataCollection] 
+    // [DataCollection]
+    cout << "Data collection" <<endl;
     gloop.evaluateStandVariables();
     // collectDataAfterGrowth collects data for HDF5 file. The 0th Year dimension
     // contains initial data. The year+1 requires because year is not yet updated
