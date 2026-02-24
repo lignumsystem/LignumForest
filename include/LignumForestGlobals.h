@@ -85,12 +85,20 @@ using namespace voxelspace;
 /// \brief Variables not used
 /// \attention The Fip, effect of relative light, and effect of Gravielius order on segment length
 /// are read from MetaFiles.
+///
+/// \defgroup REDUCEAPICAL Reduce apicality in trees
+/// \brief Variables used when reducing apicality in trees
+///
+/// Older Scots pine trees tend to loose strict apicality present in younger trees.
+/// The set of variables control the application of apicality reduction.
 /// @}
 
 ///\brief L-system namespace
 namespace Pine{
   /// \addtogroup LSYSTEM
   /// @{
+  ///\name L-system control
+  ///@{
   ///\brief Tree age
   extern double L_age;
   ///\brief Tree height
@@ -111,6 +119,7 @@ namespace Pine{
   extern bool is_architecture_change;
   ///\brief Set architecture change year
   extern int architecture_change_year;
+  ///@}
   /// @}
 }
 
@@ -125,12 +134,17 @@ namespace Pine{
 namespace LignumForest{
   ///\addtogroup INITIALSAPLINGS 
   ///@{
+  ///\name Intial trees
+  ///@{
   ///\brief Initial height ot trees
   extern double H_0_ini;
   ///\brief Variation of initial tree height
   extern double H_var_ini;
   ///@}
+  ///@}
   ///\addtogroup INITIALBUDS
+  ///@{
+  ///\name Initial buds
   ///@{
   ///\brief Set bud variation on or off \sa LignumForest::rel_bud
   extern bool bud_variation;
@@ -145,16 +159,17 @@ namespace LignumForest{
   extern int n_buds_ini_max;
   ///\brief Variation in the initial min number of buds.
   extern int n_buds_ini_min;
-  ///\deprecated Variation in branch angle. Set in \sa pine-em98.L
-  extern double branch_angle;
   ///\brief The angle of branching after architecture change. Used in L system.
   extern double max_turn_in_architecture_change;
+  ///@}
   ///@}
   
 }
 
 namespace LignumForest{
   ///\addtogroup RANDOM
+  ///@{
+  ///\name Random variability
   ///@{
   ///\brief Seed for `ran3` function
   extern int ran3_seed;
@@ -169,9 +184,11 @@ namespace LignumForest{
   ///\sa LignumForest::is_adhoc
   extern ParametricCurve adhoc;
   ///@}
+  ///@}
   ///\addtogroup ALLOCATION
   ///@{
-  ///
+  ///\name Allocation models
+  ///@{
   ///\brief EBH model is used e.g. in bybranches.cc
   ///\todo Not (yet) used in LignumForest
   ///\note GrowthLoop.h has growthloop_ebh_mode as a class data member
@@ -181,16 +198,22 @@ namespace LignumForest{
   ///\attention Not (yet) used in LignumForest
   extern LGMdouble max_rueqin;
   ///@}
+  ///@}
   ///\addtogroup GROWTHMODE
   ///@{
-  ///\brief Reinitialize trees
+  ///\name Control growth  mode change
+  ///@{
+  ///\brief Reinitialize tree parameters and parameters
   ///
   ///Set mode change on/off to rereade
   ///MetaFiles and reinitialize trees.
   ///\sa GrowthLoop::insertModeChangeYears()
   extern bool is_mode_change;
   ///@}
+  ///@}
   ///\addtogroup GROWTHSPACE
+  ///@{
+  ///\name Growth space survey model
   ///@{
   ///\brief Additional Firmament for  VoxelSpace `LignumForest::space_occupancy`.
   ///\sa LignumForest::space_occupancy
@@ -208,35 +231,10 @@ namespace LignumForest{
   extern double space2_distance;
   ///@}
   ///@}
-  ///\addtogroup SHAPE
-  ///@{
-  ///\brief Height crown base
-  extern double global_hcb;
-  ///\brief For change in base diameter, for the command line option -heightFun
-  ///\attention The class GrowthLoop has dDb as data member 
-  extern double dDb;
-  ///@}
-  ///\addtogroup DEPRECATED 
-  ///@{
-  ///\brief Height functionn experiment in use or not
-  ///\deprecated Not used in LignumForest
-  ///\todo Remove from LignumForest
-  extern bool is_height_function;
-  ///@}
-  ///\addtogroup DEPRECATED 
-  ///@{
-  ///\brief Fip function
-  ///
-  ///Effect of relative light on segment length
-  ///\deprecated Fip functions are read from MetaFiles 
-  extern ParametricCurve fip_mode;
-  ///\brief Gravelius order function
-  ///
-  ///Gravelius order effect on segment length 
-  ///\deprecated Gravelius order functions are read from MetaFiles
-  extern ParametricCurve fgo_mode;
   ///@}
   ///\addtogroup BUDSPACE
+  ///@{
+  ///\name Bud growth space survey model
   ///@{
   ///\brief Bud view function
   ///
@@ -248,7 +246,10 @@ namespace LignumForest{
   ///\sa bud_vew_f
   extern bool is_bud_view_function;
   ///@}
+  ///@}
   ///\addtogroup BUTTSWELL
+  ///@{
+  ///\name Diameter growth models
   ///@{
   ///\brief Butt swell model in diameter growth.
   ///
@@ -262,23 +263,37 @@ namespace LignumForest{
   ///\brief Tree age to start butt swell, default value is INT_MAX (i.e. never).
   ///\sa ScotsPineSegment::aging() GrowthLoop::usage()  GrowthLoop::parseCommanLine() LignumForest::butt_swell_coeff
   extern int butt_swell_start;
+  ///\brief Height crown base
+  extern double global_hcb;
+  ///\brief For change in base diameter, for the command line option -heightFun
+  ///\attention The class GrowthLoop has dDb as data member 
+  extern double dDb;
+  ///@}
   ///@}
   ///\addtogroup BUDTERMINATION
   ///@{
-  ///\brief Variable for command line 
+  ///\name Control growth in Voxel space
+  ///@{
+  ///\brief Growth within the Voxel space
   ///
-  ///Boolean flag. Terminate buds grown out of the *original* VoxelSpace, default False.
+  ///Boolean flag to limit the branch growth by terminating buds
+  ///grown out of the *original* VoxelSpace side walls, default False.
   ///The command line option `-terminate_buds` sets the value to *true*.
+  ///Without limitation the VoxelSpace will expand to create new growth space for
+  ///branches.
   ///\sa GrowthLoop<TREE,TS,BUD,LSYSTEM>::terminateEscapedBuds().
   extern bool terminate_escaped_buds;
   ///@}
+  ///@}
   ///\addtogroup SEGMENTLIMIT 
+  ///@{
+  ///\name Segment length models
   ///@{
   ///\brief File defining max segment length model behaviour.
   ///
   ///File sets values for LignumForest::g1maxL, LignumForest::g2maxL
   ///and LignumForest::length_limit_year.
-  const string SEGMENT_LENGTH_LIMIT_FILE="dhlimit.txt";
+  extern const string SEGMENT_LENGTH_LIMIT_FILE;
   ///First branch segments max length. Use unrealistic high value to have no effect.
   extern double g1maxL;
   ///Second branch segments max length. Use unrealistic high value to have no effect.
@@ -288,6 +303,47 @@ namespace LignumForest{
   ///Start year the max segment lengths LignumForest::g1maxL and LignumForest::g2maxL take effect.
   ///Value larger than the simulation time annuls the max segment length model calculations.
   extern int length_limit_year;
+  ///@}
+  ///@}
+  ///\addtogroup REDUCEAPICAL
+  ///@{
+  ///\name Apicality reduction control
+  ///@{
+  ///\brief Boolean flag to denote reducing apicality is in effect. Set *true* based on command line.
+  extern bool REDUCE_APICAL;
+  ///\brief Tree age when reducing apicality in trees starts
+  extern const double REDUCE_APICAL_AGE;
+  ///\brief Top part of the tree crown (\f$H_{\mathrm{top}} \in [0,1] \f$) when applying apical reduction
+  extern const double TREE_CROWN_TOP;
+  ///\brief File name for ParametricCurve function
+  ///
+  ///The ParametricCurve function controls apicality by reducing tree segment length growth.
+  ///Defined in comand line.
+  extern string REDUCE_APICAL_FILE;
+  ///@}
+  ///@}
+  ///\addtogroup DEPRECATED 
+  ///@{
+  ///\name Deprecated
+  ///@{
+  ///\brief Fip function
+  ///
+  ///Effect of relative light on segment length
+  ///\deprecated Fip functions are read from MetaFiles 
+  extern ParametricCurve fip_mode;
+  ///\brief Gravelius order function
+  ///
+  ///Gravelius order effect on segment length 
+  ///\deprecated Gravelius order functions are read from MetaFiles
+  extern ParametricCurve fgo_mode;
+  ///\brief Height function experiment in use or not
+  ///\deprecated Not used in LignumForest
+  ///\todo Remove from LignumForest
+  extern bool is_height_function;
+  ///\brief Constant \p branch_angle. Not used in pine-em98-branch-C.L.
+  ///\deprecated See pitch, turn and roll commands in pine-em98-branch-C.L
+  extern double branch_angle;
+  ///@}
   ///@}
 }//end namespace
 #endif

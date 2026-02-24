@@ -51,4 +51,12 @@ namespace LignumForest{
   ParametricCurve bud_view_f("bvf.fun");
   bool is_bud_view_function = false;
   bool terminate_escaped_buds = false;
+  //Segment length limitation
+  const string SEGMENT_LENGTH_LIMIT_FILE="dhlimit.txt";
+  //Apical dominancy control
+  bool REDUCE_APICAL=false;
+  const double REDUCE_APICAL_AGE=60;
+  const double TREE_CROWN_TOP=0.9;
+  string REDUCE_APICAL_FILE="ReduceApical.fun";
+  
 }//end namespace
