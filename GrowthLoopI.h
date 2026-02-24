@@ -1286,10 +1286,11 @@ namespace LignumForest{
       //Insert the target tree location
       //    locations.insert(locations.begin(), pair<double,double>(x_coord,y_coord));
       if (verbose){
-	cout << "Number of trees" << locations.size() <<endl 
-	     << " Density/ha wanted: " << (double)no_trees_0/(vx*vy/10000.0)
-	     << " Density/ha created: " << (double)no_trees/(vx*vy/10000.0) <<endl;
-	cout << " Minimum tree distance: " << tree_distance <<endl; 
+	cout << "Generated random tree locations" <<endl
+	     << "Number of tree locations " << locations.size() <<endl 
+	     << "Density/ha requested:  " << (double)no_trees_0/(vx*vy/10000.0) << endl
+	     << "Density/ha created:    " << (double)no_trees/(vx*vy/10000.0) <<endl
+	     << "Minimum tree distance: " << tree_distance <<endl; 
       }
     } //  if(generate_locations  ...)
     else {
@@ -2609,15 +2610,16 @@ namespace LignumForest{
   template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::printTreeLocations(int iter)const
   {
-    //Print the locations. Generate the file name Locations-<n>.txt where
+    //If verbose Print the locations. Generate the file name Locations-<n>.txt where
     //n is the value of 'iter'
-    ostringstream locations_file;
-    locations_file << "Locations-" << iter << ".txt";
-    if (verbose)
+    if (verbose){
+      ostringstream locations_file;
+      locations_file << "Locations-" << iter << ".txt";
       cout << "Writing tree locations to file: " << locations_file.str() << endl;
-    ofstream ofs(locations_file.str().c_str());
-    for(unsigned int i = 0; i < locations.size(); i++){
-      ofs << locations[i].first << " " << locations[i].second << endl;
+      ofstream ofs(locations_file.str().c_str());
+      for(unsigned int i = 0; i < locations.size(); i++){
+	ofs << locations[i].first << " " << locations[i].second << endl;
+      }
     }
   }
 

@@ -40,7 +40,6 @@ namespace LignumForest{
     //Metafiles
     for (unsigned int i = 0; i < metafile_queue.size(); i++){
       string fname = metafile_queue[i];
-      cout << "INSERTING METAFILE " << fname << " TO HDF5 FILE" <<endl;
       hdf5_file.createFileDataSetsFromDir(metafile_queue[i],LignumForest::ALLMETAFILEGROUP);
     }
     //Tree parameters
