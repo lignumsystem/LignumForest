@@ -115,13 +115,15 @@ namespace LignumForest{
   ///
   ///Reduce apicality based on tree age, segment relative height in tree crown and Gravelius order.
   ///The function of Gravelius order is implemented as ParametericCurve in a file.
-  ///Tree age and segment relative height value trigger apicality reduction.
+  ///Tree age and segment relative height in the tree crown trigger apicality reduction.
   ///\sa  LignumForest::REDUCE_APICAL_AGE LignumForest::TREE_CROWN_TOP  LignumForest::REDUCE_APICAL_FILE
   ///\sa ReduceApicalityWithFip
   class ReduceApicalityWithGraveliusOrder{
   public:
-    ///\brief Constructor where apicality parameter values are from global variables
+    ///\brief Constructor where apicality parameter values are set from global variables. 
     ///\param lambda Lambda to iterate over new tree segment lengths
+    ///\attention This is mandatory constructor signature for GrowthLoop::allocationAndGrowth
+    ///template parameter
     ///\sa LignumForest::REDUCE_APICAL_AGE LignumForest::TREE_CROWN_TOP LignumForest::REDUCE_APICAL_FILE
     ReduceApicalityWithGraveliusOrder(double lambda)
       :l(lambda),tree_apical_age(LignumForest::REDUCE_APICAL_AGE),crown_top(LignumForest::TREE_CROWN_TOP),
@@ -136,8 +138,7 @@ namespace LignumForest{
     ///\brief Segment length with decreased growth potential for reduced apicality
     ///
     ///Segment length is based on LignumForest::SetScotsPineSegmentLength Basic model
-    ///with addition to reduce apicality in the tree. When and how reduced apicality is applied
-    ///depends on tree age and segment position in the tree crown.
+    ///with apicality reduction according the segment Gravelius order.
     ///\param tc Tree compartment
     ///\retval tc The tree comaprtment
     ///\sa GrowthLoop::allocationAndGrowth LignumForest::SetScotsPineSegmentLength
@@ -207,9 +208,9 @@ namespace LignumForest{
 	/// -# \p fvi: Segment length as a function of Vigor index, i.e. *growth vigor*
 	/// -# \p faf: Initial foliage for Scots pine as a function of relative light
 	/// -# \p flr: Segmment radius as a function of relative light
-	/// -# \p getApical(): Function to set apicality [0,1] for new segments, 1 for others
+	/// -# \p getApical(): Function to set apicality [0,1] for new segments, 1 for others.
 	/// -# \p fapicality: Experimental addition. Apicality in older trees set for new segments in the upper part of the crown.
-	///                   Set ScotsPineSegment::getApical to 1 when using \p fapicality.
+	///                   
 	///\internal
 	///\snippet{lineno} ApicalDominance.h ApicalFunc
 	// [ApicalFunc]
@@ -222,7 +223,7 @@ namespace LignumForest{
 	///\endinternal
 	///
 	///\par Segment apicality in the Basic model
-	///The value of  \p my_apical is [0,1] for new branches  and set to 1 after that.
+	///The value of  \p my_apical is in [0,1] for new branches  and set to 1 after that.
 	///Also set apicality \p reduction to 1.0 (no effect) in the tree crown apicality model for older trees.
 	///\internal
 	///\snippet{lineno} ApicalDominance.h ReduceApicalityBasic
@@ -236,7 +237,7 @@ namespace LignumForest{
 	if ((GetValue(GetTree(*ts),LGAage) >= tree_apical_age) && ((z / tree_height) >= crown_top)){
 	  ///\par Reduce apicality
 	  ///If the tree age and the segment height  in the tree crown triggers the tree crown apicality model
-	  ///reduce the segment elongation defined by Gravelius order.
+	  ///reduce the segment elongation defined by \p fapicality(go), where \p go is Gravelius order.
 	  ///Also set \p my_apical in the Basic model to 1.0 (no effct)
 	  ///\internal
 	  ///\snippet{lineno} ApicalDominance.h LApicalReduction
@@ -265,7 +266,7 @@ namespace LignumForest{
 	// [LApicalDimensions]
 	//Set segment dimensions based on segment length
 	SetValue(*ts,LGAL,Lnew);
-	//Initial radius, NOTE: R = flr(ip)*Lnew, i,.e. length/radius function NOT static constant  
+	//Initial radius, NOTE: R = flr(ip)*Lnew, i.e. length/radius is a function, not static constant parameter value  
 	SetValue(*ts,LGAR,flr(ip)*Lnew);
 	//Reset previous Rh!!!!
 	SetValue(*ts,LGARh,0.0);
@@ -294,8 +295,10 @@ namespace LignumForest{
   ///\sa ReduceApicalityWithGraveliusOrder
   class ReduceApicalityWithFip{
   public:
-    ///\brief Constructor where apicality parameter values are from global variables
+    ///\brief Constructor where apicality parameter values are set from global variables
     ///\param lambda Lambda to iterate over new tree segment lengths
+    ///\attention This is mandatory constructor signature for GrowthLoop::allocationAndGrowth
+    ///template parameter
     ///\sa LignumForest::REDUCE_APICAL_AGE LignumForest::TREE_CROWN_TOP LignumForest::REDUCE_APICAL_FILE
     ReduceApicalityWithFip(double lambda)
       :l(lambda),tree_apical_age(LignumForest::REDUCE_APICAL_AGE),crown_top(LignumForest::TREE_CROWN_TOP),
@@ -337,17 +340,25 @@ namespace LignumForest{
 
   TreeCompartment<ScotsPineSegment,ScotsPineBud>* ReduceApicalityWithFip::operator()(TreeCompartment<ScotsPineSegment,ScotsPineBud>* tc)const
   {
+    ///\par Calculate tree height
+    ///Calculate tree height once
     if (Axis<ScotsPineSegment,ScotsPineBud>* axis = dynamic_cast<Axis<ScotsPineSegment,ScotsPineBud>*>(tc)){
       if (!tree_height_calculated){
+	///\internal
+	///\snipppet{lineno} ApicalDominance.h ApicalTH
+	// [ApicalTH]
 	Point p(0,0,0);
 	ScotsPineTree& t = dynamic_cast<ScotsPineTree&>(GetTree(*axis));
 	p = Accumulate(t,p,FindHighestPoint<ScotsPineSegment,ScotsPineBud>());
 	tree_height = p.getZ();
 	tree_height_calculated=true;
+	// [ApicalTH]
+	///\endinternal
       }
     }	  
     ///\par Steps in setting segment length
-    ///The first part is as in SetScotsPineSegmentLength. The final part reduces apicality.
+    ///The first part is as in the Basic model in SetScotsPineSegmentLength.
+    ///The additinional part reduces apicality.
     else if (ScotsPineSegment* ts = dynamic_cast<ScotsPineSegment*>(tc)){
       if (GetValue(*ts,LGAage) == 0.0){
 	///\par Relative light
