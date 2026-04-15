@@ -174,7 +174,7 @@ points(ksto$year,ksto$Dbhav,type="l",lwd=3,col="darkgreen")
 
 
 #Height
-plot(y,trees[7,mukana[largest],], type="l", ylim=c(0,1.2*trees[7,mukana[largest],ymax]), lty=1,xlab="time (y)", ylab="Tree height (m)",lwd=2, main=paste("Height growth of (at age ", as.character(ymax-1),") shortest (red), median (green),\n tallest (blue) tree",sep=""), col="blue") #largest
+plot(y,trees[7,mukana[largest],], type="l", ylim=c(0,1.2*trees[7,mukana[largest],ymax]), lty=1,xlab="time (y)", ylab="Tree height (m)",lwd=2, main=paste("Height growth of ","shortest (red), median (green), tallest (blue) tree\n","Nos: ",as.character(trees[1,mukana[smallest],1]),", ",as.character(trees[1,mukana[med],1]),", ",as.character(trees[1,mukana[largest],1]),sep=""), col="blue") #largest
 points(y,trees[7,mukana[med],], type="l",lwd=2, col="darkgreen")  #median
 points(y,trees[7,mukana[smallest],], type="l",lwd=2,col="red")    #smallest
 
