@@ -13,6 +13,7 @@
 #include <Point.h>
 #include <PositionVector.h>
 #include <TMatrix3D.h>
+#include <TMatrixN.h>
 #include <Bisection.h>
 #include <LGMHDF5File.h>
 #include <Sensitivity.h> 
@@ -73,25 +74,42 @@ namespace LignumForest{
     template <class TREE1,class TS1,class BUD1,class LSYSTEM1>
     /// \brief Create XML string reprentations for the trees in the forest stand.
     ///
-    /// Each tree will be its own dataset in its age group. Trees are (must be) collected
-    /// during the growth loop.
-    /// \pre The HDF5 file \p hdf5_file must be open
-    /// \param gl The GrowLoop
+    /// Each tree will be its own dataset in its age group. Trees are collected
+    /// during the growth loop. The dataset path name for the trees will be */TXMLGROUP/age/TREEXML_PREFIX+tree_id*,
+    /// where the \e age is the age of the tree and \e tree_id the ID of the tree.
+    /// \param gl GrowLoop
     /// \param hdf5_file The HDF5 file where the XML strings will be stored
     /// \param group_name The name of the root group (dataset) for the XML strings
     /// \param interval Write interval: trees will be written when `age mod interval = 0`.
-    /// \return 0 Always returns zero. 
-    /// \note The dataset naming for the trees will be */dataset_name/`age`/Tree_`tree_id`*,
-    /// where the `age` is the age of the tree and `tree_id` the ID of the tree.
-    /// \post  The HDF5 file \p hdf5_file remains open
+    /// \return 0 Always returns zero.
+    /// \pre The HDF5 file \p hdf5_file must be open
+    /// \post The HDF5 file \p hdf5_file remains open
     /// \attention The \p hdf5_file must be closed after the growth loop before program exit.
+    /// \sa TXMLGROUP
+    /// \sa TREEXML_PREFIX
     /// \todo Improve the use of the return value to use return values from HDF5 functions
     friend int CreateTreeXMLDataSet(const GrowthLoop<TREE,TS,BUD,LSYSTEM>& gl, LGMHDF5File& hdf5_file,const string& group_name,
 				    const int interval);
+    /// \brief Create dataset from VoxelSpace selected content
+    ///
+    /// The data set path name will be /VOXELSPACEGROUP/age/VOXELSPACE_DATA_DATASET_NAME
+    /// where \e age is the simulation year
+    /// \param gl GrowLoop
+    /// \param hdf5_file The HDF5 file where the XML strings will be stored
+    /// \param group_name The name of the root group (dataset) for the XML strings
+    /// \param interval Write interval: trees will be written when `age mod interval = 0`.
+    /// \return 0 Always returns zero.
+    /// \pre The HDF5 file \p hdf5_file must be open
+    /// \post The HDF5 file \p hdf5_file remains open
+    /// \attention The \p hdf5_file must be closed after the growth loop before program exit.
+    /// \sa VOXELSPACEGROUP
+    /// \sa VOXELSPACE_DATA_DATASET_NAME
+    friend int CreateVoxelSpaceContentDataSet(const GrowthLoop<TREE,TS,BUD,LSYSTEM>& gl, LGMHDF5File& hdf5_file,const string& group_name,
+					      const int interval);
     /// \brief Update `GrowthLoop::ws_after_senescence` vector
     /// \param gl GrowthLoop
     /// \param ws Sapwood mass
-    /// \param pos position in the `GriwthLoop::ws_after_senescence` vector
+    /// \param pos position in the `GrowthLoop::ws_after_senescence` vector
     /// \sa GrowthLoop::ws_after_senescence vector
     friend void UpdateSapwoodAfterSenescence(GrowthLoop<TREE,TS,BUD,LSYSTEM>& gl,double ws,unsigned int pos)
     {
@@ -444,14 +462,13 @@ namespace LignumForest{
     void treeAging(TREE& t);
     double collectSapwoodMass(TREE& t);
     void setSapwoodDemandAtJunction(TREE& t);
-    /// \brief Allocation of photosynthates to growth.
+    /// \brief Implements iterative calls to FSEGMENTLENGTH functor
     ///
     /// The allocation of photosynthates \f$P\f$ after respiration costs \f$M\f$.
     /// Find value of the \f$ \lambda  \f$ parameter that makes available resources, \f$P-M\f$, to match
-    /// demand of growth, \f$G\f$, with the aid of iteration, i.e. \f$P - M = G(\lambda)\f$.
+    /// demand of growth, \f$G\f$, using iterative cxxadt::Bisection() method, i.e. \f$P - M = G(\lambda)\f$.
     ///
-    /// \tparam FSEGMENTLENGTH Functor or function for segment length.
-    /// The functor or function takes one parameter \f$ \lambda \f$ to adjust segment length.
+    /// \tparam FSEGMENTLENGTH Functor with one parameter \f$ \lambda \f$ to adjust segment length.
     /// \tparam TREE Lignum tree
     /// \param t Lignum tree 
     /// \param verbose Verbose output
@@ -620,20 +637,17 @@ namespace LignumForest{
     void createNewSegments();
     /// \brief Allocation of net photosynthates to growth.
     ///
-    /// Also responsible of keeping record of tree death.
-    /// Dead trees are removed from the list of trees, L-systems
-    /// and from the vectors of collected data.
-    ///
     /// Allocation of photosynthetic production to growth of new segments and
     /// expansion of existing ones. The tree structure is also updated and
     /// new buds are created.
     ///
     /// If the  photosynthates allocation does not succeed in the iterative GrowthLoop::allocation()
-    /// (bracketing fails or P - M < 0.0) the tree is considered dead and removed from the data
-    /// lists
+    /// the tree is considered dead and removed from  the vectors \p GrowthLoopp:::vtree  of trees,
+    /// L-systems and from the vectors of collected data. The dead tree is added to the vector
+    /// \p GrowthLoop::dead_trees of dead trees.
     ///
     /// Algorithm in detail:
-    /// + Clear the list \c GrowthLoop::dead_trees
+    /// + Clear the list \p GrowthLoop::dead_trees
     /// + Set Pine::mode to 1, i.e. create new segments mode in the L-system
     /// + For each tree 
     ///   + Set sapwood demand at a branching point (LignumForest::SetSapwoodDemandAtJunction())
@@ -641,8 +655,9 @@ namespace LignumForest{
     ///   + Check if the tree is dead:
     ///     + GrowthLoop::allocation() returns \c false or 
     ///     + Height growth has been stagnant for 3 successive years.
-    ///     + Push the dead tree to \c GrowthLoop::allocationAndGrowth::dead_trees.
-    ///   + Calculate Lignum::LGAsf for newly created segments (depends on segment length as in P. Kaitaniemi data)
+    ///     + Push the dead tree to \p GrowthLoop::dead_trees.
+    ///   + Calculate Lignum::LGAsf with LignumForest::SetSapwoodDemandAtJunction for newly created segments
+    ///     + Depends on segment length, P. Kaitaniemi data
     ///   + Kill buds that could not create new segments (PineTree::KillBudsAfterAllocation())
     ///   + Calculate diameter growth using LignumForest::PartialSapwoodAreaDown() and LignumForest::ScotsPineDiameterGrowth2()
     ///   + Calculate root growth
@@ -660,21 +675,30 @@ namespace LignumForest{
     ///   + Synchronise the tree with L-system
     ///
     /// \tparam FSEGMENTLENGTH Functor or function for segment length.
-    /// The functor or function takes one parameter \f$ \lambda \f$ to adjust segment length.
-    /// \pre \c GrowthLoop::allocationAndGrowth::dead_trees is empty
-    /// \pre  Pine::mode is set to 1 to create new buds with Lsystem::derie() after GrowthLoop::allocation()
+    /// The functor takes one parameter \f$ \lambda \f$ to adjust segment length.
+    /// \sa SetScotsPineSegmentLength
+    /// \tparam KILLBUDS Functor for Lignum::PropagateUp() to kill buds buds after growth allocation
+    /// \sa KillBudsAfterAllocation
+    /// \pre \c GrowthLoop::dead_trees is cleared and set empty
+    /// \pre  Pine::mode is set to 1 to create new buds with LSystem::derive() after GrowthLoop::allocation()
     /// \post Pine::mode == 1
     /// \post GrowthLoop::no_trees is the number of growing trees
     /// \post GrowthLoop::dead_trees contain dead trees
     /// \todo GrowthLoop::allocationAndGrowth() encompasses diverse growth related activities.
-    /// Consider dividing the method into functionally coherent, independent parts and implement them
-    /// in distinct methods. These methods can then be called for example in the main loop in the right order.
+    ///       Consider dividing the method into functionally coherent, independent parts in distinct methods.
+    ///       These methods can then be called for example in the main loop in the right order.
     /// \sa LignumForest::SetSapwoodDemandAtJunction()
     /// \sa GrowthLoop::collectDeadTreeDataAfterGrowth()
     /// \sa GrowthLoop::no_trees
-    /// \sa GrowthLoop::vtree GrowthLoop::vlsystem GrowthLoop::locations \c GrowthLoop::allocationAndGrowth::dead_trees
-    /// \sa GrowthLoop::wsapwood GrowthLoop::wfoliage GrowthLoop::wroot GrowthLoop::ws_after_senescence
-    template <class FSEGMENTLENGH>
+    /// \sa GrowthLoop::vtree
+    /// \sa GrowthLoop::vlsystem
+    /// \sa GrowthLoop::locations
+    /// \sa GrowthLoop::dead_trees
+    /// \sa GrowthLoop::wsapwood
+    /// \sa GrowthLoop::wfoliage
+    /// \sa GrowthLoop::wroot
+    /// \sa GrowthLoop::ws_after_senescence
+    template <class FSEGMENTLENGH,class KILLBUDS>
     void allocationAndGrowth();
     int getNumberOfTrees() {return no_trees;}
     void setYear(const int& y) {year = y;}
