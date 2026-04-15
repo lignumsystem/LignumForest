@@ -96,7 +96,7 @@ namespace LignumForest{
     /// where \e age is the simulation year
     /// \param gl GrowLoop
     /// \param hdf5_file The HDF5 file where the XML strings will be stored
-    /// \param group_name The name of the root group (dataset) for the XML strings
+    /// \param vs_group_name The name of the root group (dataset) for the XML strings
     /// \param interval Write interval: trees will be written when `age mod interval = 0`.
     /// \return 0 Always returns zero.
     /// \pre The HDF5 file \p hdf5_file must be open
@@ -104,7 +104,7 @@ namespace LignumForest{
     /// \attention The \p hdf5_file must be closed after the growth loop before program exit.
     /// \sa VOXELSPACEGROUP
     /// \sa VOXELSPACE_DATA_DATASET_NAME
-    friend int CreateVoxelSpaceContentDataSet(const GrowthLoop<TREE,TS,BUD,LSYSTEM>& gl, LGMHDF5File& hdf5_file,const string& group_name,
+    friend int CreateVoxelSpaceContentDataSet(const GrowthLoop<TREE,TS,BUD,LSYSTEM>& gl, LGMHDF5File& hdf5_file,const string& vs_group_name,
 					      const int interval);
     /// \brief Update `GrowthLoop::ws_after_senescence` vector
     /// \param gl GrowthLoop
