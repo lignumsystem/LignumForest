@@ -1410,9 +1410,6 @@ namespace LignumForest{
       wf = Accumulate(*t,wf,CollectNewFoliageMass<TS,BUD>());
       //Initial root mass
       SetValue(*t,TreeWr,GetValue(*t,LGPar)*wf);
-      //Calculate  the  LGAsf  for   newly  created  segments,  sf  in  P
-      //Kaitaniemi data depens on segment length
-      ForEach(*t,SetScotsPineSegmentSf());
     }
     if (verbose)
       cout << "Initialized " << vtree.size() << " trees" <<endl;
