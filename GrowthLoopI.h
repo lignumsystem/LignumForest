@@ -11,36 +11,25 @@
 
 namespace Pine{
 
-  extern int mode;  ///<Declared in L-system. 
+  extern int mode;  ///< Growth mode in L-system, defined in L-system. 
 
 }
 
 using namespace Pine;
 using namespace LignumForest;
 using namespace lignumxml;
-// extern int LignumForest::ran3_seed; ///<Initialized in GrowthLoopI.h
-// extern double LignumForest::H_0_ini; ///<Initialized in GrowthLoopI.h
-// extern double LignumForest::H_var_ini;///<Initialized in GrowthLoopI.h
-// extern int LignumForest::n_buds_ini_min;///<Initialized in GrowthLoopI.h
-// extern int LignumForest::n_buds_ini_max;///<Initialized in GrowthLoopI.h
-// extern double L_age; ///<Initialized in GrowthLoopI.h
-// extern double LignumForest::rel_bud;///<Initialized in GrowthLoopI.h
-// extern bool LignumForest::bud_variation;///<Initialized in GrowthLoopI.h
-// extern double LignumForest::branch_angle;///<Initialized in GrowthLoopI.h
-// extern ParametricCurve LignumForest::bud_view_f;///<Initialized in GrowthLoopI.h
-// extern bool LignumForest::is_bud_view_function;///<Reinitialized in GrowthLoopI.h.
-// extern double LignumForest::global_hcb;///<Initialized in GrowthLoopI.h
-// extern double L_H;///<Initialized in GrowthLoopI.h
+
 namespace LignumForest{                                 
   template <class TREE,class TS, class BUD, class LSYSTEM>
-  int  CreateTreeXMLDataSet(const GrowthLoop<TREE,TS,BUD,LSYSTEM>& gl, LGMHDF5File& hdf5_file,const string& group_name, const int interval)
+  int  CreateTreeXMLDataSet(const GrowthLoop<TREE,TS,BUD,LSYSTEM>& gl, LGMHDF5File& hdf5_file,
+			    const string& group_name, const int interval)
   {
     const vector<TREE*>& vt = gl.getTrees();
     TREE* t0 = vt[0];
     int age = static_cast<int>(GetValue(*t0,LGAage));
     if (age % interval == 0){
       XMLDomTreeWriter<TS,BUD> writer;
-      string age_group = to_string(age)+"/";
+      string age_group = std::to_string(age)+"/";
       string new_group = group_name+age_group;
       //Groups must be created one by one
       hdf5_file.createGroup(new_group);
@@ -57,7 +46,63 @@ namespace LignumForest{
     }
     return 0;
   }
-
+  
+  template <class TREE,class TS, class BUD, class LSYSTEM>
+  int CreateVoxelSpaceContentDataSet(const GrowthLoop<TREE,TS,BUD,LSYSTEM>& gl, LGMHDF5File& hdf5_file,
+				     const string& vs_group_name, const int interval)
+  {
+    const vector<TREE*>& vt = gl.getTrees();
+    TREE* t0 = vt[0];
+    int age = static_cast<int>(GetValue(*t0,LGAage));
+    if (age % interval == 0){
+      const VoxelSpace* vs = gl.getVoxelSpace();
+      const TMatrix3D<VoxelBox>& vbm3d = vs->getVoxelBoxes();
+      int rows = vbm3d.rows();
+      int cols = vbm3d.cols();
+      int zdim = vbm3d.zdim();
+      int ndata = VB_DATA_COLUMN_NAMES.size();
+      TMatrix4D<double> m4d(rows,cols,zdim,ndata,0.0);
+      for (int i = 0; i < rows; i++){
+	for (int j = 0; j < cols; j++){
+	  for (int k = 0; k < zdim; k++){
+	      const VoxelBox& vb = vbm3d[i][j][k];
+	      double star = vb.getStar();
+	      double star_sum = vb.getStarSum();
+	      double val_c = vb.getStarConifer();
+	      double val_b = vb.getStarBroadLeaf();
+	      double wf = vb.getFoliageMass();
+	      double af = vb.getFoliageArea();
+	      double ws = vb.getWoodMass();
+	      double aws = vb.getWoodArea();
+	      double nseg = vb.getNumSegments();
+	      double nseg_real = vb.getNumSegmentsReal();
+	      m4d[i][j][k][VB_STAR] = star;
+	      m4d[i][j][k][VB_STARSUM] = star_sum;
+	      m4d[i][j][k][VB_VAL_c] = val_c;
+	      m4d[i][j][k][VB_VAL_b] = val_b;
+	      m4d[i][j][k][VB_LGAWf] = wf;
+	      m4d[i][j][k][VB_LGAAf] = af;
+	      m4d[i][j][k][VB_LGAWs] = ws;
+	      m4d[i][j][k][VB_LGAAWs] = aws;
+	      m4d[i][j][k][VB_NSEG] = nseg;
+	      m4d[i][j][k][VB_NSEGREAL] = nseg_real;
+	  }
+	}
+      }
+      hdf5_file.createGroup(vs_group_name);
+      const string dataset_name(vs_group_name+VOXELSPACE_DATA_DATASET_NAME+std::to_string(age));
+      hdf5_file.createDataSet(dataset_name,rows,cols,zdim,ndata,m4d);
+      hdf5_file.createColumnNames(dataset_name,VOXELSPACE_ATTRIBUTE_NAME,VS_COLUMN_NAMES);
+      hdf5_file.createColumnNames(dataset_name,VOXELBOX_DATA_ATTRIBUTE_NAME,VB_DATA_COLUMN_NAMES);
+      double edge_x = vs->getXSideLength();
+      double edge_y = vs->getYSideLength();
+      double edge_z = vs->getZSideLength();
+      vector<double> voxel_dims={edge_x,edge_y,edge_z};
+      hdf5_file.createDataSetAttribute(dataset_name,VB_EDGE_SIZE_NAME,voxel_dims);
+    }
+    return 0;
+  }
+  
   template<class TREE, class TS, class BUD, class LSYSTEM>
   GrowthLoop<TREE,TS,BUD,LSYSTEM>::~GrowthLoop()
   {
@@ -1822,9 +1867,14 @@ namespace LignumForest{
     return true;
   }
 
-  template <class TREE, class TS, class BUD,class LSYSTEM> template <class FSEGMENTLENGTH>
+  ///\par Implementation
+  ///\internal
+  ///\snippet{lineno} GrowthLoopI.h AllocationAndGrowth
+  // [AllocationAndGrowth]
+  template <class TREE, class TS, class BUD,class LSYSTEM> template <class FSEGMENTLENGTH,class KILLBUDS>
   void GrowthLoop<TREE,TS,BUD,LSYSTEM>::allocationAndGrowth()
   {
+    
     dead_trees.clear();
     //Create new buds by making derive with mode == 1 (global variable in L system)
     Pine::mode = 1;
@@ -1833,17 +1883,9 @@ namespace LignumForest{
       cout << "Allocation loop with tree: " << k << " Number of trees " << no_trees <<endl; 
       TREE* t = vtree[k];
       LSYSTEM* l = vlsystem[k];
-
-      /// \internal
-      /// Initialize calculation of thickness growth induced by adding new shoots.
-      /// \sa SetSapwoodDemandAtJunction
-      /// \snippet{lineno} GrowthLoopI.h PipeModel
-      // [PipeModel]
+      //Initialize calculation of thickness growth induced by ew shoots.
       double alku = 1.0;    //= Gravelius order of main axis
       PropagateUp(*t,alku,SetSapwoodDemandAtJunction());
-      // [PipeModel]
-      /// \remark This is for Pipe model calculations:
-      /// \endinternal
       if(!allocation<FSEGMENTLENGTH>(*t,bracket_verbose)){
 	//Iteration failed
 	//Save position for deletion from lists for growing trees
@@ -1871,7 +1913,7 @@ namespace LignumForest{
       ForEach(*t,SetScotsPineSegmentSf());
 
       bool kill = false;
-      PropagateUp(*t,kill,KillBudsAfterAllocation<TS,BUD>());
+      PropagateUp(*t,kill,KILLBUDS());
 
       //Now the lengths of the segments are such that G = P - M. Adjust the diameters
       // of old segments on the basis sapwood demand from above and those of new
@@ -1897,11 +1939,8 @@ namespace LignumForest{
       PropagateUp(*t,lentobuds,ForwardSegLen<TS,BUD>());
       l->lignumToLstring(*t,1,PBDATA);
 
-
-      //============================================================================
-      // Here is calculation of estimation of local needle area density for
-      // using in estimation of bud fate
-      //=============================================================================
+      //Calculation of estimation of local needle area density for
+      //using in estimation of bud fate
       if (LignumForest::is_bud_view_function) {
 	BoundingBox b1;
 	bool foliage = true;
@@ -1927,9 +1966,10 @@ namespace LignumForest{
       LignumForest::branch_angle = t->getBranchAngle();        //this global variable goes to pine-em98.L
       l->derive();
       l->lstringToLignum(*t,1,PBDATA);
-    }  //for (unsigned int k = 0; k < ...	  
+    }  //for (unsigned int k = 0; k < ...
   }
-
+  //[AllocationAndGrowth]
+  ///\endinternal
   template<class TREE, class TS,class BUD, class LSYSTEM>
   void GrowthLoop<TREE, TS,BUD,LSYSTEM>::output()
   {
@@ -2325,7 +2365,8 @@ namespace LignumForest{
 					  k_border_conifer, wood_voxel, pairwise_self);
 
     //HUOM: true on border forest
-    SetStarMean<TS,BUD> setstar(ParametricCurve(0.14));
+    ParametricCurve fstar_mean(STARMEAN_VALUE);
+    SetStarMean<TS,BUD> setstar(fstar_mean);
     ResetQinQabs<TS,BUD> RQQ;
     for (unsigned int k = 0; k < (unsigned int)no_trees; k++) {
       TREE* t = vtree[k];

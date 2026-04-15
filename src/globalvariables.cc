@@ -31,6 +31,7 @@ namespace LignumForest{
 }
 
 namespace LignumForest{
+  const double STARMEAN_VALUE=0.14;
   int ran3_seed=-1234567;
   bool is_random_length = false;
   bool is_adhoc = false;
@@ -55,8 +56,12 @@ namespace LignumForest{
   const string SEGMENT_LENGTH_LIMIT_FILE="dhlimit.txt";
   //Apical dominancy control
   bool REDUCE_APICAL=false;
-  const double REDUCE_APICAL_AGE=60;
-  const double TREE_CROWN_TOP=0.9;
   string REDUCE_APICAL_FILE="ReduceApical.fun";
+  const double REDUCE_APICAL_AGE=60;
+  const double TREE_CROWN_TOP=0.8;
+  const double P_DEAD_APICAL_BUD_GO1=0.0;
+  const double P_DEAD_APICAL_BUD_GO2=0.0;
+  const double H_REL_APICAL_BUD=0.8;
+  
   
 }//end namespace

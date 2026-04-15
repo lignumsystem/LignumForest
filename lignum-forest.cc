@@ -165,9 +165,12 @@ int main(int argc, char** argv)
   ParseCommandLine(argc,argv,"-hdf5", hdf5fname);
   LGMHDF5File hdf5_trees(TREEXML_PREFIX+hdf5fname);
   hdf5_trees.createGroup(TXMLGROUP);
+  LGMHDF5File hdf5_voxelspaces(VOXELSPACE_PREFIX+hdf5fname);
+  hdf5_voxelspaces.createGroup(VOXELSPACEGROUP);
   LignumForest::CreateHDF5File hdf5datafile(hdf5fname,gloop.getVoxelFile(),gloop.getMetaFiles());
   cout << "createConfigurationDataSets" <<endl;
   hdf5datafile.createConfigurationDataSets(argc,argv);
+  cout << "Done" <<endl;
   // [HDF5Init]
   ///\page HDF5FILES 3. HDF5 files
   ///@}
@@ -260,23 +263,36 @@ int main(int argc, char** argv)
     ///    + Depending on the command line:
     ///      + Calculate space colonization model
     ///      + Calculate Extended Borchert-Honda model
-    ///  + Growth allocation
+    ///  + Calculate allocation and growth
+    ///    + Move dead trees or stagnant trees to the vector of dead trees
+    ///    + Set sapwood demand in branching points
+    ///    + Iterative allocation of net photosynthates
+    ///    + Calculate specific leaf area Lignum::LGAsf for new segments
+    ///    + Kill buds not able to create new segments, i.e. segment length = 0
+    ///    + Execute diameter growth
+    ///    + Execute root growth
+    ///    + From command line additional check of bud fate based on conical growth space check
     ///    + It is assumed that parameters and functions affecting segment length and diameter
-    ///      can be retrieved from the segment and the Lignum tree.
+    ///      can be retrieved from the segments and from Lignum trees.
     ///  + Collect data from trees that died in the allocation step
-    ///  + Remove dead trees from simulation
     ///  + Check and terminate buds grown outside the Lignum::VoxelSpace
     ///  + Prune dead branches from living trees
     ///  + Depending on the command line:
     ///    + Set radiation use efficiency (RUE) in new segments
     ///    + Use function of shadiness experienced by mother segment
+    /// \sa GrowthLoop::photosynthesisRespirationTreeAging().
     /// \sa GrowthLoop::allocationAndGrowth()
-    /// \sa Lignum::LGMGrowthAllocator2 and Lignum::LGMGrowthAllocator2::operator()()
+    /// \sa GrowthLoop::allocation
+    /// \sa Lignum::LGMGrowthAllocator2
+    /// \sa Lignum::LGMGrowthAllocator2::operator()()
+    /// \sa ScotsPineSegment::getApical()
     /// \sa LignumForest::SetScotsPineSegmentLength
     /// \sa LignumForest::ScotsPineDiameterGrowth2
-    /// \sa  LignumForest::PartialSapwoodAreaDown
-    /// \sa GrowthLoop::photosynthesisRespirationTreeAging().
-    ///
+    /// \sa LignumForest::PartialSapwoodAreaDown
+    /// \sa LignumForest::SetSapwoodDemandAtJunction
+    /// \sa LignumForest::SetScotsPineSegmentSf
+    /// \sa GrowthLoop::dead_trees
+    /// \sa LignumForest::is_bud_view_function
     /// \snippet{lineno} lignum-forest.cc NewSeg
     // [NewSeg]
     gloop.setVoxelSpaceAndBorderForest();
@@ -301,7 +317,7 @@ int main(int argc, char** argv)
     gloop.createNewSegments();
     //It assumed that parameters and functions affecting segment length and diameter
     //can be retrieved from the new segment and the Lignum tree
-    gloop.allocationAndGrowth<ReduceApicalityWithFip>();
+    gloop.allocationAndGrowth<ReduceApicalityWithFip,KillBudsReduceApicality>();
     // collectDeadTreeDataAfterGrowth collects dead tree data for HDF5 file.
     // Dead tree appears once, the year it has died and removed from simulation
     cout << "Pruning dead trees" << endl;
@@ -338,7 +354,8 @@ int main(int argc, char** argv)
     //Collect VoxelSpace dimensions
     gloop.collectVoxelSpaceData(year+1,gloop.getWriteInterval());
     //Save trees as xml
-    CreateTreeXMLDataSet(gloop,hdf5_trees,TXMLGROUP,gloop.getWriteInterval());
+    LignumForest::CreateTreeXMLDataSet(gloop,hdf5_trees,TXMLGROUP,gloop.getWriteInterval());
+    LignumForest::CreateVoxelSpaceContentDataSet(gloop,hdf5_voxelspaces,VOXELSPACEGROUP,gloop.getWriteInterval());
     // [DataCollection]
     ///\page DATACOLLECTION 5.3 Data collection
     /// @}
@@ -376,6 +393,7 @@ int main(int argc, char** argv)
   hdf5datafile.createDataSets(gloop);
   hdf5datafile.close();
   hdf5_trees.close();
+  hdf5_voxelspaces.close();
   // [AfterGrowth]
   ///\page AFTERGROWTH 6. After growth
   /// @}

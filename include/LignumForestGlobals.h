@@ -23,11 +23,15 @@ using namespace voxelspace;
 //The groups will appear in the order they appear for Doxygen
 //or Doxygen can sort the groups (SORT_GROUP_NAMES = YES).
 /// \defgroup GLOBALGROUP Global variables
-/// \brief Global variables in LignumForest.
+/// \brief Global variables affecting simulations in LignumForest.
 ///
-///Global variables passing information between LignumForest and L-systems
-///and for various experiments to model and adjust forest growth.
+/// Global variables passing information between LignumForest and L-systems
+/// and for various experiments to model and adjust forest growth.
+///
 /// @{
+/// \defgroup CANOPYPROPERTIES Tree canopy properties
+/// \brief Tree canopy properties affecting radiation calculations
+///
 /// \defgroup GROWTHMODE Growth mode
 /// \brief Variables for growth mode change experiment
 /// \defgroup GROWTHSPACE Growth space
@@ -69,9 +73,9 @@ using namespace voxelspace;
 /// \defgroup ALLOCATION Resource allocation
 /// \brief Variables for resource allocation experiments
 ///
-/// Extended Borchert–Honda and Radiation use efficiency models.
+/// See Extended Borchert–Honda and Radiation use efficiency models.
 ///
-/// \defgroup SEGMENTLIMIT Segment length limit
+/// \defgroup SEGMENTLENGTHLIMIT Segment length limit
 /// \brief Variables limiting growth in new segments experiment
 ///
 /// Impose max length for first and second order branch segments.
@@ -81,16 +85,16 @@ using namespace voxelspace;
 /// \attention Be careful not to set too low values of max segment lengths.
 /// Undesired effects may occur through low foliage mass.
 ///
-/// \defgroup DEPRECATED Deprecated variables
-/// \brief Variables not used
-/// \attention The Fip, effect of relative light, and effect of Gravielius order on segment length
-/// are read from MetaFiles.
-///
 /// \defgroup REDUCEAPICAL Reduce apicality in trees
 /// \brief Variables used when reducing apicality in trees
 ///
 /// Older Scots pine trees tend to loose strict apicality present in younger trees.
-/// The set of variables control the application of apicality reduction.
+/// The set of variables to control the apicality reduction.
+///
+/// \defgroup DEPRECATED Deprecated variables
+/// \brief Variables not used
+/// \attention The Fip, effect of relative light, and effect of Gravielius order on segment length
+/// are read from MetaFiles.
 /// @}
 
 ///\brief L-system namespace
@@ -167,6 +171,17 @@ namespace LignumForest{
 }
 
 namespace LignumForest{
+  ///\addtogroup CANOPYPROPERTIES
+  ///@{
+  ///\name Tree canopy properties 
+  ///@{
+  ///\brief STAR mean value (\f$ \overline{STAR} \f$)
+  ///
+  ///Metric how efficiently a tree's branches and needles intercept light.
+  ///\sa GrowthLoop::calculateRadiation()
+  extern const double STARMEAN_VALUE;
+  ///@}
+  ///@}
   ///\addtogroup RANDOM
   ///@{
   ///\name Random variability
@@ -240,7 +255,7 @@ namespace LignumForest{
   ///
   ///Global variable to convey the Bud View Function to L-system
   ///and if LignumForest::bud_view_f is in use
-  ///\attention initialized with "bvf.fun" in globalvariables.cc
+  ///\attention initialized with the \e "bvf.fun" file in globalvariables.cc
   extern ParametricCurve bud_view_f;
   ///\brief Boolean flag to set bud view function on or off.
   ///\sa bud_vew_f
@@ -285,7 +300,7 @@ namespace LignumForest{
   extern bool terminate_escaped_buds;
   ///@}
   ///@}
-  ///\addtogroup SEGMENTLIMIT 
+  ///\addtogroup SEGMENTLENGTHLIMIT
   ///@{
   ///\name Segment length models
   ///@{
@@ -307,19 +322,42 @@ namespace LignumForest{
   ///@}
   ///\addtogroup REDUCEAPICAL
   ///@{
-  ///\name Apicality reduction control
+  ///\name Apical reduction control
   ///@{
   ///\brief Boolean flag to denote reducing apicality is in effect. Set *true* based on command line.
   extern bool REDUCE_APICAL;
   ///\brief Tree age when reducing apicality in trees starts
   extern const double REDUCE_APICAL_AGE;
-  ///\brief Top part of the tree crown (\f$H_{\mathrm{top}} \in [0,1] \f$) when applying apical reduction
+  ///\brief Top part of the tree crown (\f$H_{\mathrm{top}} \in [0,1] \f$)
+  ///when applying segment length shortening for apical reduction
   extern const double TREE_CROWN_TOP;
   ///\brief File name for ParametricCurve function
   ///
   ///The ParametricCurve function controls apicality by reducing tree segment length growth.
   ///Defined in comand line.
   extern string REDUCE_APICAL_FILE;
+  ///\name Apical reduction bud mortality
+  ///Probabilities of a bud to die to reduce apicality. The tree must be at least
+  ///LignumForest::REDUCE_APICAL_AGE old and the bud must be at the relative height
+  ///LignumForest::H_REL_APICAL_BUD or above in the tree.
+  ///@{
+  ///\brief First order bud
+  ///
+  ///Probability for the Gravelius order 1 (main axis) bud to die in order the reduce apical dominance in a tree.
+  ///\sa H_REL_APICAL_BUD
+  ///\sa REDUCE_APICAL_AGE
+  extern const double P_DEAD_APICAL_BUD_GO1;
+  ///\brief Second order buds
+  ///
+  ///Probability for Gravelius order 2 (main axis) buds to die in order the reduce apical dominance in a tree.
+  extern const double P_DEAD_APICAL_BUD_GO2;
+  ///\brief Relative height of a bud
+  ///
+  ///Relative height of a bud (\f$H_{\mathrm{rel}} \in [0,1] \f$) in a tree to die with some probability
+  ///\sa P_DEAD_APICAL_BUD_GO1
+  ///\sa P_DEAD_APICAL_BUD_GO2
+  extern const double H_REL_APICAL_BUD;
+  ///@}
   ///@}
   ///@}
   ///\addtogroup DEPRECATED 
