@@ -49,9 +49,12 @@ ForestPlotAndConfig<-function(infile,pick=1, GYdata = "ResultAnalysis/",outdir=F
         ExtractAllFiles(infile,paste(outdir,"/","Config",sep=''))
         print("Move HDF5 files")
         cat(infile,'->',outdir,"\n")
+        file.move(infile,outdir,overwrite=TRUE)
         ###File prefix for trees in XML format  
         cat(paste('TreesXML_',infile,sep=''),'->',outdir,"\n")
-        file.move(infile,outdir,overwrite=TRUE)
         file.move(paste('TreesXML_',infile,sep=''),outdir,overwrite=TRUE)
+        ###File prefix for voxel space HDF5 files
+        cat(paste('VoxelSpaces_',infile,sep=''),'->',outdir,"\n")
+        file.move(paste('VoxelSpaces_',infile,sep=''),outdir,overwrite=TRUE)
     }
 }
