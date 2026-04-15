@@ -3,7 +3,7 @@
 #LGPlr (flr.fun) , LGPsf (fsf.fun) , LGPaf (faf.fun), LGPna (fna.fun)
 #and LGPapical (fapical.fun)
 LGPlr 0.01
-LGPsf 28
+LGPsf 25
 LGPms 0.024
 LGPmr 0.24
 LGPnl 0.05
