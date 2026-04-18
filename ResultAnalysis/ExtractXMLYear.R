@@ -4,7 +4,7 @@
 #########        for one year and evaluates shortest, median and longest trees this year.
 #########        The names of the XML files are xmfile_TreeNN_Yyear.xml
 #########        NOTE: year in the file name is written as Yyear to distinquish from output of ExtractXML
-#########        Call: ForestPlot(datafile, xmlfile, year)
+#########        Call: ExtractXMLYear(datafile, xmlfile, year)
 #########        datafile: name of input HDF5 file Containing tree information
 #########        xmlfile:  HDF5 file containing the XML data
 #########        year      the year of evaluation.
