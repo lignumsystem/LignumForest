@@ -44,7 +44,7 @@ maxdyrs <- max(datayrs, na.rm=TRUE)
 
 if(year > maxdyrs) { print("year is too large"); return(-1)}
 
-#h <- d$ForestTreeData[7,,year+1]
+h <- d$ForestTreeData[7,,year+1]
 mh <- max(d$ForestTreeData[7,,year+1],na.rm=TRUE)
 largest <- which(h>0.999*mh)[1]              #Takes first index that fulfills the condition
 
