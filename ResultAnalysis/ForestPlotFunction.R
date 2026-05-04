@@ -136,14 +136,15 @@ ymax = max(y, na.rm=TRUE)
 
 ###Height
 plot(y,stand[11,], type="l", ylim=c(0,40), lwd=2, xlab="time (y)", ylab="Tree height, nin, mean, max (m)", main=paste("Mean, min and max stand height\nIn the plots: ",mtxt,sep=""),sub=paste("File: ",infile,sep=""))##mean
-legend('topleft',inset=0.05,c("Lignum mean","Lignum (min, max)"," Vuokila/Väliaho 1980"," Varmola M 1987","Koivisto: kasvu- ja tuotostaulukot"),col=c('black','black','blue','red','darkgreen'),
-       lty=c(1,2,1,1,1),lwd=2)
+legend('topleft',inset=0.05,c("Lignum mean","Lignum (min, max)"," Vuokila/Väliaho 1980"," Varmola M 1987","Koivisto: kasvu- ja tuotostaulukot","Koivisto: Hdom"),col=c('black','black','blue','red','darkgreen','darkgreen'),
+       lty=c(1,2,1,1,1,2),lwd=2)
 
 points(y,stand[12,], type="l", lwd=2, lty=2)   #min
 points(y,stand[13,], type="l",lwd=2, lty=2)   #max
 points(va27$a,va27$HgM,type="l",lwd=3,col="red")
 points(vv$age,vv$H,type="l",lwd=3,col="blue")
 points(ksto$year,ksto$Hav,type="l",lwd=3,col="darkgreen")
+points(ksto$year,ksto$Hdom,type="l",lwd=3,col="darkgreen",lty=2)
 
 
 
@@ -177,6 +178,8 @@ points(ksto$year,ksto$Dbhav,type="l",lwd=3,col="darkgreen")
 plot(y,trees[7,mukana[largest],], type="l", ylim=c(0,1.2*trees[7,mukana[largest],ymax]), lty=1,xlab="time (y)", ylab="Tree height (m)",lwd=2, main=paste("Height growth of ","shortest (red), median (green), tallest (blue) tree\n","Nos: ",as.character(trees[1,mukana[smallest],1]),", ",as.character(trees[1,mukana[med],1]),", ",as.character(trees[1,mukana[largest],1]),sep=""), col="blue") #largest
 points(y,trees[7,mukana[med],], type="l",lwd=2, col="darkgreen")  #median
 points(y,trees[7,mukana[smallest],], type="l",lwd=2,col="red")    #smallest
+points(ksto$year,ksto$Hav,type="l",lwd=3,col="darkgreen")
+legend('topleft',inset=0.05,"Koivisto: kasvu- ja tuotostaulukot Hmean",col='darkgreen', lty=1,lwd=2)
 
 
 #Height vs breast height diameter
@@ -215,11 +218,22 @@ points(ksto$year,ksto$N,type="l",lwd=3,col="blue")
 
 #self thinning plot
 aplot1 <- aplot/1e4          	#area in ha
-plot(stand[16,]*1e4/(stand[3,]/aplot1),stand[3,]/aplot1,log="xy",ylim=c(500,20000),type="l", lty=1, lwd=2, xlab="Mean tree V (m3)", ylab="No. trees / ha", main="Self-thinning curve", xlim=c(0.001,0.5))
+plot(stand[16,]*1e4/(stand[3,]/aplot1),stand[3,]/aplot1,log="xy",ylim=c(500,20000),type="l", lty=1, lwd=2, xlab="Mean tree stem volume (m3)", ylab="No. trees / ha", main="Self-thinning curve", xlim=c(0.001,0.5))
 legend('bottomleft',inset=0.05,cex=0.8,c("Lignum",
 expression(paste(N == alpha*v^{-2/3}," (", N," = Density",", ",v," = mean V",")"),"Koivisto: kasvu- ja tuotostaulukot")),col=c('black','red','darkgreen'),lty=1,lwd=2)
 points(ksto$V/ksto$N,ksto$N,type="l",lwd=3,col="darkgreen")
 points(seq(0.02,0.5,0.1),1100*(seq(0.02,0.5,0.1))**(-2/3),type="l",lwd=2,col="red")
+
+
+#self thinning plot
+# aplot1 <- aplot/1e4          	#area in ha
+# plot(stand[16,]*1e4,stand[3,]/aplot1,log="xy",ylim=c(500,20000),type="l", lty=1, lwd=2, xlab="Stem volume (m3)", ylab="No. trees / ha", main="Self-thinning curve (V, N)", xlim=c(10,500))
+# legend('bottomleft',inset=0.05,cex=0.8,c("Lignum",
+# expression(paste(N == alpha*V^{-2}," (", N," = Density",", ",V," = stem V",")"),"Koivisto: kasvu- ja #tuotostaulukot")),col=c('black','red','darkgreen'),lty=1,lwd=2)
+# points(ksto$V,ksto$N,type="l",lwd=3,col="darkgreen")
+# points(seq(150,500,10),11000*40000*(seq(150,500,10))**(-2),type="l",lwd=2,col="red")
+
+
 
 
 #Basal area
