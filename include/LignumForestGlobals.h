@@ -349,8 +349,13 @@ namespace LignumForest{
   extern const double P_DEAD_APICAL_BUD_GO1;
   ///\brief Second order buds
   ///
-  ///Probability for Gravelius order 2 (main axis) buds to die in order the reduce apical dominance in a tree.
+  ///Probability for Gravelius order 2 (branch) buds to die in order the reduce apical dominance in a tree.
   extern const double P_DEAD_APICAL_BUD_GO2;
+    ///\brief Third order buds
+  ///
+  ///Probability for Gravelius order 3 (side branch) buds to die in order the reduce apical dominance in a tree.
+  extern const double P_DEAD_APICAL_BUD_GO3;
+
   ///\brief Relative height of a bud
   ///
   ///Relative height of a bud (\f$H_{\mathrm{rel}} \in [0,1] \f$) in a tree to die with some probability

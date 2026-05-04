@@ -57,11 +57,12 @@ namespace LignumForest{
   //Apical dominancy control
   bool REDUCE_APICAL=false;
   string REDUCE_APICAL_FILE="ReduceApical.fun";
-  const double REDUCE_APICAL_AGE=60;
+  const double REDUCE_APICAL_AGE=30;
   const double TREE_CROWN_TOP=0.8;
   const double P_DEAD_APICAL_BUD_GO1=0.0;
-  const double P_DEAD_APICAL_BUD_GO2=0.0;
-  const double H_REL_APICAL_BUD=0.8;
+  const double P_DEAD_APICAL_BUD_GO2=0.3;
+  const double P_DEAD_APICAL_BUD_GO3=0.3;
+  const double H_REL_APICAL_BUD=0.1;
   
   
 }//end namespace

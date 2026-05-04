@@ -231,7 +231,8 @@ namespace LignumForest{
     ///\brief Constructor initialized with global variables to control apicality
     KillBudsReduceApicality()
       :tree_id(-1.0),tree_height(0.0),tree_apical_age(LignumForest::REDUCE_APICAL_AGE),bud_apical_rel_h(LignumForest::H_REL_APICAL_BUD),
-       p_bud_dead_go1(LignumForest::P_DEAD_APICAL_BUD_GO1),p_bud_dead_go2(LignumForest::P_DEAD_APICAL_BUD_GO2){}
+       p_bud_dead_go1(LignumForest::P_DEAD_APICAL_BUD_GO1),p_bud_dead_go2(LignumForest::P_DEAD_APICAL_BUD_GO2),
+       p_bud_dead_go3(LignumForest::P_DEAD_APICAL_BUD_GO3){}
     ///\brief Copy constructor
     ///\param  kbra KillBudsReduceApicality object
     KillBudsReduceApicality(const KillBudsReduceApicality& kbra)
@@ -266,6 +267,8 @@ namespace LignumForest{
     double bud_apical_rel_h;///< Bud relative height in tree crown when the apical reduction is applied
     double p_bud_dead_go1;///< Bud Gravelius order 1 probability to die to reduce apicality
     double p_bud_dead_go2;///< Bud Gravelius order 2 probability to die to reduce apicality
+    double p_bud_dead_go3;///< Bud Gravelius order 3 probability to die to reduce apicality
+
     static Uniform u;///< Random number generator for uniform distribution
   };
   ///\brief Initialize the random number generator 
@@ -604,6 +607,9 @@ namespace LignumForest{
 	    SetValue(*b,LGAstate,DEAD);
 	  }
 	  if ((go == 2) && (p_dead >= 0.0) && (p_dead < p_bud_dead_go2)){
+	    SetValue(*b,LGAstate,DEAD);
+	  }
+	  if ((go == 3) && (p_dead >= 0.0) && (p_dead < p_bud_dead_go3)){
 	    SetValue(*b,LGAstate,DEAD);
 	  }
 	}
