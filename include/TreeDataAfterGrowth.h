@@ -47,6 +47,8 @@ namespace LignumForest{
   const string ALLFNFILEGROUP("/AllFunctionFiles/");
   ///\brief Group name for Firmament
   const string FIRMAMENTGROUP("/Firmament/");
+  ///\brief Root group for VoxelSpace dataset for visualization
+  const string VOXELSPACEROOTGROUP("/");
   ///\brief Group prefix for the VoxelSpaces 
   const string VOXELSPACEGROUP("/VoxelSpace/");
   ///\brief Group name for VoxelSpace sizes during sikmulation
@@ -251,7 +253,7 @@ namespace LignumForest{
   ///Dataset, attribute and columns names for VoxelSpace datasets
   ///@{
   ///\brief VoxelSpace dataset name
-  const string VOXELSPACE_DATA_DATASET_NAME("VoxelSpaceData");
+  const string VOXELSPACE_DATA_DATASET_NAME("VoxelSpaceDataSet");
   ///\brief VoxelSpace columns attribute name
   const string VOXELSPACE_ATTRIBUTE_NAME("VoxelSpaceColumnNames");
   ///\brief VoxelSpace data collected VBDATA dimension attribute name

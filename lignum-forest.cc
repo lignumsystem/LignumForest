@@ -355,7 +355,7 @@ int main(int argc, char** argv)
     gloop.collectVoxelSpaceData(year+1,gloop.getWriteInterval());
     //Save trees as xml
     LignumForest::CreateTreeXMLDataSet(gloop,hdf5_trees,TXMLGROUP,gloop.getWriteInterval());
-    LignumForest::CreateVoxelSpaceContentDataSet(gloop,hdf5_voxelspaces,VOXELSPACEGROUP,gloop.getWriteInterval());
+    LignumForest::CreateVoxelSpaceContentDataSet(gloop,hdf5_voxelspaces,VOXELSPACEROOTGROUP,gloop.getWriteInterval());
     // [DataCollection]
     ///\page DATACOLLECTION 5.3 Data collection
     /// @}
