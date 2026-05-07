@@ -44,26 +44,29 @@ namespace LignumForest{
     }
     //Tree parameters
     //All functions from files in a simulation directory as 2D dataset
-    hdf5_file.createFnDataSetsFromDir("*.fun",LignumForest::AFGROUP,LignumForest::TREE_FN_ATTRIBUTE_NAME,LignumForest::TREE_FN_COLUMN_NAMES);
+    hdf5_file.createFnDataSetsFromDir(LignumForest::TREE_FUNCTION_FILE_REG_EXPR,LignumForest::AFGROUP,LignumForest::TREE_FN_ATTRIBUTE_NAME,
+				      LignumForest::TREE_FN_COLUMN_NAMES);
     //All Tree parameters in a simulation directory  as 2D dataset
-    hdf5_file.createParameterDataSetsFromDir("{Tree,Tree[0-9]}.txt",LignumForest::PFILEGROUP,LignumForest::TREE_PARAMETER_FILE_ATTRIBUTE_NAME,
-					     LignumForest::TREE_PARAMETER_COLUMN_NAMES);
-    ///String datasets for parameters, functions, Firmament, initial voxel space
-    hdf5_file.createFileDataSetsFromDir("{Tree,Tree[0-9]}.txt",LignumForest::ALLPARAMFILEGROUP);
+    hdf5_file.createParameterDataSetsFromDir(LignumForest::TREE_PARAMETER_FILE_REG_EXPR,LignumForest::PFILEGROUP,
+					     LignumForest::TREE_PARAMETER_FILE_ATTRIBUTE_NAME,LignumForest::TREE_PARAMETER_COLUMN_NAMES);
+    //String datasets for parameters, functions, Firmament, initial voxel space
+    //Tree parameters
+    hdf5_file.createFileDataSetsFromDir(LignumForest::TREE_PARAMETER_FILE_REG_EXPR,LignumForest::ALLPARAMFILEGROUP);
     //All functions
-    hdf5_file.createFileDataSetsFromDir("*.fun",LignumForest::ALLFNFILEGROUP);
+    hdf5_file.createFileDataSetsFromDir(LignumForest::TREE_FUNCTION_FILE_REG_EXPR,LignumForest::ALLFNFILEGROUP);
     //The Firmament used
-    hdf5_file.createFileDataSetsFromDir("{Firmament,Firmament[0-9]}.txt",LignumForest::FIRMAMENTGROUP);
+    hdf5_file.createFileDataSetsFromDir(LignumForest::FIRMAMENT_FILE_REG_EXPR,LignumForest::FIRMAMENTGROUP);
     //The initial Voxel space used
     hdf5_file.createFileDataSetsFromDir(vsfile,LignumForest::VOXELSPACEGROUP);
     //The max segment length file
     hdf5_file.createFileDataSetsFromDir(LignumForest::SEGMENT_LENGTH_LIMIT_FILE,LignumForest::ALLPARAMFILEGROUP);
-    //Command line
+    //The command line
     vector<string> c_vec;
     std::copy( argv, argv+argc,back_inserter(c_vec));
     ostringstream cline;
     copy(c_vec.begin(),c_vec.end(),ostream_iterator<string>(cline, " "));
-    hdf5_file.createDataSet(LignumForest::COMMAND_LINE_DATASET_NAME,cline.str());
+    string command_line = LignumForest::COMMAND_LINE_COMMENT+cline.str();
+    hdf5_file.createDataSet(LignumForest::COMMAND_LINE_DATASET_NAME,command_line);
   }
   
   void CreateHDF5File::close()
@@ -72,7 +75,7 @@ namespace LignumForest{
   }
   
   
-  ///Function to create HDF5 groups and datasets (not part of the class CreateHDF5File).
+  //Obsolete Function to create HDF5 groups and datasets (not part of the class CreateHDF5File).
   void CreateLignumHDF5File(const string& hdf5fname, const TMatrix3D<double>& hdf5_data, TMatrix2D<double> hdf5_tree_param_data, int argc, char** argv)
   {
     //Create and open HDF5 file for write

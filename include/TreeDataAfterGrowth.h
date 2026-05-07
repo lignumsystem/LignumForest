@@ -11,6 +11,7 @@
 /// \defgroup HDF5FILES HDF5 file constants
 /// \brief Constants for HDF5 file names, groups, datasets and dataset attributes
 /// @{
+/// \defgroup HDF5FILENAMEREGEXPR HDF5 file name regular expressions
 /// \defgroup HDF5GROUPNAMES HDF5 file group names
 /// \defgroup HDF5COMMANDLINEDATASET HDF5 file command line dataset
 /// \defgroup HDF5STANDDATASET HDF5 file stand dataset
@@ -22,6 +23,26 @@
 /// \defgroup HDF5VOXELSPACEDATADATASET HDF5 file voxel space data dataset
 /// @}
 namespace LignumForest{
+  /// \addtogroup HDF5GROUPNAMES
+  ///@{
+  ///\name HDF5FILENAMEREGEXPR
+  ///Regular expressions for file name constants
+  ///\sa CreateHDF5File::createConfigurationDataSets()
+  ///@{
+  ///\brief Regular expression for tree parameter file
+  ///
+  ///File names Tree.txt, Tree0.txt, Tree1,txt,...,Treee9.txt allowed.
+  const string TREE_PARAMETER_FILE_REG_EXPR("{Tree,Tree[0-9]}.txt");
+  ///\brief Regular expression for tree function files
+  const string TREE_FUNCTION_FILE_REG_EXPR("*.fun");
+  ///\brief Regular expression for Firmament files
+  ///
+  ///File names Firmament.txt, Firmament0.txt, Firmament1.txt,...,Firmament9.txt allowed.
+  const string FIRMAMENT_FILE_REG_EXPR("{Firmament,Firmament[0-9]}.txt");
+  ///\brief Regular expression for VoxelSpace files
+  const string VOXELSPACE_FILE_REG_EXPR("VoxelSpace*.txt");
+  ///@}
+  ///@}
   /// \addtogroup HDF5GROUPNAMES
   ///@{
   ///\name HDF5 file group constants
@@ -66,6 +87,7 @@ namespace LignumForest{
   ///@{
   ///\brief HDF5 Dataset name for command line
   const string COMMAND_LINE_DATASET_NAME("CommandLine");
+  const string COMMAND_LINE_COMMENT("#NOTE (-metafile option): Wrap unquoted regular expressions in quotation marks to ensure they are processed correctly\n");
   ///@}
   ///@}
   /// \addtogroup HDF5STANDDATASET
