@@ -1,19 +1,16 @@
 # HDF5 files
-After simulation one HDF5 file is created for simulation results
-and one HDF5 file for trees as XML strings.  An HDF5 file
-is a self-documenting tree-like hierarchical collection of datasets 
-and groups of datasets.
+Each simulation run creates three HDF5 files — one for the primary results, a second for tree structures 
+stored as XML strings and the third for the voxel space data.
 
-The HDF5 files are meant to be analysed with R, Python or some other 
-high level language or tool. R and Python have packages *rhdf5* and *h5py* 
-respectively implementing HDF5 API to read, write and examine HDF5 files.
+## File names
+File names are based on the primary HDF5 result file, with *TreesXML* or *VoxelSpaces* append for tree and
+voxel space data.
 
-## Simulation data
-The HDF5 file for the simulation data contains the simulation configuration
-including the program command line, data collected from individual trees 
-each simulation year as well as aggregate stand level data. In short, simulation 
-data collected and all data needed to repeat the simulation is compiled into a single HDF5 file. 
-The 2D and 3D datasets have also attribute names for data columns for the self-documentation. 
+## Primary simulation results
+To ensure reproducibility, all primary simulation data — ranging from the initial configuration
+and command line to annual tree and stand-level outputs — is compiled into one HDF5 file. 
+Furthermore, the 2D and 3D datasets are self-documenting through the use of descriptive 
+attribute names
 
 ### Command line
 - <I>/CommandLine</I>: Command line string used.
@@ -37,18 +34,19 @@ The 2D and 3D datasets have also attribute names for data columns for the self-d
 
 ### Voxel space
 - <I>/VoxelSpace/VoxelSpace\*.txt</I>: The initial voxel space assuming the traditional *VoxelSpace* file prefix.
-- <I>/VoxelSpaceSizes/VoxelSpaceSizesData</I>: HDF5 2D table for voxel space expansion during simulation.
+- <I>/VoxelSpaceSizes/VoxelSpaceSizesData</I>: HDF5 2D table for voxel space size expansion during simulation.
+
+Dataset saves voxel space size dynamics. See HDF5 voxel space file for tree, foliage and solar radiation data.
 
 ### Supplementary data
-The obsolete supplementary data duplicate the content of their corresponding files saved 
-and can be removed from the HDF5 file structure some time in the future.
+The obsolete supplementary data duplicate the content of the files and will be removed from the HDF5 file structure.
 
 - <I>/AllFunctions</I>: Group for functions. Functions are saved as HDF5 2D tables.
 - <I>/TreeFunctions</I>: Group for functions in a tree. Function files are save as HDF5 2D tables.
 - <I>/AllParameters</I>: Group for parameters. Parameter values are saved as HDF5 2D tables.
 - <I>/Parameters/TreeParameters</I>: Tree parameters (denoted by relevant Lignum::LGMPD names) as HDF5 1D array.
 
-### Trees
+## Tree structures
 Trees are saved in a separate HDF5 file as XML strings and grouped by simulation years. 
 The designated file name is the file name for simulation results prefixed with *TreesXML_*.
 
@@ -59,34 +57,37 @@ by user defined intervals for certain years, for example:
 - <I>/TreeXML/10</I>: Group for trees collected for the simulation year 10.
 - <I>/TreeXML/20/Tree_967</I>: XML string for the tree collected for the simulation year 20 with the tree identification tag 967.
 
+## Voxel space data
+*VoxelSpace* data sets are collected at regular intervals as 4D matrices, where the fourth dimension represents 
+the tree, foliage and solar radiation data recorded from each voxel. 
+
 ## Retrieve data from HDF5 files
-The example for simulation analyses and trees assume *LignumForest* working directory.
 
 ### Simulation analyses
-`ResultAnalysis/ForestPlotAndConfig.R` is a collection of `R` scripts 
-for LignumForest simulation analyses. Suppose the HDF5 file *SimulationResults.h5* 
-contains the data from a simulation:
+The `R` scripts in `ResultAnalysis/ForestPlotAndConfig.R` analyze LignumForest simulation. 
+*SimulationResults.h5* serves as an example containing the primary simulation data:
 	
 	R #Start R
 	>source('ResultAnalysis/ForestPlotAndConfig.R',chdir=TRUE)
 	>ForestPlotAndConfig('SimulationResults.h5',pick=5,GYdata='ResultAnalysis/',outdir='ResultsDir')
 	>
 	
-`ForestPlotAndConfig` creates pdf files for analyses results and retrieves simulation configuration. 
-These as well as the HDF5 files from the simulation are moved to *ResultsDir*. The *pick* parameter 
-selects every 5th tree for evaluation. The *GYdata* parameter points to the directory with 
-predefined growth and yield tables used in analyses. 
+`ForestPlotAndConfig` generates PDF plots and retrieves simulation configurations. These files, along with 
+the simulation’s HDF5 data, are moved to the *outdir* directory. To optimize processing, the *pick* parameter 
+evaluates every fifth tree, while *GYdata* specifies the location of the growth and yield tables required 
+for the analysis.
 
 ### Trees
-Trees are saved as XML strings. Continuing the example the trees are in the file
-*TreesXML_SimulationResults.h5*. To extract the trees use `ResultAnalysis/ExtractXML.R`:
+Continuing the example Trees are saved as XML strings in the file *TreesXML_SimulationResults.h5*. 
+Exctract them with `ResultAnalysis/ExtractXML.R` script:
  
 	>source('ResultAnalysis/ExtractXML.R')
 	>setwd('ResultsDir') #Move to 'outdir' directory set in ForestPlotAndConfig
 	>ExtractXML('SimulationResults.h5','TreesXML_SimulationResults.h5',c(20,40,60))
 	>
 
-`ExtractXML` creates XML files for the shortest, the median and the longest tree
-for the years 20,40 and 60. If more than three specimen trees for each selected 
-year are needed for inspection see the LignumVTK project to select trees for visualization.
+`ExtractXML` generates XML files for the shortest, median, and longest trees for the years 20, 40, and 60.
+ For larger specimen sets, use LignumVTK.
 
+### Visualization
+Use the LignumVTK project to visualize trees and voxel space data with ParaView.
