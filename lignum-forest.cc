@@ -86,13 +86,13 @@
 #include <Space.h>
 
 
-#if defined (__APPLE__) || defined(__MACOSX__)
-#include <VisualFunctor.h>
+//#if defined (__APPLE__) || defined(__MACOSX__)
+//#include <VisualFunctor.h>
 //Impelements VisualizeLGMTree
-#include <GLSettings.h>
-#include <OpenGLUnix.h>
-#include <LGMVisualization.h>
-#endif
+//#include <GLSettings.h>
+//#include <OpenGLUnix.h>
+//#include <LGMVisualization.h>
+//#endif
 //Includes L-system, turtle graphics, GrowthLoop typedefs
 #include <GLoopDefs.h>
 
