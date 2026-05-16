@@ -38,10 +38,16 @@ message("-----------------------------------------------------------------------
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-# Lignum core projects as an ExternalProject. 'lignum-core' target is compiled first
-# Note: lignum-core  has to be configured with cmake first. See lignum-core/CMakeLists.txt
-include(ExternalProject)
 include(CMakePrintHelpers)
+
+#Using "add_subdirectory" aligns with modern CMake as it supports namespaced targets
+#and there is no need to use explicit directory paths.
+#Also, the maintenance is easier - to refer to "lignum-core" relative to LignumForest
+#change the first argument "../" to point to "lignum-core" CMakeLists.txt location.
+#"lignum-core_build" is the local build directory for lignum-core,
+#located inside the LignumForest build directory.
+add_subdirectory(../ lignum-core_build)
+
 # Choose one L-system and comment out other L-systems
 #Note other L-systems than  pine-em98-branch-C.L may generate "dupclicate symbols" errors
 #due to restructuring CrownDensity and LignumForest and rigorous use of using namespaces.
@@ -53,24 +59,6 @@ include(CMakePrintHelpers)
 #set(LSYSTEMSRC  pine-em98-branch-B.cpp)
 set(LSYSTEMFILE pine-em98-branch-C.L)
 set(LSYSTEMSRC  pine-em98-branch-C.cpp)
-ExternalProject_Add(lignum-core
-SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/..
-DOWNLOAD_COMMAND "")
-#The '*.cmake' files for dependencies are preproduced with 'cmake' configuration
-#for 'lignum-core' (see lignum-core/CMakeLists.txt).  
-include(../c++adt/lib/cxxadt.cmake)
-include(../Firmament/lib/sky.cmake)
-include(../stl-lignum/lib/LGM.cmake)
-include(../stl-voxelspace/lib/voxel.cmake)
-include(../LEngine/lib/L.cmake)
-include(../LEngine/lib/l2c.cmake)
-  
-if(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin")
-  message("LignumForest")
-  message("------------")
-  message("Apple macOS (Darwin) Compiling Visual")
-  include(../Graphics/lib/Visual.cmake)
-endif()
 
 cmake_print_variables(CMAKE_CXX_COMPILER)
 cmake_print_variables(CMAKE_CXX_COMPILER_ID) 
@@ -91,16 +79,16 @@ find_package(Qt5 COMPONENTS Xml Core  REQUIRED)
 #find_package(Qt6 COMPONENTS Xml Core  REQUIRED)
 if(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin")
   message("LignumForest")
-  message("------------")
   message("Apple macOS (Darwin) platform")
+  message("-----------------------------")
   #Simple visualization tool in macOS
   find_package(OpenGL REQUIRED) 
   # cmake 3.x output erroneusly prints 'glut not found'. It is found. 
   find_package(GLUT REQUIRED)
 elseif(CMAKE_HOST_SYSTEM_NAME MATCHES "Linux")
   message("LignumForest")
-  message("------------")
   message("Linux platform")
+  message("--------------")
 else()
   message(${CMAKE_HOST_SYSTEM_NAME} " not supported")
   message(FATAL_ERROR "Exiting cmake")
@@ -121,11 +109,11 @@ set(SOURCE_FILES lignum-forest.cc
   src/CreateVoxelSpaceData.cc
 )
 
-# Rebuild L system with custom command for 'l2c'
+# Rebuild L system with custom command 'l2c'
 add_custom_command(
 OUTPUT ${CMAKE_CURRENT_LIST_DIR}/${LSYSTEMSRC}
 DEPENDS ${CMAKE_CURRENT_LIST_DIR}/${LSYSTEMFILE}
-COMMAND ${CMAKE_CURRENT_LIST_DIR}/../LEngine/bin/l2c ${CMAKE_CURRENT_LIST_DIR}/${LSYSTEMFILE}  ${CMAKE_CURRENT_LIST_DIR}/${LSYSTEMSRC}
+COMMAND l2c::l2c  ${CMAKE_CURRENT_LIST_DIR}/${LSYSTEMFILE}  ${CMAKE_CURRENT_LIST_DIR}/${LSYSTEMSRC}
 )
 
 # Main target, the executable 'lignum-forest'
@@ -139,39 +127,34 @@ target_include_directories(lignum-forest PUBLIC . include
   ${CMAKE_CURRENT_LIST_DIR}/../LEngine/include
 )
 
-# add_depencencies:
-# -----------------
-# Enable automatic rebuilds for lignum-forest and lignum-core via add_dependencies.
-# This ensures proper incremental compilation for Unix Makefiles when source files change."
-# Note: 'make clean' clears the build environment for rebuild.
-#
-# Note Xcode project:
-# 'lignum-forest' rebuilds correctly (Product in Xcode), but its 'lignum-core' dependency (Target
-# in Xcode) is only compiled once. Xcode ignores any timestamped changes in the 'lignum-core' dependency
-# when rebuilding 'lignum-forest'. Select and recompile 'lignum-core' Target explicitely. 
-add_dependencies(lignum-forest lignum-core)
-
 if(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin")
   message("LignumForest")
   message("------------")
   message("Apple macOS (Darwin) libraries")
   target_link_libraries(lignum-forest
+    HDF5::HDF5
     #Obsolete Qt4 
-    #HDF5::HDF5 Qt4::QtOpenGL Qt4::QtXml Qt4::QtGui Qt4::QtCore
+    #Qt4::QtOpenGL Qt4::QtXml Qt4::QtGui Qt4::QtCore
     #Qt5 linking
-    HDF5::HDF5 Qt5::Xml Qt5::Core
+    Qt5::Xml Qt5::Core
     #Qt6 linking
-    #HDF5::HDF5 Qt6::Xml Qt6::Core
+    #Qt6::Xml Qt6::Core
     GLUT::GLUT OpenGL::GLU OpenGL::GL
-    Visual L voxel sky LGM cxxadt
+    Visual::Visual L::L voxel::voxel sky::sky LGM::LGM cxxadt::cxxadt
   )
 elseif(CMAKE_HOST_SYSTEM_NAME MATCHES "Linux")
   message("LignumForest")
   message("------------")
   message("Linux libraries")
   target_link_libraries(lignum-forest
-    HDF5::HDF5 Qt5::Xml Qt5::Core
-    L voxel sky LGM cxxadt
+    HDF5::HDF5
+    #Obsolete Qt4 
+    #Qt4::QtOpenGL Qt4::QtXml Qt4::QtGui Qt4::QtCore
+    #Qt5 linking
+    Qt5::Xml Qt5::Core
+    #Qt6 linking
+    #Qt6::Xml Qt6::Core
+    L::L voxel::voxel sky::sky LGM::LGM cxxadt::cxxadt
   )
 else()
   message(${CMAKE_HOST_SYSTEM_NAME} " not supported")
