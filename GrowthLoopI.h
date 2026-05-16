@@ -60,7 +60,7 @@ namespace LignumForest{
       int rows = vbm3d.rows();
       int cols = vbm3d.cols();
       int zdim = vbm3d.zdim();
-      int ndata = VB_DATA_COLUMN_NAMES.size();
+      int ndata = static_cast<int>(VB_DATA_COLUMN_NAMES.size());
       TMatrix4D<double> m4d(rows,cols,zdim,ndata,0.0);
       for (int i = 0; i < rows; i++){
 	for (int j = 0; j < cols; j++){
