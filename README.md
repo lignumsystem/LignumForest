@@ -3,92 +3,79 @@ LignumForest simulates a growing Scots pine tree community using individual LIGN
 There are two shell scripts to run the `lignum-forest` program:
 	
     run-lignum-forest.sh
-	run-lignum-forest.slurm #SLURM workload manager additions
+	run-lignum-forest.slurm #Slurm workload manager additions
 
+The Slurm[^slurm] version includes native workload management commands.
+
+`lignum-forest` looks for configuration files in the working directory. 
 Run `lignum-forest` without parameters to see all command line options."
 
+The *lignum-forest.cc* file handles the main growth loop. Simulation data is saved in HDF5 format,
+and an introductory overview will be in GENERAL_DESCRIPTION.
+
+## Prerequisites
+Download *lignum-core* and *LignumForest* from GitHub. Install the dependencies specified in the 
+lignum-core [README](https://github.com/lignumsystem/lignum-core/blob/master/README.md). 
+
 ## CMake Makefile build system
-See the [README](https://github.com/lignumsystem/lignum-core/blob/master/README.md) for
-lignum-core. The `make install`command will copy `lignum-forest` to LignumForest directory.
+Running `make install` compiles `lignum-forest` and copies it into the LignumForest working directory.
 
 ## CMake Xcode build system
-
 ### Create Xcode project 
-Create the Xcode project file:
-	
-	cd LignumForest
-    mkdir xcode
-    cd xcode
-    cmake .. -G Xcode
-
-Open the project file in Xcode:
+Create the Xcode project file and open the project file in Xcode:
      
 	 open LignumForest.xcodeproj
 
-### Build lignum-forest binary
-First set Scheme to `lignum-forest`:
+The CMakeLists.txt file defines the Xcode project's targets, sources, and build settings.
 
-	Xcode -> Product (in the menu bar) -> Scheme 
+### Build lignum-forest
+Set Scheme to `lignum-forest`:
+
+	Xcode -> Product -> Scheme -> lignum-forest
 
 Build the `lignum-forest` binary in  Xcode for Testing. It will appear
 in the *xcode/Debug*  directory:
 
-	Xcode -> Product (in the menu bar) -> Build For -> Running/Testing/Profiling
-
-Xcode tracks source file dependencies during the build process. To install 
-`lignum-forest` to LignumForest working directory select the `install` Scheme
-and build:
-
-	Xcode -> Product (in the menu bar) -> Build 
+	Xcode -> Product -> Build For -> Testing
 	
 ### Debugging the program
-Copy necessary function and parameter files (*.fun* and *.txt* suffixes)
-to *xcode/Debug*  to the `lignum-forest` binary location. `lignum-forest` assumes 
-that the configuration files are found in the working directory. 
+`lignum-forest` looks for configuration files in the working directory. Copy the required
+function and parameter files (*.fun and *.txt) to the *xcode/Debug* folder where the 
+`lignum-forest` binary is located.
 
 Set Scheme  to `lignum-forest`:
 
-	Xcode -> Product (in the menu bar) -> Scheme 
+	Xcode -> Product -> Scheme -> lignum-forest
+	
+Break down the long command line for easier debugging:
 
-Set command  line parameters for  `lignum-forest` in Xcode:
-
-	Xcode -> Product (in the menu  bar) -> Scheme ->  Edit Scheme -> Arguments.
-
-Divide the lengthy command line into practical parts for debugging from `Arguments -> '+'`.
+	Xcode -> Product -> Scheme ->  Edit Scheme -> Arguments -> '+'.
 
 Set the breakpoints in source files. To debug the program:
 
-	Xcode -> Product (in the menu bar) -> Run
+	Xcode -> Product -> Run
 
-Alternatively, load the `lignum-forest` binary to Xcode from the LignumForest directory:
+#### Install lignum-forest
+Set Scheme to `install` and build:
 
-	Xcode -> Debug (in the menu bar) -> Debug Executable
-
+	Xcode -> Product -> Build 
+	
 ## Software documentation
-Run `doxygen` in the LignumForest directory:
+Run `doxygen` in the LignumForest directory to generate the html document:
     
     doxygen Doxyfile 2> errors.txt
-     
-To read html version of the document type:
-
     open DoxygenDoc/html/index.html
-    
-Go to latex subdirectory and use make:
+	
+Run the Doxygen-generated Makefile to compile the LaTeX output into *refman.pdf*:
 
     cd DoxygenDoc/latex
     make all
 	open refman.pdf
-    
-The final LaTeX documentation will be provided as *refman.pdf*. 
-
-The main growth loop for LignumForest is implemented in *lignum-forest.cc*.
-Simulation results are saved in [HDF5 files](HDF5FILES.md). The introductionary presentation
-will appear in [GENERAL_DESCRIPTION](GENERAL_DESCRIPTION.md).
 
 > [!TIP]
-> Doxyfile default values for graphs may result too large uninformative figures.
-> Reduce values, for example DOT_GRAPH_MAX_NODES = 10 and MAX_DOT_GRAPH_DEPTH = 3,
-> for more concise graphs and network diagrams easier to understand figures.
+> The Doxyfile defaults can produce overly large, uninformative figures. To create more concise
+> graphs and network diagrams, try reducing the limit values — for example, set DOT_GRAPH_MAX_NODES = 10
+> and MAX_DOT_GRAPH_DEPTH = 3.
 
 ### LignumForest project dependency graph
 CMake can generate Graphviz files representing project dependencies using the Dot language. 
@@ -118,3 +105,5 @@ To refer to the core model of LIGNUM in general use:
 
 - Perttunen J, Sievänen R, Nikinmaa R, Salminen H, Saarenmaa H, Väkevä J. 1996. LIGNUM: a tree model based on simple structural units. Annals of Botany 77: 87–98.
 - Perttunen J, Sievänen R, Nikinmaa E. 1998. LIGNUM: a model combining the structure and the functioning of trees. Ecological Modelling 108: 189–198.
+
+[^slurm]: Simple Linux Utility for Resource Management
