@@ -1,0 +1,7 @@
+#File describing the location of definition files
+#for parameters and fuctions of LIGNUM
+Functions:
+    LGMGO: fgo2.fun
+    LGMIP: fip2.fun
+
+
