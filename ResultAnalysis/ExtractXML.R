@@ -68,19 +68,19 @@ for(i in 1:length(years)) {
 	t <- paste("TreeXML/",as.character(years[i]),"/Tree_",as.character(sid),sep="")
 	if(H5Lexists(x,t)) {
 		tree <- h5read(x,t)
-		oname <- paste(xmlfile,"_Tree",as.character(sid),"_",as.character(years[i]),".xml",sep="")
+		oname <- paste(xmlfile,"_Tree",as.character(sid),"-S_",as.character(years[i]),".xml",sep="")
 		cat(tree,file=oname)
 		}
 	t <- paste("TreeXML/",as.character(years[i]),"/Tree_",as.character(mid),sep="")
 	if(H5Lexists(x,t)) {
 		tree <- h5read(x,t)
-		oname <- paste(xmlfile,"_Tree",as.character(mid),"_",as.character(years[i]),".xml",sep="")
+		oname <- paste(xmlfile,"_Tree",as.character(mid),"-M_",as.character(years[i]),".xml",sep="")
 		cat(tree,file=oname)
 		}
 	t <- paste("TreeXML/",as.character(years[i]),"/Tree_",as.character(lid),sep="")
 	if(H5Lexists(x,t)) {
 		tree <- h5read(x,t)
-		oname <- paste(xmlfile,"_Tree",as.character(lid),"_",as.character(years[i]),".xml",sep="")
+		oname <- paste(xmlfile,"_Tree",as.character(lid),"-L_",as.character(years[i]),".xml",sep="")
 		cat(tree,file=oname)
 		}			
 	}
