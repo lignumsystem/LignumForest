@@ -228,11 +228,28 @@ namespace LignumForest{
   ///\sa GrowthLoop::allocationAndGrowth()
   class KillBudsReduceApicality{
   public:
-    ///\brief Constructor initialized with global variables to control apicality
+    ///\brief Constructor initialized with global variables to control apicality or from file LignumForest::DEAD_APICAL_FILE if exists
     KillBudsReduceApicality()
       :tree_id(-1.0),tree_height(0.0),tree_apical_age(LignumForest::REDUCE_APICAL_AGE),bud_apical_rel_h(LignumForest::H_REL_APICAL_BUD),
        p_bud_dead_go1(LignumForest::P_DEAD_APICAL_BUD_GO1),p_bud_dead_go2(LignumForest::P_DEAD_APICAL_BUD_GO2),
-       p_bud_dead_go3(LignumForest::P_DEAD_APICAL_BUD_GO3){}
+       p_bud_dead_go3(LignumForest::P_DEAD_APICAL_BUD_GO3){
+      
+      bool file_error = false;
+      ParametricCurve d_a;
+      try{
+	d_a = ParametricCurve(LignumForest::DEAD_APICAL_FILE);
+      }
+      catch (ParametricCurveFileException e){
+	file_error = true;
+      }
+      if(!file_error) {
+	tree_apical_age = d_a(4);
+	bud_apical_rel_h = d_a(5);
+	p_bud_dead_go1 = d_a(1);
+	p_bud_dead_go2 = d_a(2);
+	p_bud_dead_go3 = d_a(3);
+      }
+    }
     ///\brief Copy constructor
     ///\param  kbra KillBudsReduceApicality object
     KillBudsReduceApicality(const KillBudsReduceApicality& kbra)

@@ -355,7 +355,10 @@ namespace LignumForest{
   ///
   ///Probability for Gravelius order 3 (side branch) buds to die in order the reduce apical dominance in a tree.
   extern const double P_DEAD_APICAL_BUD_GO3;
-
+  ///\brief File to read in parameters of KillBudsReduceApicality
+  ///
+  extern string DEAD_APICAL_FILE;
+  ///
   ///\brief Relative height of a bud
   ///
   ///Relative height of a bud (\f$H_{\mathrm{rel}} \in [0,1] \f$) in a tree to die with some probability
