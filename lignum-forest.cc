@@ -249,7 +249,10 @@ int main(int argc, char** argv)
     /// \ingroup AMAIN 
     /// @{
     /// \par Steps in new growth
-    ///  + Update foliage in voxel space and recalculate border forest
+    ///  + Set voxel space and border forest
+    ///    + Resize voxel space  
+    ///    + Insert trees: update foliage in voxel space
+    ///    + Recalculate border forest
     ///  + Calculate radiation climate for trees
     ///  + Calculate photosynthesis, respiration and aging of tree compartments. 
     ///  + Create new segments
@@ -302,18 +305,18 @@ int main(int argc, char** argv)
     //before new growth and tree aging
     gloop.photosynthesisRespirationTreeAging();
     //For new segments and buds:
-    //Forward Qin to new segments from mother segments
-    //Forward Qin to new buds from mother segments
-    //Calclulate relative light (LGAQip/TreeQinMax) for new buds
-    //Set segment needle angle
-    //Set segment apicality
-    //Calculate vigour indices in a tree segments and buds
-    //Set TreeQinMax in the Firmament
-    //Calculate path length from the base of the tree to each segment
-    //Depending on the command line:
-    //Calculate space colonization
-    //Calculate Extended Borchert-Honda model
-    cout << "New growth" << endl;
+    // - Forward Qin to new segments from mother segments
+    // - Forward Qin to new buds from mother segments
+    // - Calclulate relative light (LGAQip/TreeQinMax) for new buds
+    // - Set segment needle angle
+    // - Set segment apicality
+    // - Calculate vigour indices in a tree segments and buds
+    // - Set TreeQinMax in the Firmament
+    // - Calculate path length from the base of the tree to each segment
+    // - Depending on the command line:
+    // - Calculate space colonization
+    // - Calculate Extended Borchert-Honda model
+    cout << "New growth" <<endl;
     gloop.createNewSegments();
     //It assumed that parameters and functions affecting segment length and diameter
     //can be retrieved from the new segment and the Lignum tree
