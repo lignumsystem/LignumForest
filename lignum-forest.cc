@@ -304,18 +304,18 @@ int main(int argc, char** argv)
     //Currently data collection in photosynthesisRespirationTreeAging
     //before new growth and tree aging
     gloop.photosynthesisRespirationTreeAging();
-    //For new segments and buds:
-    // - Forward Qin to new segments from mother segments
-    // - Forward Qin to new buds from mother segments
-    // - Calclulate relative light (LGAQip/TreeQinMax) for new buds
-    // - Set segment needle angle
-    // - Set segment apicality
-    // - Calculate vigour indices in a tree segments and buds
-    // - Set TreeQinMax in the Firmament
-    // - Calculate path length from the base of the tree to each segment
-    // - Depending on the command line:
-    // - Calculate space colonization
-    // - Calculate Extended Borchert-Honda model
+    ///For new segments and buds:
+    /// - Forward Qin to new segments from mother segments
+    /// - Forward Qin to new buds from mother segments
+    /// - Calclulate relative light (LGAQip/TreeQinMax) for new buds
+    /// - Set segment needle angle
+    /// - Set segment apicality
+    /// - Calculate vigour indices in a tree segments and buds
+    /// - Set TreeQinMax in the Firmament
+    /// - Calculate path length from the base of the tree to each segment
+    /// - Depending on the command line:
+    /// - Calculate space colonization
+    /// - Calculate Extended Borchert-Honda model
     cout << "New growth" <<endl;
     gloop.createNewSegments();
     //It assumed that parameters and functions affecting segment length and diameter
