@@ -138,7 +138,7 @@ namespace Pine{
 namespace LignumForest{
   ///\addtogroup INITIALSAPLINGS 
   ///@{
-  ///\name Intial trees
+  ///\name Initial trees
   ///@{
   ///\brief Initial height ot trees
   extern double H_0_ini;
