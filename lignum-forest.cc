@@ -73,31 +73,38 @@
 ///\include pine-em98-branch-C.L
 ///\page lsystemcforest
 
-/// \defgroup GROWTHLOOP The main growth loop
-/// \brief Forest stand development phases are implemented in the LignumForest::GrowthLoop class
+/// \defgroup GROWTHLOOP Forest stand development
+/// \brief Main program workflow and structure
+///
+/// This section outlines the main program structure using code snippets from lignum-forest.cc.
+/// The development phases of the forest stand are explicitly implemented within the
+/// LignumForest::GrowthLoop class.
 /// @{
-/// \defgroup VARIABLES Variable declarations
+/// \defgroup A_VARIABLES 1. Variable declarations
 /// \snippet{lineno} lignum-forest.cc GLoopVar
 ///
-/// \defgroup FOREST Forest stand
+/// \defgroup B_FOREST 2. Forest stand set-up
 /// \snippet{lineno} lignum-forest.cc InitForest
 ///
-/// \defgroup HDF5FILESINIT HDF5 files
+/// \defgroup C_HDF5FILESINIT 3. HDF5 files set-up
 /// \snippet{lineno} lignum-forest.cc HDF5Init
 ///
-/// \defgroup GROWTHLOOPINIT Growth loop intialization
+/// \defgroup D_GROWTHLOOPINIT 4. Growth loop intialization
 /// \snippet{lineno} lignum-forest.cc InitForestGrowth
 ///
-/// \defgroup GROWTHINIT Growth step initialization
+/// \defgroup E_GROWTHLOOP 5. Growth loop
+/// @{
+/// \defgroup E1_GROWTHINIT 5.1 Growth step initialization
 /// \snippet{lineno} lignum-forest.cc InitGrowthLoop
 ///
-/// \defgroup GROWTHPHASES  Growth phases
+/// \defgroup E2_GROWTHPHASES 5.2 Growth phases
 /// \snippet{lineno} lignum-forest.cc NewSeg
 ///
-/// \defgroup DATACOLLECTION Data collection
+/// \defgroup E3_DATACOLLECTION 5.3 Data collection
 /// \snippet{lineno} lignum-forest.cc DataCollection
+/// @}
 ///
-/// \defgroup AFTERGROWTH Post-simulation operations
+/// \defgroup F_AFTERGROWTH 6. Post-simulation operations
 /// \snippet{lineno} lignum-forest.cc AfterGrowth
 /// @}
 
@@ -132,9 +139,8 @@ using namespace lignumxml;
 int main(int argc, char** argv)
 {
   // @{
-  ///\ingroup  VARIABLES
-  ///\page Variables_page Growth loop and random number
-  ///
+  ///\ingroup  A_VARIABLES
+  ///\page Variables_page Growth loop and random numbers
   /// + The `ScotsPineForest gloop` is in control of the growth loop
   /// + The `cxxadt::ran3` uniform random number generator used in the program
   ///.
@@ -145,7 +151,7 @@ int main(int argc, char** argv)
   // @}
   Sensitivity<ScotsPineSegment,ScotsPineBud> sensitivity;
   // @{
-  ///\ingroup FOREST
+  ///\ingroup B_FOREST
   ///\page Forest_page Initialize the forest stand
   /// + Parse and resolve command line
   /// + Initialize functions
@@ -167,7 +173,7 @@ int main(int argc, char** argv)
   // [InitForest]
   //@}
   //@{
-  ///\ingroup HDF5FILESINIT
+  ///\ingroup C_HDF5FILESINIT
   ///\page HDF5filesinit_page Initialize HDF5 files and datasets 
   /// + Create HDF5 file for forest stand data
   /// + Create HDF5 datasets for simulation configuration
@@ -195,7 +201,7 @@ int main(int argc, char** argv)
   // [HDF5Init]
   //@}
   //@{
-  ///\ingroup GROWTHLOOPINIT
+  ///\ingroup D_GROWTHLOOPINIT
   ///\page GrowthLoopInit_page Initialize the growth loop
   ///  + Initialize trees
   ///  + Resize HDF5 data arrays
@@ -237,7 +243,7 @@ int main(int argc, char** argv)
       continue;
     }
     //@{
-    ///\ingroup GROWTHINIT
+    ///\ingroup E1_GROWTHINIT
     ///\page GrowthInit_page Initialize the growth step
     /// + Pass growth \p year to L system and to \c gloop.
     /// + Save previous year tree height for each tree.
@@ -256,7 +262,7 @@ int main(int argc, char** argv)
     // [InitGrowthLoop]
     //@}
     //@{
-    ///\ingroup GROWTHPHASES
+    ///\ingroup E2_GROWTHPHASES
     ///\page GrowthPhases_page Growth phases in one growth step
     ///  + Set voxel space and border forest
     ///    + Resize voxel space  
@@ -333,7 +339,7 @@ int main(int argc, char** argv)
     // [NewSeg]
     //@}
     //@{
-    /// \ingroup DATACOLLECTION
+    /// \ingroup E3_DATACOLLECTION
     /// \page DataCollection_page Collect data after the growth step 
     ///  + Evaluate stand metrics every year
     ///  + Collect data for each tree every year
@@ -367,14 +373,14 @@ int main(int argc, char** argv)
     // }
   } // End of  for(year = 0; ...)
   //@{
-  ///\ingroup AFTERGROWTH
+  ///\ingroup F_AFTERGROWTH
   ///\page AfterGrowth_page Clean-up operations and save simulation data
   ///  + Clean up growth loop
   ///  + Create datasets for HDF5 file
   ///      + Year by year, tree by tree data
   ///      + Aggregate stand data
   ///      + Aggregate center stand data
-  ///      + Voxel space dimensions data 
+  ///      + Voxel space data \sa LignumForest::VB_DATA_NAMES
   ///  + Close HDF5 files for forest stand data and XML trees
   ///.
   // [AfterGrowth]

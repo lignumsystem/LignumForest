@@ -116,12 +116,16 @@ namespace LignumForest{
       gl.ws_after_senescence[pos]=ws;
     }
   public:
-    ///\brief Initialize variables.
+    ///\brief Constructor: Initialize variables.
     ///
     ///No trees. The GrowthLoop::location_file is set to "TreeLocations.txt" for predefined tree locations.   
     ///GrowthLoop::hw_start` is set to 15.   
     ///GrowthLoop::c` is set to 0.30.      
-    ///\sa H´GrowthLoop::hw_start GrothLoop::cv
+    ///\sa H´GrowthLoop::hw_start
+    ///\sa GrothLoop::cv
+    ///\todo Constructor has hard-coded default values (other than zeros), redefine as global constants.
+    ///\todo GrowthLoop::wood_voxel and GrowthLoop::pairwise_self are set here, might be better
+    ///to give as GrowthLoop::calculateRadiation parameters
     GrowthLoop()
       :vs(NULL),verbose(false),iterations(0),start_voxel_calculation(0),
        num_parts(1.0), interval(0),init_density(0),nsegment(0.0),
@@ -598,12 +602,31 @@ namespace LignumForest{
     /// + Dump also the foliage (except the first tree) into voxels
     /// + Set BorderForest
     void setVoxelSpaceAndBorderForest();
-    ///\brief Calculates radiation for the trees 
-    ///-# If *pairwise_self* pairwise for a tree itself
-    ///-# Through voxelspace 
-    ///-# Account for border forest
-    ///\sa pairwise_self
-    ///\sa Lignum::EvaluateRadiationForCfTreeSegmentInVoxelSpace
+    ///\brief Calculates radiation climate for the trees 
+    ///
+    ///Following functors are applied in the following order:
+    /// -# SetStarMean<TS,BUD>: Set first default LignumForest::STARMEAN_VALUE for all segments for border forest.
+    /// -# ResetQinQabs<TS,BUD>: Reset Lignum::LGAQin and Lignum::LGAQabs values in tree segments
+    /// -# GrowthLoop::pairwise_self = \e true: Call LignumForest::UnDumpScotsPineTree()
+    /// -# EvaluateRadiationForCfTreeSegmentInVoxelSpace to calculate:
+    ///    -# Optical depth for each light ray
+    ///    -# Transmittance
+    ///    -# Border forest optical depth and transmittance
+    /// -#  GrowthLoop::pairwise_self = \e true: Call voxelspace::DumpCfTree()
+    ///.
+    ///\par Methods affecting radiation cliamte calculations
+    ///
+    /// Default values:
+    /// - \p wood_voxel = \e true Calculate tree segment wood part in optical depth 
+    /// - \p pairwise_self = \e false No pairwise comparison for a target tree itself
+    ///.
+    ///\sa GrowthLoop::pairwise_self
+    ///\sa LignumForest::EvaluateRadiationForCfTreeSegmentInVoxelSpace
+    ///\sa LignumForest::STARMEAN_VALUE
+    ///\todo \htmlonly <span style="color:orange;">&#9679;</span>\endhtmlonly Check call to voxelspace::DumpCfTree()
+    /// - See comments LignumForest::DumpScotsPineTree() vs. voxelspace::DumpCfTree()
+    ///\todo \htmlonly <span style="color:orange;">&#9679;</span>\endhtmlonly Remove call to ResetQinQabs:
+    /// - Lignum::LGAQin and Lignum::LGAQabs are resetted in EvaluateRadiationForCfTreeSegmentInVoxelSpace.
     void calculateRadiation();
     StandDescriptor<TREE>& getStand() {return stand;}
     ///\brief Access the vector of trees.
