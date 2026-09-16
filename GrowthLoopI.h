@@ -477,16 +477,16 @@ namespace LignumForest{
     if (ParseCommandLine(argc,argv,"-hw", clarg))
       hw_start = atoi(clarg.c_str());
     ///+ `-bracketVerbose`, boolean set allocation of photosynthates verbose mode, default `false`.
+    ///.
     ///\sa bracket_verbose
     bracket_verbose = false;
     if (CheckCommandLine(argc,argv,"-bracketVerbose"))
       bracket_verbose = true;
-    ///.
-    
     ///---
     ///\par Parse arguments for forest generation.
     ///
     ///+ `-generateLocations`, if present the argument is the number of trees.
+    ///.
     ///\attention Either `-generateLocations` or `-treeLocations` must be present
     ///\sa no_trees, generate_locations
     generate_locations = false;
@@ -534,13 +534,13 @@ namespace LignumForest{
       }
     }
     ///+ `-kBorderConifer`, extinction coefficient for homogenous conifer border forest, default 0.14.
+    ///.
     ///\sa k_border_conifer.
     k_border_conifer = 0.14;
     clarg.clear();
     if (ParseCommandLine(argc,argv,"-kBorderConifer", clarg))
       k_border_conifer = atof(clarg.c_str());
-    ///.
-    
+    ///
     ///---
     ///\par Parse parameters for experiments to adjust tree growth.
     ///
@@ -615,12 +615,13 @@ namespace LignumForest{
       LignumForest::is_adhoc = true;
     }
     ///+ `-budViewFunction`
+    ///.
     ///\sa LignumForest::is_bud_view_function
     LignumForest::is_bud_view_function = false;
     if(CheckCommandLine(argc,argv,"-budViewFunction")) {
       LignumForest::is_bud_view_function = true;
     }
-    ///.
+    ///
     LignumForest::space0 = false;
     LignumForest::space1 = false;
     LignumForest::space2 = false;
@@ -646,8 +647,7 @@ namespace LignumForest{
 	LignumForest::space2_distance = atof(clarg.c_str());
       }
     }
-    ///.
-
+    ///
     ///---
     ///\par Parse EBH model.
     ///

@@ -82,17 +82,12 @@ namespace LignumForest{
     ///     \snippet{lineno} CalculateLightI.h OpticalDepth
     ///     - The default values in <b>\p v_pairwise_self </b> are 0.
     ///     - AccumulateOpticalDepth  \p AOD summates the independent optical depth values of individual voxels.
+    ///       \note  AccumulateOpticalDepth includes the wood part of the segment.
+    ///       \sa AccumulateOpticalDepth
     ///     - It is correct to subtract self-shading by segment's own foliage to not over estimate shading by \f$\overline{\mathrm{STAR}}\f$,
     ///       but make sure the logic matches calculations in \p AOD.
-    ///     .
-    ///    \note  AccumulateOpticalDepth includes the wood part of the segment.
-    ///    \sa AccumulateOpticalDepth
-    ///    \todo  \htmlonly <span style="color:red;">&#9679;</span>\endhtmlonly Check the logic how the self-shading is treated.
-    ///
-    ///   -# Transmittance from one sky sector:
+    ///   -# Transmittance from one sky sector through forest canopy:
     ///      \snippet{lineno} CalculateLightI.h TransmittanceForest
-    ///      \todo \htmlonly <span style="color:red;">&#9679;</span>\endhtmlonly Ensure the logic correctly flags or handles optical depths greater than 20.
-    ///
     ///   -# Transmittance from the border forest:
     ///      \snippet{lineno} CalculateLightI.h TransmittanceBorderForest
     ///   \sa BorderForest::getBorderForestExtinction()
@@ -102,16 +97,19 @@ namespace LignumForest{
     /// -# Calculate the total incoming radiation from all sectors:
     ///    \snippet{lineno} CalculateLightI.h QinTotal
     /// -# Calculate the segment's absorbed radiation for each sky sector:
+    ///    \snippet{lineno} CalculateLightI.h QabsSectors  
     ///    - The absorption is realized according to Oker-Blom and Smolander. 1988. Forest Science,34(4):894–906.
     ///    - Calculate the radiation absorption coeffient, denoted \p Ask.
     ///    - Segment angle of incidence and consequent shadow area are used as the measure of absorption efficiency
-    ///      \snippet{lineno} CalculateLightI.h QabsSectors
     ///    - The absorbed radiation is in the <b>\p s</b> vector.
     /// -# Total absorbed radiation from all sky sectors:
-    ///      \snippet{lineno}  CalculateLightI.h QabsTotal
+    ///    \snippet{lineno}  CalculateLightI.h QabsTotal
     /// -# Save the calculated values for incoming and absorbed radiation in the tree segment:
     ///    \snippet{lineno} CalculateLightI.h SaveQinQabs
     ///.
+    ///\todo  \htmlonly <span style="color:red;">&#9679;</span>\endhtmlonly Check the logic how the self-shading is treated.
+    ///\todo \htmlonly <span style="color:red;">&#9679;</span>\endhtmlonly Ensure the logic correctly flags or handles optical depths greater than 20.
+    ///
     ///\par Mathematical details for the radiation absorption coeffient
     ///
     ///According to the Beer-Lambert law for radiation transmittance (\f$ T = \exp(-\tau) \f$)
@@ -127,12 +125,12 @@ namespace LignumForest{
     ///\f]
     ///which expresses the probability light escaping absorption entirely.
     ///
-    ///Assuming no scattering, the light can either be transmitted or absorbed. The fraction absorbed
-    ///(\f$ \alpha \f$) by a tree segment is \f$ 1.0-T \f$:
+    ///Assuming no scattering, the light is either transmitted or absorbed. The fraction absorbed
+    ///(\f$ \alpha \f$) by a tree segment is defined as \f$ 1.0-T \f$:
     ///\f[
     /// \alpha = 1.0 - \exp\left(-k\frac{A_f}{A_{\mathrm{ref}}}\right)
     ///\f]
-    ///To convert the relative absorption fraction into spatial metrics, that fraction
+    ///To convert the relative absorption fraction into spatial metric, that fraction
     ///must be scaled by the object's silhouette footprint or projection area (\f$ A_{\mathrm{geom}} \f$).
     ///Consequently, the total radiation absorption area - or the radiation absorption
     ///coefficient (\f$A_{\mathrm{abs}}\f$) - is expressed as:
@@ -140,13 +138,13 @@ namespace LignumForest{
     /// A_{\mathrm{abs}} = \alpha A_{\mathrm{geom}}
     ///\f]
     ///In many applications, such as with tree segment cylinders, \f$ A_{\mathrm{ref}} = A_{\mathrm{geom}} \f$,
-    ///yet they serve different roles in the calculation. \f$ A_{\mathrm{ref}} \f$ acts as a normalizing
-    ///factor that scales the foliage area to a local leaf area index, ensuring the exponent is unitless.
-    ///Conversely, \f$ A_{\mathrm{geom}} \f$ is an absolute multiplier that scales the the relative absorption
+    ///yet they serve different conceptual roles in the calculation. Specifically, \f$ A_{\mathrm{ref}} \f$ acts as a normalizing
+    ///factor that scales the foliage area to a local leaf area index, ensuring the exponent is unitless;
+    ///whereby the ratio \f$ A_f / A_{\mathrm{ref}} \f$ defines the inverse of the directional \f$ \mathrm{STAR} \f$.
+    ///Conversely, \f$ A_{\mathrm{geom}} \f$ is an absolute multiplier that scales the relative absorption
     ///fraction back into physical geometric area.
     ///\sa \ref radiative_properties "Radiative properties"
     TreeCompartment<TS,BUD>* operator()(TreeCompartment<TS,BUD>* tc)const;
-
   private:
     const ParametricCurve& K;
     VoxelSpace* voxel_space;
@@ -174,16 +172,17 @@ namespace LignumForest{
     ///\brief Calculate the optical depth of a single voxel.
     ///
     ///Calculate the optical depth of a single voxel, accounting for both foliage and woody material.
-    ///Evaluation of the wood area is conditional on the \p wood flag.
-    ///\param o_d Optical depth
+    ///Evaluation of the wood area is conditional on the wood flag.
+    ///\param od Optical depth
     ///\param vm Voxel data
-    ///\retval o_d The sum of foliage and wood optical depths 
+    ///\retval od The sum of foliage and wood optical depths 
     ///
     ///\sa AccumulateOpticalDepth()
     ///\sa AccumulateOpticalDepth::wood
     ///\sa voxelspace::VoxelMovement
     ///\sa voxelspace::VoxelSpace::getRoute()
     ///\sa \ref radiative_properties "Radiative properties"
+    ///
     ///\par Formulas for optical depth
     ///
     ///Calculate the single-voxel foliage optical depth (\f$ \tau_f \f$) based on voxel's \f$ \overline{\mathrm{STAR}}_\mathrm{voxel} \f$:
@@ -228,28 +227,29 @@ namespace LignumForest{
     ///  \overline{A}_p = \frac{1}{2}\pi r^2 + \frac{1}{2}\pi rh = \frac{2}{4}\pi r^2 + \frac{2}{4}\pi rh = \frac{1}{4}(2\pi r^2 + 2\pi rh) = \frac{1}{4}A
     ///\f]
     ///This completes Cauchy's surface area theorem for the flat faced right cylinder.
-    double operator()(double o_d, VoxelMovement& vm){
-      if(vm.af > R_EPSILON || (wood && vm.wood_area > R_EPSILON)) {
-	// [VoxelOpticalDepth]
-	//Foliage
-	LGMdouble k = vm.STAR_mean;
-	o_d += k * vm.af * vm.l / box_volume;
-	if(wood) {
-	  //Wood
-	  //Cauchy's theorem: Mean projection area of surface of a circular cylinder
-	  //(excluding end disks) is 1/4 of its area
-	  o_d += 0.25 * vm.wood_area * vm.l / box_volume;
-	}
-	// [VoxelOpticalDepth]
-      }
-      return o_d;
-    }
+    double operator()(double od, VoxelMovement& vm);
   private:
     LGMdouble box_side_length;
     LGMdouble box_volume;
     bool wood;                       //  If woody parts are considered
   };
 
+  inline double AccumulateOpticalDepth::operator()(double od, VoxelMovement& vm){
+    if(vm.af > R_EPSILON || (wood && vm.wood_area > R_EPSILON)) {
+      // [VoxelOpticalDepth]
+      //Foliage
+      LGMdouble k = vm.STAR_mean;
+      od += k * vm.af * vm.l / box_volume;
+      if(wood) {
+	//Wood
+	//Cauchy's theorem: Mean projection area of surface of a circular cylinder
+	//(excluding end disks) is 1/4 of its area
+	od += 0.25 * vm.wood_area * vm.l / box_volume;
+      }
+      // [VoxelOpticalDepth]
+    }
+    return od;
+  }
 #undef HIT_THE_FOLIAGE
 #undef NO_HIT
 #undef HIT_THE_WOOD
