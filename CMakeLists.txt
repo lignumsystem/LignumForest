@@ -34,11 +34,15 @@
 cmake_minimum_required(VERSION 3.30)
 project(LignumForest DESCRIPTION "Individual trees in single species Scots pine forest" LANGUAGES CXX)
 message("Project  ${CMAKE_PROJECT_NAME}: ${LignumForest_DESCRIPTION}")
-message("---------------------------------------------------------------------------")
+#Global defaults for all targets
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
 include(CMakePrintHelpers)
+cmake_print_variables(CMAKE_CXX_COMPILER)
+cmake_print_variables(CMAKE_CXX_COMPILER_ID) 
+cmake_print_variables(CMAKE_CXX_STANDARD)
 
 #Using "add_subdirectory" aligns with modern CMake as it supports namespaced targets
 #and there is no need to use explicit directory paths.
@@ -60,11 +64,6 @@ add_subdirectory(../ lignum-core_build)
 set(LSYSTEMFILE pine-em98-branch-C.L)
 set(LSYSTEMSRC  pine-em98-branch-C.cpp)
 
-cmake_print_variables(CMAKE_CXX_COMPILER)
-cmake_print_variables(CMAKE_CXX_COMPILER_ID) 
-cmake_print_variables(CMAKE_CXX_STANDARD)
-
-#HDF5 is mandatory
 find_package(HDF5 COMPONENTS C CXX HL REQUIRED)
 
 #Select one of Qt4, Qt5 or Qt6 for XML parsing.
@@ -72,25 +71,32 @@ find_package(HDF5 COMPONENTS C CXX HL REQUIRED)
 #Set also libray linking accordingly (target_link_libray).
 #Qt4 is obsolete and only for macOS with Intel processors
 #find_package(Qt4 COMPONENTS QtOpenGL QtXml QtGui QtCore REQUIRED)
-#find_package(HDF5 COMPONENTS C CXX HL REQUIRED)
-#Qt5 package
-find_package(Qt5 COMPONENTS Xml Core  REQUIRED)
+#Find Qt5 package, QUIET allows fallback to Qt6
+message("LignumForest")
+find_package(Qt5 COMPONENTS Xml Core  QUIET)
+if(Qt5_FOUND)
+  message(STATUS "Found Qt5: ${Qt5_VERSION}")
+  set(QT_LIBRARIES Qt5::Xml Qt5::Core)
+else()
+    #If Qt5 isn't found, search for Qt6. 
+    #REQUIRED will force CMake to exit if Qt6 is also missing.
+    message(STATUS "Qt5 not found. Looking for Qt6...")
+    find_package(Qt6 COMPONENTS Xml Core REQUIRED)
+    message(STATUS "Found Qt6: ${Qt6_VERSION}")
+    set(QT_LIBRARIES Qt6::Xml Qt6::Core)
+endif()
 #Qt6 package
 #find_package(Qt6 COMPONENTS Xml Core  REQUIRED)
 if(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin")
-  message("LignumForest")
-  message("Apple macOS (Darwin) platform")
-  message("-----------------------------")
+  message(STATUS "Apple macOS (Darwin) platform")
   #Simple visualization tool in macOS
   find_package(OpenGL REQUIRED) 
   # cmake 3.x output erroneusly prints 'glut not found'. It is found. 
   find_package(GLUT REQUIRED)
 elseif(CMAKE_HOST_SYSTEM_NAME MATCHES "Linux")
-  message("LignumForest")
-  message("Linux platform")
-  message("--------------")
+  message(STATUS "Linux platform")
 else()
-  message(${CMAKE_HOST_SYSTEM_NAME} " not supported")
+  message(STATUS ${CMAKE_HOST_SYSTEM_NAME} " not supported")
   message(FATAL_ERROR "Exiting cmake")
 endif()
 
@@ -128,30 +134,29 @@ target_include_directories(lignum-forest PUBLIC . include
 )
 
 if(CMAKE_HOST_SYSTEM_NAME MATCHES "Darwin")
-  message("LignumForest")
-  message("------------")
-  message("Apple macOS (Darwin) libraries")
+  message(STATUS "Apple macOS (Darwin) libraries")
   target_link_libraries(lignum-forest
     HDF5::HDF5
     #Obsolete Qt4 
     #Qt4::QtOpenGL Qt4::QtXml Qt4::QtGui Qt4::QtCore
-    #Qt5 linking
-    Qt5::Xml Qt5::Core
+    #Qt linking
+    ${QT_LIBRARIES}
+    #Qt5::Xml Qt5::Core
     #Qt6 linking
     #Qt6::Xml Qt6::Core
     GLUT::GLUT OpenGL::GLU OpenGL::GL
     Visual::Visual L::L voxel::voxel sky::sky LGM::LGM cxxadt::cxxadt
   )
 elseif(CMAKE_HOST_SYSTEM_NAME MATCHES "Linux")
-  message("LignumForest")
-  message("------------")
-  message("Linux libraries")
+  message(STATUS "Linux libraries")
   target_link_libraries(lignum-forest
     HDF5::HDF5
     #Obsolete Qt4 
     #Qt4::QtOpenGL Qt4::QtXml Qt4::QtGui Qt4::QtCore
+    #Qt linking
+    ${QT_LIBRARIES}
     #Qt5 linking
-    Qt5::Xml Qt5::Core
+    #Qt5::Xml Qt5::Core
     #Qt6 linking
     #Qt6::Xml Qt6::Core
     L::L voxel::voxel sky::sky LGM::LGM cxxadt::cxxadt
