@@ -1,59 +1,27 @@
 library(rhdf5)
-library(ineq)
-#########        ForestPlot function prints out graphs from Lignum simulation of a forest stand
-#########        Call: ForestPlot(infile, aplot, pick, GYdata = "", center = "a")
-#########        infile: name of input HDF5 file (if not in the current directory include path). The file
-#########                must be in the HDF5 File Format (see below)
-#########                Output is writen to a pdf file, name is infile.pdf
-#########        aplot   Area of the simulated plot in m2
-#########        pick    Every pick tree will appear in the height and diameter growth graphs.
-#########                (If there are e.g. 600 trees on plot graphs become a mess if all are plotted)
-#########        GYdata = ""       Path to the Growh & Yield data used for comparison
-#########        center = "a"      If all trees (= default) or only in center of plot are used for evaluation
-#########                          If center = "c", center of plot, any other character all trees, the extent
-#########                          of the excluded area is read from the VoxelSpace of the hdf5 file.
-#########                          In the case of center of plot the name of output file is infile_c.pdf
-#########         Wfall = "n"      If plots Wf vs tree diameter and height are shown (Wfall = "Y")
-#########         Gini = "n"       If plots of Gini coefficient and Lorennz curve are shown (Gini = "Y")
+#library(ineq)
+#########        Compare prints to a pdf file graphs from several Lignum simulations
+#########        Call: Compare(traits, files, legends, center = "c", GYdata ="", pdfd = "")
+#
+#########        traits: any combination of the following c("height", diameter", "heightvsdiameter",
+#########                "selfthinning", "basalarea", "basalareaatcrownbase", "stemvolume",
+#########                "stemvolumegrowth", "leafareaindex", "crownratio", "dominantheight",
+#########                "basalareavsdominantheight")
+#########        files:  HDF5 files of the simulations
+#########        legends: legends that mark the simulations - must have same length as files
+#########        center: Whole plot or center of it. Output file name = compare_all.pdf, if
+#########                whole plot, compare_c.pdf, if center plot.
+#########        GYdata: Directory for G&Y data. It is used as paste(getwd(),GYdata,sep=""
+#########                IF it is empty, no G&Y data is shown.
+#########        pdfd:   Subdirecory of the current one for pdf file: if pdff ="xxx", the
+#########                the result will be written to xxx/compare_*.pdf
 
-
-
-#The Lignum forest simulation results are stored in a file in the HDF5 File Format
-#(https://en.wikipedia.org/wiki/Hierarchical_Data_Format).
-
-#ForestPlot assumes the input file contains the following datasets: 
-#              /  ForestTreeData H5I_DATASET  FLOAT 51 x 599 x 21
-#              /       StandData H5I_DATASET  FLOAT       19 x 21
-#              / CenterStandData H5I_DATASET  FLOAT       19 x 81
-
-#In this example 599 is the numberof trees on plot and 21 is the number times (years) at which
-#results are stored
-
-#In order to run ForestPlot in R a suitable package is needed. ForestPlot has been tested using
+#For running Compare yoy will need:
 #Biomanager package (https://www.rdocumentation.org/packages/BiocManager/versions/1.30.17):
 #install.packages("BiocManager")
 #BiocManager::install("rhdf5")
-
-#For Lorenz curve (inequality) install the package "ineq"
-#install.packages("ineq")
-#
-#To run ForestPlot load libraries first
 #library("rhdf5")
-#library("ineq")
-#Then source "ForestPlotFunction.R"
-#source("ForestPlotFunction.R")
-#Finally run the ForestPlot function, e.g.:
-#ForestPlot("../HDF5ForestData770_ajo157_3100.h5",400,2,"ResultAnalysis/","c")
-#The figures will appear in "../HDF5ForestData770_ajo157_3100.h5.pdf"
 
-#NOTE! Three data files are are used: Va27.txt, VVV-40.txt, ksto-mt.dat and Ilvessalo.txt
-#(in LignumForest/Resultanalysis).
-#Va27.txt = Varmola M (1987) Männyn viljelytaimikoiden kasvumalli. Lic. For & Agric.
-#Thesis, Department of Forest Mensuration, University of Helsinki, 89 p.
-#VVV-40.txt = Vuokila Y, Väliaho H (1980) Viljeltyjen havumetsiköiden kasvatusmallit.
-#Communicationes Instituti Forestalis Fenniae 99, 271.
-#ksto-mt.dat.  Finnish yiels tables compiled by Koivisto
-#Ilvessalo.txt Ilvessalo G&Y tables
 #----------------------------------------------------------------------------
 
 in_center <- function(x,y, pX, pY, dx, dy) {
@@ -66,9 +34,9 @@ in_center <- function(x,y, pX, pY, dx, dy) {
 #traits <- c("height","diameter","heightvsdiameter","selfthinning","basalarea","basalareaatcrownbase",
 # "stemvolume","leafareaindex", "crownratio", "dominantheight","basalareavsdominantheight")
 
-Compare <- function(traits, files, legends, center = "c", pdfd = "") {
 
 
+Compare <- function(traits, files, legends, center = "c", GYdata = "", pdfd = "") {
 
 d <- H5Fopen(files[1])
 #The size of the plot and is read from VoxelSpace.txt & information about
@@ -117,17 +85,29 @@ if(center != "c") {
 
 H5Fclose(d)
 
+GY <- FALSE
+if(GYdata == "") {
+GY <- FALSE
+} else {
+GY <- TRUE
+ksto <- read.table(paste(GYdata,"ksto-mt.dat",sep=""), header=TRUE)
+}  
 
 pdf(pdf_file)
 
 #
 #First explanation of the graphs
 #
-colors <- c('black','red','darkgreen','blue', 'brown', 'cyan','orangered3','yellow3')
+colors <- c('black','red','darkgreen','blue', 'brown', 'cyan','orangered3','yellow3','cadetblue3',
+'chartreuse','chocolate1','darkorange','darkorchid1','goldenrod1')
 
 plot(0,0,axes=FALSE, ylab="",xlab="", type="l")
 
-legend('top',"Explanation",box.lty=0)
+legend('top',"Explanation" ,box.lty=0)
+
+if(GY) {
+legend('top',inset=0.05, "Data = Koivisto MT", box.lty=0)
+}
 
 legend('top', inset=0.1, legends, col= colors[1:length(legends)],lty=1,lwd=2,box.lty=0)
 
@@ -150,6 +130,7 @@ if(length(which(traits=="height") > 0)) {
 	y <- stand[1,]
 	plot(y,stand[11,], type="l", ylim=c(0,30), lwd=2, xlab="time (y)", ylab="Tree height (m)", main= 	paste("Mean height ",mtxt,sep=""), col=colors[1])
 	H5Fclose(d)
+	if(GY) {points(ksto$year,ksto$Hav,type="p", lwd=2, pch=3, col="darkgreen")}
 
 for(i in 2:length(files)) {
 d <- H5Fopen(files[i])
@@ -177,7 +158,7 @@ if(center != "c") {
 y <- stand[1,]
 plot(y,100*stand[8,], type="l", ylim=c(0,40), lwd=2, xlab="time (y)", ylab="Diameter (m)", main= "Mean Breast height diameter", col=colors[1])
 H5Fclose(d)
-
+if(GY) {points(ksto$year,ksto$Dbhav,type="p", lwd=2, pch=3, col="darkgreen")}
 
 for(i in 2:length(files)) {
 d <- H5Fopen(files[i])
@@ -205,6 +186,7 @@ if(center != "c") {
 }
 plot(100*stand[8,],stand[11,], type="l", ylim=c(0,30), xlim=c(0,30),lwd=2, xlab="BH diameter (cm)", ylab="Mean tree height (m)", main="Height vs breast height diameter", col=colors[1])
 H5Fclose(d)
+if(GY) {points(ksto$Dbhav,ksto$Hav,type="p", lwd=2, pch=3, col="darkgreen")}
 
 for(i in 2:length(files)) {
 d <- H5Fopen(files[i])
@@ -234,6 +216,7 @@ plot(stand[16,]*1e4/(stand[3,]/aplot1),stand[3,]/aplot1, log="xy",ylim=c(500,200
 points(seq(0.02,0.5,0.1),1100*(seq(0.02,0.5,0.1))**(-2/3),type="l",lwd=2,col="magenta3")
 legend('topright',inset=0.01,cex=0.8,expression(paste(N == alpha*v^{-2/3}," (", N," = Density",", ",v," = mean V",")")),lty=1,lwd=2,col="magenta3",box.lty = 0)
 H5Fclose(d)
+if(GY) {points(ksto$V/ksto$N,ksto$N,type="p", lwd=2, pch=3, col="darkgreen")}
 
 for(i in 2:length(files)) {
 d <- H5Fopen(files[i])
@@ -262,6 +245,8 @@ if(center != "c") {
 y <- stand[1,]
 plot(y,stand[14,]*1e4, type="l", ylim=c(0,80),lwd=2, xlab="time (y)", ylab="m2/ha", main="Basal area", col=colors[1])
 H5Fclose(d)
+if(GY) {points(ksto$year,ksto$G,type="p", lwd=2, pch=3, col="darkgreen")}
+
 
 for(i in 2:length(files)) {
 d <- H5Fopen(files[i])
@@ -317,6 +302,7 @@ if(center != "c") {
 y <- stand[1,]
 plot(y,stand[16,]*1e4, type="l", ylim=c(0,1000),lwd=2, xlab="time (y)", ylab="m3/ha", main="Stem volume", col=colors[1])
 H5Fclose(d)
+if(GY) {points(ksto$year,ksto$V,type="p", lwd=2, pch=3, col="darkgreen")}
 
 for(i in 2:length(files)) {
 d <- H5Fopen(files[i])
@@ -332,7 +318,7 @@ H5Fclose(d)
 }
 
 #
-# 					Stem volume
+# 					Stem volume growth
 #
 
 if(length(which(traits=="stemvolumegrowth") > 0)) {
@@ -450,6 +436,7 @@ for(i in 11:length(y)) {
 
 plot(y[11:length(y)],hd[11:length(y)], type="l", ylim=c(0,30),lwd=2, xlab="time (y)", ylab="Height (m)", main="Dominant height", col=colors[1],xlim = c(0,max(y)))
 H5Fclose(d)
+if(GY) {points(ksto$year,ksto$Hdom,type="p", lwd=2, pch=3, col="darkgreen")}
 
 for(i in 2:length(files)) {
 d <- H5Fopen(files[i])
@@ -504,6 +491,8 @@ for(i in 11:length(y)) {
 
 plot(hd[11:length(y)],ba[11:length(y)], type="l", xlim=c(0,30), ylim=c(0,40),lwd=2, xlab="Dominant height (m)", ylab="Basal area (m2/ha)", main="Basal area vs dominant height", col=colors[1])
 H5Fclose(d)
+if(GY) {points(ksto$Hdom,ksto$G,type="p", lwd=2, pch=3, col="darkgreen")}
+
 
 if(length(files) > 1) {
 for(i in 2:length(files)) {
