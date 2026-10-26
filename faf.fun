@@ -1,5 +1,5 @@
-#faf.fun written for parameter estimation
-#order faf-value
-0 0.01
-1 0.01
+#Needle mass of new segment proportional length (Wf0 = faf * L)
+#ip faf-value
+0 0.008
+1 0.008
 
